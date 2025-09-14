@@ -19,4 +19,16 @@ MONGO_DATABASE = os.getenv("MONGO_DATABASE", "FaceDB")
 MONGO_COLLECTION = os.getenv("MONGO_COLLECTION", "Photo_storage")
 MONGO_URI = f"{MONGO_PROTOCOL}://{MONGO_HOST}:{MONGO_PORT}/"
 
+KAFKA_PRODUCER_CONFIG = {
+    'bootstrap.servers': BOOTSTRAP_SERVER
+}
+
+KAFKA_CONSUMER_CONFIG = {
+    'bootstrap.servers': BOOTSTRAP_SERVER,
+    'group.id': KAFKA_GROUP_ID,
+    'auto.offset.reset': 'earliest',
+    'enable.auto.commit': True
+}
+
+
 
