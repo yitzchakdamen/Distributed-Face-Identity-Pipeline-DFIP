@@ -3,10 +3,10 @@ from src.face_detection import FaceExtractor
 import logging
 from src.kafka_publisher import KafkaPublisher
 from src.mongo_dal import MongoImageStorage
-from typing import Union,Optional
+from typing import Union
 
-logger = logging.getLogger(config.LOGGER_NAME)
-logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+logger = logging.getLogger(config.LOGGER_NAME) #remember to change this to es logger and set up every logger to his class
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S") 
 
 
 class FaceDetectionApp:

@@ -127,16 +127,16 @@ class FaceExtractor:
                     continue
                 content_type = "image/png" if self.encode_format == ".png" else "image/jpeg"
                 face_bytes = buf.tobytes()
-                face_id = self._stable_uuid(face_bytes)
+                face_id = self._stable_uuid(face_bytes) # replaced with util function
                 outputs.append(
                     FaceObject(
-                        face_id=face_id,
+                        face_id=face_id, # i need to replace this with my util function
                         bbox=(int(x), int(y), int(w), int(h)),
                         width=int(w),
                         height=int(h),
                         content_type=content_type,
                         image_bytes=face_bytes,
-                        timestamp_utc=datetime.now(timezone.utc).isoformat(),
+                        timestamp_utc=datetime.now(timezone.utc).isoformat(), # i need to replace this with my util function
                         source_hint=source_hint,
                     )
                 )
