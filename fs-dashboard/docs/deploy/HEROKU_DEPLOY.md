@@ -45,6 +45,26 @@ heroku config:set NODE_ENV=production ALLOWED_ORIGINS=https://facealert.live,htt
 heroku config:set NODE_ENV=production -a facealert-frontend
 ```
 
+#### Enable SSL certificates
+
+```bash
+# Enable automatic SSL for API
+heroku certs:auto:enable -a facealert-api
+
+# Enable automatic SSL for frontend  
+heroku certs:auto:enable -a facealert-frontend
+```
+
+#### Verify SSL status
+
+```bash
+# Check API SSL
+heroku certs -a facealert-api
+
+# Check frontend SSL
+heroku certs -a facealert-frontend
+```
+
 #### DNS information
 
 ##### To check the DNS information that needs to be configured
