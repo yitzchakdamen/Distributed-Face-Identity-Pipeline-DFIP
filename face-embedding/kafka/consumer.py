@@ -7,14 +7,17 @@ logger = logging.getLogger(__name__)
 
 class KafkaConsumer:
     def __init__(self, config: dict, topics: list):
+        """Initialize Kafka consumer and subscribe to topics."""
         self.__consumer = Consumer(config)
         self.__consumer.subscribe(topics)
         self.__running = True
 
     def stop(self):
+        """Stop the consumer loop."""
         self.__running = False
 
     def consume(self, process_message, timeout: float = 1.0):
+        """Consume messages from Kafka and process them with the provided callback."""
         try:
             while self.__running:
                 msg = self.__consumer.poll(timeout)
