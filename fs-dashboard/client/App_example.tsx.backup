@@ -4,10 +4,16 @@ import "./App.css";
 // Use the dynamic API URL from Vite config
 const API_URL = __API_URL__;
 
+interface HealthData {
+  message: string;
+  environment: string;
+  uptime: number;
+}
+
 function App() {
-  const [healthData, setHealthData] = useState(null);
+  const [healthData, setHealthData] = useState<HealthData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Example: Fetch health data from API
@@ -34,7 +40,7 @@ function App() {
           <h2>Server Status</h2>
           <p>Status: {healthData.message}</p>
           <p>Environment: {healthData.environment}</p>
-          <p>Uptime: {healthData.uptime?.toFixed(2)} seconds</p>
+          <p>Uptime: {healthData.uptime.toFixed(2)} seconds</p>
         </div>
       )}
     </>
