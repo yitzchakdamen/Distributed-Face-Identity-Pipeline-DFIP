@@ -1,5 +1,4 @@
 import "./Navbar.css";
-import logoSvg from "/logo.svg";
 
 interface NavbarProps {}
 
@@ -8,7 +7,7 @@ const Navbar: React.FC<NavbarProps> = () => {
     <nav className="navbar">
       <div className="navbar-container">
         <div className="navbar-brand">
-          <img src={logoSvg} alt="Face Alert Logo" className="logo" />
+          <img src="/logo.svg" alt="Face Alert Logo" className="logo" />
           <span className="brand-text">Face Alert</span>
         </div>
         <div className="navbar-menu">
