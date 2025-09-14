@@ -2,7 +2,8 @@ from utils import config
 from src.face_detection import FaceExtractor
 import logging
 from src.kafka_publisher import KafkaPublisher
-from src.mongo_dal import SimpleGridFSWriter
+from src.mongo_dal import MongoImageStorage
+from typing import Union,Optional
 
 logger = logging.getLogger(config.LOGGER_NAME)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
@@ -11,20 +12,20 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(
 class FaceDetectionApp:
     def __init__(self):
         self.extractor = FaceExtractor()
-        self.mongo_writer = SimpleGridFSWriter(
+        self.mongo_writer = MongoImageStorage(
             uri=config.MONGO_URI,
             db_name=config.MONGODB_DB_NAME,
             bucket_name="faces"
         )
         self.kafka_publisher = KafkaPublisher(
-            bootstrap="localhost:9092",
-            topic="detected-faces"
+            bootstrap=config.KAFKA_BOOTSTRAP,
+            topic=config.KAFKA_TOPIC
         )
 
-    def process_image(self, image_path: str):
+    def process_image(self, image: Union[str, bytes, bytearray]) -> None:
         try:
-            faces = self.extractor.extract_faces(image_path)
-            logger.info(f"Extracted {len(faces)} face(s) from {image_path}")
+            faces = self.extractor.extract_faces(image)
+            logger.info(f"Extracted {len(faces)} face(s) from the image")
 
             for face in faces:
                 payload = {
@@ -37,17 +38,14 @@ class FaceDetectionApp:
 
                 kafka_payload = {
                     "face_id": face.face_id,
-                    "bbox": face.bbox,
-                    "width": face.width,
-                    "height": face.height,
-                    "mongo_file_id": str(file_id),
+                    "mongo_id": str(file_id),
                     "event_ts": face.timestamp_utc
                 }
                 self.kafka_publisher.publish(kafka_payload)
                 logger.info(f"Published metadata for face {face.face_id} to Kafka")
 
         except Exception as e:
-            logger.error(f"Error processing image {image_path}: {e}")
+            logger.error(f"Error processing image: {e}")
 
 
 

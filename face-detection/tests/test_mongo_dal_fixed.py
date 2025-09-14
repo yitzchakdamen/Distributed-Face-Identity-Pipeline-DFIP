@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch, MagicMock
 from bson import ObjectId
 import tempfile
 import os
-from src.mongo_dal import SimpleGridFSWriter
+from src.mongo_dal import MongoImageStorage
 
 
 class TestSimpleGridFSWriter(unittest.TestCase):
@@ -40,7 +40,7 @@ class TestSimpleGridFSWriter(unittest.TestCase):
         mock_client.__getitem__.return_value = mock_db
         mock_gridfs.return_value = mock_fs
         
-        writer = SimpleGridFSWriter(
+        writer = MongoImageStorage(
             uri="mongodb://localhost:27017",
             db_name="test_db",
             bucket_name="test_bucket"
@@ -68,7 +68,7 @@ class TestSimpleGridFSWriter(unittest.TestCase):
         expected_object_id = ObjectId()
         mock_fs.put.return_value = expected_object_id
         
-        writer = SimpleGridFSWriter(
+        writer = MongoImageStorage(
             uri="mongodb://localhost:27017",
             db_name="test_db"
         )
@@ -101,7 +101,7 @@ class TestSimpleGridFSWriter(unittest.TestCase):
         expected_object_id = ObjectId()
         mock_fs.put.return_value = expected_object_id
         
-        writer = SimpleGridFSWriter(
+        writer = MongoImageStorage(
             uri="mongodb://localhost:27017",
             db_name="test_db"
         )
@@ -134,7 +134,7 @@ class TestSimpleGridFSWriter(unittest.TestCase):
         mock_client.__getitem__.return_value = mock_db
         mock_gridfs.return_value = mock_fs
         
-        writer = SimpleGridFSWriter(
+        writer = MongoImageStorage(
             uri="mongodb://localhost:27017",
             db_name="test_db"
         )
@@ -163,7 +163,7 @@ class TestSimpleGridFSWriter(unittest.TestCase):
                 with patch('src.mongo_dal.gridfs.GridFS', return_value=mock_fs):
                     mock_client.__getitem__.return_value = mock_db
                     
-                    writer = SimpleGridFSWriter(
+                    writer = MongoImageStorage(
                         uri="mongodb://localhost:27017",
                         db_name="test_db"
                     )
@@ -183,7 +183,7 @@ class TestSimpleGridFSWriter(unittest.TestCase):
                 with patch('src.mongo_dal.gridfs.GridFS', return_value=mock_fs):
                     mock_client.__getitem__.return_value = mock_db
                     
-                    writer = SimpleGridFSWriter(
+                    writer = MongoImageStorage(
                         uri="mongodb://localhost:27017",
                         db_name="test_db"
                     )
@@ -202,7 +202,7 @@ class TestSimpleGridFSWriter(unittest.TestCase):
                 with patch('src.mongo_dal.gridfs.GridFS', return_value=mock_fs):
                     mock_client.__getitem__.return_value = mock_db
                     
-                    writer = SimpleGridFSWriter(
+                    writer = MongoImageStorage(
                         uri="mongodb://localhost:27017",
                         db_name="test_db"
                     )

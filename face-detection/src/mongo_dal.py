@@ -11,7 +11,7 @@ logger = logging.getLogger(LOGGER_NAME)
 ImageInput = Union[bytes, bytearray, memoryview, str]
 
 
-class SimpleGridFSWriter:
+class MongoImageStorage:
     """Minimal GridFS writer with logging and robust error handling.
 
     Expects payloads shaped as:
