@@ -12,6 +12,9 @@ export default defineConfig(({ mode }) => ({
       }
     }
   },
+  preview: {
+    allowedHosts: true
+  },
   define: {
     __API_URL__: JSON.stringify(mode === 'production' ? 'https://api.facealert.live' : 'http://localhost:3000')
   }
