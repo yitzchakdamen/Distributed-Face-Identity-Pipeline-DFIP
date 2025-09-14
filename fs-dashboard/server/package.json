@@ -8,7 +8,8 @@
     "start": "node index.js",
     "dev": "node --watch index.js",
     "build": "echo 'No build step needed for server'",
-    "heroku-postbuild": "echo 'Server is ready for deployment'",
+    "build:client": "cd ../client && npm install && npm run build && cp -r dist/* ../server/public/",
+    "heroku-postbuild": "npm run build:client",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
