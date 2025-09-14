@@ -7,7 +7,7 @@ from bson import ObjectId
 from utils.config import LOGGER_NAME
 import logging
 
-logger = logging.getlogger(LOGGER_NAME)
+logger = logging.getLogger(LOGGER_NAME)
 
 ImageInput = Union[bytes, bytearray, memoryview, str]
 
@@ -106,3 +106,22 @@ class SimpleGridFSWriter:
             except Exception as ex:
                 raise ValueError(f"Failed to read file at path '{image}': {ex}") from ex
         raise ValueError("image must be bytes-like or a file path string.")
+
+
+# if __name__ == "__main__":
+#     # Example usage
+#     from utils.config import MONGO_URI, MONGODB_DB_NAME
+
+#     writer = SimpleGridFSWriter(uri=MONGO_URI, db_name=MONGODB_DB_NAME)
+
+#     sample_payload = {
+#         "image": "C:/Users/brdwn/Pictures/Screenshots/Screenshot 2025-07-31 145934.png",  # Path to an example image file
+#         "image_id": "example123",
+#         "event_ts": "2024-01-01T12:00:00Z",
+#     }
+
+#     try:
+#         file_id = writer.insert_image(sample_payload)
+#         print(f"Image stored with GridFS file_id: {file_id}")
+#     except Exception as e:
+#         print(f"Failed to store image: {e}")
