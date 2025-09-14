@@ -22,7 +22,7 @@ class FaceDetectionApp:
             topic=config.KAFKA_TOPIC
         )
 
-    def process_image(self, image: Union[str, bytes, bytearray]) -> None:
+    def process_image(self, image: Union[str, bytes, bytearray]) -> None: # for short it build util that build the dict messege
         try:
             faces = self.extractor.extract_faces(image)
             logger.info(f"Extracted {len(faces)} face(s) from the image")
