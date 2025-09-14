@@ -5,7 +5,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 from utils.config import LOGGER_NAME
 from confluent_kafka import Producer, KafkaException, KafkaError
 
-logger = logging.getlogger(LOGGER_NAME)
+logger = logging.getLogger(LOGGER_NAME)
 JSONLike = Union[Dict[str, Any], List[Any]]
 PayloadLike = Union[JSONLike, str, bytes]
 
@@ -16,14 +16,6 @@ class KafkaPublisher:
     This publisher configures idempotent delivery, full acknowledgments,
     and safe in-flight ordering. It exposes a clear API for single and bulk
     publishing with explicit error reporting through logs and raised exceptions.
-
-    Example:
-        publisher = KafkaPublisher(
-            bootstrap="localhost:9092",
-            topic="events"
-        )
-        publisher.publish({"id": 1, "event": "hello"}, key="1")
-        publisher.flush()
     """
 
     def __init__(
@@ -34,16 +26,8 @@ class KafkaPublisher:
         security: Optional[Dict[str, str]] = None,
         extra: Optional[Dict[str, Any]] = None,
     ) -> None:
-        """Initialize the publisher with safe defaults and optional security.
-
-        Args:
-            bootstrap: Kafka bootstrap servers string (e.g., "localhost:9092").
-            topic: Default topic to publish to.
-            logger: Optional logger instance; if None, a module logger is created.
-            security: Optional security properties (e.g., SASL/SSL for cloud clusters).
-            extra: Optional advanced librdkafka overrides.
-        """
-        self._logger = logger 
+        """Initialize the publisher with safe defaults and optional security."""
+        self._logger = logger
         self._topic = topic
 
         conf: Dict[str, Any] = {
@@ -66,14 +50,7 @@ class KafkaPublisher:
         self._delivery_errors: List[str] = []
 
     def _serialize(self, value: PayloadLike) -> bytes:
-        """Serialize payload to bytes (UTF-8 for str/JSON, passthrough for bytes).
-
-        Args:
-            value: JSON-like object, str, or bytes.
-
-        Returns:
-            UTF-8 encoded bytes.
-        """
+        """Serialize payload to bytes (UTF-8 for str/JSON, passthrough for bytes)."""
         if isinstance(value, bytes):
             return value
         if isinstance(value, str):
@@ -81,12 +58,7 @@ class KafkaPublisher:
         return json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
 
     def _on_delivery(self, err: Optional[KafkaError], msg) -> None:
-        """Delivery callback that records and logs failures in detail.
-
-        Args:
-            err: KafkaError or None.
-            msg: The message object delivered or failed to deliver.
-        """
+        """Delivery callback that records and logs failures in detail."""
         if err is not None:
             info = (
                 f"topic={msg.topic()} partition={msg.partition()} "
@@ -100,29 +72,11 @@ class KafkaPublisher:
                 msg.topic(), msg.partition(), msg.offset(), msg.key(),
             )
 
-    def publish(
-        self,
-        value: PayloadLike,
-        *,
-        key: Optional[str] = None,
-        headers: Optional[Dict[str, str]] = None,
-        topic: Optional[str] = None,
-        max_buffer_wait_s: float = 5.0,
-    ) -> None:
-        """Enqueue a single record for delivery and poll the producer.
-
-        Args:
-            value: JSON-like object, str, or bytes to publish.
-            key: Optional partitioning key for ordering within a partition.
-            headers: Optional message headers as a dict of str->str.
-            topic: Optional override for the target topic; defaults to the ctor topic.
-            max_buffer_wait_s: Maximum time to wait if the local queue is full.
-
-        Raises:
-            RuntimeError: On immediate produce errors (non-buffer) or after buffer wait timeout.
+    def publish(self, value: PayloadLike, topic: Optional[str] = None, max_buffer_wait_s: float = 5.0) -> None:
+        """
+        Publish a single record to Kafka with error handling and logging.
         """
         serialized = self._serialize(value)
-        headers_list = [(k, v.encode("utf-8")) for k, v in (headers or {}).items()]
 
         deadline = time.time() + max_buffer_wait_s
         while True:
@@ -130,8 +84,6 @@ class KafkaPublisher:
                 self._producer.produce(
                     topic or self._topic,
                     value=serialized,
-                    key=key,
-                    headers=headers_list if headers_list else None,
                     on_delivery=self._on_delivery,
                 )
                 break
@@ -149,40 +101,22 @@ class KafkaPublisher:
 
     def publish_many(
         self,
-        items: Iterable[Tuple[PayloadLike, Optional[str], Optional[Dict[str, str]]]],
+        items: Iterable[PayloadLike],
         *,
         topic: Optional[str] = None,
         max_buffer_wait_s: float = 5.0,
     ) -> None:
-        """Enqueue multiple records efficiently with periodic polling.
-
-        Args:
-            items: Iterable of (value, key, headers) tuples.
-            topic: Optional override for the target topic per batch call.
-            max_buffer_wait_s: Maximum time to wait if the local queue is full.
-
-        Raises:
-            RuntimeError: If the local queue remains full beyond the timeout or on produce errors.
-        """
-        for value, key, headers in items:
+        """Enqueue multiple records efficiently with periodic polling."""
+        for value in items:
             self.publish(
                 value,
-                key=key,
-                headers=headers,
                 topic=topic,
                 max_buffer_wait_s=max_buffer_wait_s,
             )
         self._producer.poll(0)
 
     def flush(self, timeout: float = 10.0) -> None:
-        """Block until all queued messages are delivered or timeout expires.
-
-        Args:
-            timeout: Maximum time in seconds to wait for outstanding deliveries.
-
-        Raises:
-            RuntimeError: If any delivery errors were recorded during callbacks.
-        """
+        """Block until all queued messages are delivered or timeout expires."""
         remaining = self._producer.flush(timeout)
         if remaining > 0:
             raise RuntimeError(f"Flush timed out with {remaining} messages still pending delivery.")
