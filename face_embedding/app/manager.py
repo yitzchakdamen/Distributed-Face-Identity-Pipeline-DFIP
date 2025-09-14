@@ -1,12 +1,11 @@
-import logging
 from face_embedding.app.embedding import FaceEmbedding
 from face_embedding.app.dal.mongo import MongoDBHandler
 from face_embedding.kafka.consumer import KafkaConsumer
 from face_embedding.kafka.producer import KafkaProducer
+from face_embedding.app.logger import Logger
 
 
 
-logger = logging.getLogger(__name__)
 
 
 class FaceEmbeddingManager:
@@ -33,13 +32,14 @@ class FaceEmbeddingManager:
             producer_config (dict): Kafka producer configuration.
             producer_topic (str): Kafka topic to produce to.
         """
+        self.logger = Logger.get_logger(__name__)
         self.mongo_handler = MongoDBHandler(mongo_uri, db_name)
         self.face_embedding = FaceEmbedding()
         topics = [consumer_topic]
         self.consumer = KafkaConsumer(consumer_config, topics)
         self.producer = KafkaProducer(producer_config)
         self.producer_topic = producer_topic
-        logger.info("FaceEmbeddingManager initialized.")
+        self.logger.info("FaceEmbeddingManager initialized.")
 
     def build_new_vector(self, image_id: str, camera_id: str, time: str) -> dict:
         """
@@ -75,25 +75,25 @@ class FaceEmbeddingManager:
             camera_id = data.get('camera_id', 'unknown')
             time = data.get('time', 'unknown')
             if not file_id:
-                logger.warning("No file_id found in message.")
+                self.logger.warning("No file_id found in message.")
                 return
 
             new_vector = self.build_new_vector(file_id, camera_id, time)
             self.producer.produce(topic=self.producer_topic, message=new_vector)
             self.producer.flush()
 
-            logger.info(f"Processed embedding for file_id {file_id}")
+            self.logger.info(f"Processed embedding for file_id {file_id}")
 
         except Exception as e:
-            logger.error(f"Error processing message: {e}")
+            self.logger.error(f"Error processing message: {e}")
 
     def run(self):
         """
         Run the manager to continuously process incoming Kafka messages.
         """
-        logger.info("Starting FaceEmbeddingManager...")
+        self.logger.info("Starting FaceEmbeddingManager...")
         try:
             self.consumer.consume(self.process_messages)
         except Exception as e:
-            logger.error(f"Error in consumer loop: {e}")
+            self.logger.error(f"Error in consumer loop: {e}")
             

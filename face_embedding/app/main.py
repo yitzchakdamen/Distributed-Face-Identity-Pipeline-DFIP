@@ -1,5 +1,5 @@
-from face_embedding.manager import FaceEmbeddingManager
-from face_embedding import config
+from face_embedding.app.manager import FaceEmbeddingManager
+from face_embedding.app import config
 
 
 def main():

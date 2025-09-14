@@ -1,9 +1,8 @@
 import cv2
 import numpy as np
 from insightface.app import FaceAnalysis
-import logging
+from face_embedding.app.logger import Logger
 
-logger = logging.getLogger(__name__)
 
 
 class FaceEmbedding:
@@ -21,6 +20,8 @@ class FaceEmbedding:
         provider = 'CPUExecutionProvider'
         self.app = FaceAnalysis(providers=[provider])
         self.app.prepare(ctx_id=-1, det_size=(320, 320))
+        self.logger = Logger.get_logger(__name__)
+
 
     def extract_embedding(self, image_bytes: bytes) -> np.ndarray:
         """
@@ -44,9 +45,9 @@ class FaceEmbedding:
             faces = self.app.get(image)
             if not faces:
                 raise ValueError("No face detected")
-            logger.info(f"Extracted embedding of shape: {faces[0].embedding.shape}")
+            self.logger.info(f"Extracted embedding of shape: {faces[0].embedding.shape}")
             return faces[0].embedding
         except Exception as e:
-            logger.error(f"Error extracting embedding: {e}")
+            self.logger.error(f"Error extracting embedding: {e}")
             raise 
 

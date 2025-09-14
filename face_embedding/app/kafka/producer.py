@@ -1,9 +1,7 @@
 from confluent_kafka import Producer
 import json
-import logging
+from face_embedding.app.logger import Logger
 
-
-logger = logging.getLogger(__name__)
 
 
 class KafkaProducer:
@@ -22,6 +20,8 @@ class KafkaProducer:
             config (dict): Configuration dictionary for the Kafka producer.
         """
         self.__producer = Producer(config)
+        self.logger = Logger.get_logger(__name__)
+
 
     def delivery_report(self, err, msg):
         """
@@ -32,9 +32,9 @@ class KafkaProducer:
             msg: The Kafka message object.
         """
         if err is not None:
-            logger.error(f"Message delivery failed: {err}")
+            self.logger.error(f"Message delivery failed: {err}")
         else:
-            logger.info(f"Message delivered to {msg.topic()} [{msg.partition()}]")
+            self.logger.info(f"Message delivered to {msg.topic()} [{msg.partition()}]")
 
     def produce(self, topic: str, message: dict, max_retries: int = 3):
         """
@@ -53,11 +53,11 @@ class KafkaProducer:
                 self.__producer.poll(0)
                 return
             except BufferError as e:
-                logger.warning(f"Local producer queue is full ({len(self.__producer)} messages awaiting delivery): {e}")
+                self.logger.warning(f"Local producer queue is full ({len(self.__producer)} messages awaiting delivery): {e}")
                 self.__producer.poll(1)
                 retries += 1
             except Exception as e:
-                logger.error(f"Produce error: {e}")
+                self.logger.error(f"Produce error: {e}")
                 break
 
     def flush(self):

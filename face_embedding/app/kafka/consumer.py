@@ -1,9 +1,7 @@
 import json
 from confluent_kafka import Consumer
-import logging
+from face_embedding.app.logger import Logger
 
-
-logger = logging.getLogger(__name__)
 
 
 class KafkaConsumer:
@@ -26,6 +24,8 @@ class KafkaConsumer:
         self.__consumer = Consumer(config)
         self.__consumer.subscribe(topics)
         self.__running = True
+        self.logger = Logger.get_logger(__name__)
+
 
     def stop(self):
         """
@@ -47,14 +47,14 @@ class KafkaConsumer:
                 if msg is None:
                     continue
                 if msg.error():
-                    logger.error(f"Consumer error: {msg.error()}")
+                    self.logger.error(f"Consumer error: {msg.error()}")
                     continue
                 try:
                     message_value = json.loads(msg.value().decode('utf-8'))
                     process_message(message_value)
                 except Exception as e:
-                    logger.error(f"Decode error: {e}")
+                    self.logger.error(f"Decode error: {e}")
         except Exception as e:
-            logger.info(f"Consumer stopped: {e}")
+            self.logger.info(f"Consumer stopped: {e}")
         finally:
             self.__consumer.close()
