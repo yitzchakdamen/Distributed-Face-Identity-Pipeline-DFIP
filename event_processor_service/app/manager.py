@@ -9,7 +9,6 @@ import json
 logger =  logging.getLogger("config.LOGGER_NAME")
 logging.basicConfig(level=logging.DEBUG)
 
-logger.debug("jjjj")
 
 class EventProcessorService(object):
     def __init__(self):
