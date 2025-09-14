@@ -1,7 +1,7 @@
 import json
 import logging
 import time
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional,Union
 from utils.config import LOGGER_NAME
 from confluent_kafka import Producer, KafkaException, KafkaError
 

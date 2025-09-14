@@ -52,7 +52,7 @@ class SimpleGridFSWriter:
             ValueError: If payload is missing required keys or image cannot be read.
             RuntimeError: On database or GridFS errors.
         """
-        required = {"image", "id", "event_ts"}
+        required = {"image", "image_id", "event_ts"}
         if not required.issubset(payload):
             missing = required - set(payload.keys())
             msg = f"Payload missing required keys: {', '.join(sorted(missing))}"
@@ -62,15 +62,15 @@ class SimpleGridFSWriter:
         try:
             image_bytes = self._read_image_bytes(payload["image"])
         except Exception as ex:
-            msg = f"Image normalization failed for id={payload.get('id')}: {ex}"
+            msg = f"Image normalization failed for id={payload.get('image_id')}: {ex}"
             self._logger.error(msg)
             raise ValueError(msg) from ex
 
         metadata = {
-            "ext_id": str(payload["id"]),
+            "ext_id": str(payload["image_id"]),
             "event_ts": str(payload["event_ts"]),
         }
-        filename = str(payload["id"])
+        filename = str(payload["image_id"])
 
         try:
             file_id = self._fs.put(image_bytes, filename=filename, metadata=metadata)
