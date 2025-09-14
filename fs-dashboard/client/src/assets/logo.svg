@@ -1,0 +1,22 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Monitor/Screen -->
+  <rect x="4" y="8" width="40" height="28" rx="3" fill="#1F2937" stroke="#374151" stroke-width="1.5"/>
+  <rect x="6" y="10" width="36" height="23" fill="#111827"/>
+  
+  <!-- Person silhouette -->
+  <circle cx="24" cy="18" r="5" fill="#6B7280"/>
+  <path d="M14 33C14 27 18 24 24 24C30 24 34 27 34 33H14Z" fill="#6B7280"/>
+  
+  <!-- Square corner targeting markers around face circle -->
+  <path d="M16.5 10.5L16.5 12.5M16.5 10.5L18.5 10.5" stroke="#10B981" stroke-width="1" stroke-linecap="round"/>
+  <path d="M31.5 10.5L31.5 12.5M31.5 10.5L29.5 10.5" stroke="#10B981" stroke-width="1" stroke-linecap="round"/>
+  <path d="M16.5 25.5L16.5 23.5M16.5 25.5L18.5 25.5" stroke="#10B981" stroke-width="1" stroke-linecap="round"/>
+  <path d="M31.5 25.5L31.5 23.5M31.5 25.5L29.5 25.5" stroke="#10B981" stroke-width="1" stroke-linecap="round"/>
+  
+  <!-- Status indicator (red) -->
+  <circle cx="38" cy="14" r="3" fill="#EF4444"/>
+  
+  <!-- Monitor stand -->
+  <rect x="21" y="36" width="6" height="3" fill="#374151"/>
+  <rect x="16" y="39" width="16" height="2" fill="#374151"/>
+</svg>
