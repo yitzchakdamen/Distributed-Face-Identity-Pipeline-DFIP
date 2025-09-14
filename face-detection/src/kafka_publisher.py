@@ -124,3 +124,16 @@ class KafkaPublisher:
             errors = "; ".join(self._delivery_errors)
             self._delivery_errors.clear()
             raise RuntimeError(f"One or more deliveries failed: {errors}")
+
+
+# if __name__ == "__main__":
+#     publisher = KafkaPublisher(
+#         bootstrap="localhost:9092",
+#         topic="test-topic",
+#     )
+#     try:
+#         publisher.publish({"message": "Hello, Kafka!"})
+#         publisher.flush()
+#         print("Message published successfully.")
+#     except Exception as e:
+#         print(f"Failed to publish message: {e}")
