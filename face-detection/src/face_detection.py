@@ -4,7 +4,6 @@ import logging
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from typing import List, Optional, Tuple, Union
-from pathlib import Path
 
 import cv2
 import numpy as np
@@ -34,16 +33,16 @@ class FaceObject:
     timestamp_utc: str
     source_hint: Optional[str] = None
 
-    def to_dict(self) -> dict:
-        """
-        Convert the face object into a dict suitable for serialization or insertion to a DB.
+    # def to_dict(self) -> dict:
+    #     """
+    #     Convert the face object into a dict suitable for serialization or insertion to a DB.
 
-        Returns:
-            A JSON-serializable dictionary of the face object.
-        """
-        data = asdict(self)
-        data["image_bytes"] = self.image_bytes  # keep bytes; caller can Base64 if needed
-        return data
+    #     Returns:
+    #         A JSON-serializable dictionary of the face object.
+    #     """
+    #     data = asdict(self)
+    #     data["image_bytes"] = self.image_bytes  # keep bytes; caller can Base64 if needed
+    #     return data
 
 
 class NoFacesFoundError(Exception):
@@ -209,24 +208,3 @@ class FaceExtractor:
         sha = hashlib.sha256(content).hexdigest()
         ns = uuid.UUID("00000000-0000-0000-0000-000000000000")
         return str(uuid.uuid5(ns, sha))
-
-# if __name__ == "__main__":
-#     logging.basicConfig(
-#         format="%(asctime)s | %(levelname)s | %(message)s", level=logging.INFO
-#     )
-#     extractor = FaceExtractor()
-#     test_image_path = "C:/Users/brdwn/Downloads/images.jpeg"  
-    
-#     out_dir = Path(r"C:\Users\brdwn\Downloads\faces_out")
-#     out_dir.mkdir(parents=True, exist_ok=True)
-
-#     faces = extractor.extract_faces(test_image_path, source_hint="group_photo.jpg")
-#     for i, face in enumerate(faces):
-#         ext = ".png" if face.content_type == "image/png" else ".jpg"
-#         out_path = out_dir / f"{i:02d}_{face.face_id}{ext}"
-#         out_path.write_bytes(face.image_bytes)
-#         logging.info(
-#             "Saved face -> %s (bbox=%s, size=%dx%d)",
-#             out_path, face.bbox, face.width, face.height
-#         )
-    
