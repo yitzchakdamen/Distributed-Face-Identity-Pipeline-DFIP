@@ -57,11 +57,13 @@ server/
 │   │   ├── server.js    # Server configuration
 │   │   └── cors.js      # CORS configuration
 │   ├── controllers/     # API controllers
-│   │   └── rootController.js
+│   │   ├── rootController.js
+│   │   └── healthController.js
 │   ├── middlewares/     # Middlewares
 │   │   └── errorHandler.js
 │   ├── routes/          # API routes
-│   │   └── rootRoutes.js
+│   │   ├── rootRoutes.js
+│   │   └── healthRoutes.js
 │   └── server.js        # Main server file
 ├── .env                 # Environment variables
 ├── .env.example         # Environment variables example
@@ -91,13 +93,33 @@ Basic connection test
 }
 ```
 
+### GET /health
+
+Health check endpoint for monitoring and deployment verification
+
+```json
+{
+  "success": true,
+  "message": "Server is healthy",
+  "timestamp": "2025-09-14T10:30:00.000Z",
+  "uptime": 123.456,
+  "environment": "development"
+}
+```
+
 ## Development
 
 ### Adding a New Route
 
 1. Create a controller in `src/controllers/`
-2. Create a route in `src/routes/`
-3. Import and connect to server in `src/server.js`
+2. Create a dedicated route file in `src/routes/` (e.g., `userRoutes.js`)
+3. Import and connect the route to server in `src/server.js`
+
+Example structure:
+
+- `src/controllers/userController.js` - Controller logic
+- `src/routes/userRoutes.js` - Route definitions
+- `src/server.js` - Route registration
 
 ### Error Handling
 
