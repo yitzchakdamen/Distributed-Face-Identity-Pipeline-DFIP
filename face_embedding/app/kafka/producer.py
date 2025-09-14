@@ -21,6 +21,7 @@ class KafkaProducer:
         """
         self.__producer = Producer(config)
         self.logger = Logger.get_logger(__name__)
+        self.logger.info("Kafka Producer initialized.")
 
 
     def delivery_report(self, err, msg):

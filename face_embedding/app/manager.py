@@ -1,7 +1,7 @@
 from face_embedding.app.embedding import FaceEmbedding
 from face_embedding.app.dal.mongo import MongoDBHandler
-from face_embedding.kafka.consumer import KafkaConsumer
-from face_embedding.kafka.producer import KafkaProducer
+from face_embedding.app.kafka.consumer import KafkaConsumer
+from face_embedding.app.kafka.producer import KafkaProducer
 from face_embedding.app.logger import Logger
 
 

@@ -1,11 +1,8 @@
-import logging
 from pymongo import MongoClient
 import gridfs
 from bson import ObjectId
+from face_embedding.app.logger import Logger
 
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 class MongoDBHandler:
@@ -26,10 +23,11 @@ class MongoDBHandler:
             mongo_uri (str): MongoDB connection URI.
             db_name (str): Name of the database to use.
         """
+        self.logger = Logger.get_logger(__name__)
         self.__client = MongoClient(mongo_uri)
         self.__db = self.__client[db_name]
         self.__fs = gridfs.GridFS(self.__db)
-        logger.info(f"Connected to MongoDB: {mongo_uri}, DB: {db_name}")
+        self.logger.info(f"Connected to MongoDB: {mongo_uri}, DB: {db_name}")
 
     def download_file(self, file_id: str) -> bytes:
         """
@@ -47,12 +45,12 @@ class MongoDBHandler:
         """
         try:
             file_obj = self.__fs.get(ObjectId(file_id))
-            logger.info(f"File downloaded: {file_id}")
+            self.logger.info(f"File downloaded: {file_id}")
             return file_obj.read()
         except gridfs.errors.NoFile:
-            logger.error(f"No file found with ID: {file_id}")
+            self.logger.error(f"No file found with ID: {file_id}")
             raise
         except Exception as e:
-            logger.error(f"Failed to download file: {e}")
+            self.logger.error(f"Failed to download file: {e}")
             raise
    

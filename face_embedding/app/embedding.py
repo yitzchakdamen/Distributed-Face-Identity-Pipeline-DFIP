@@ -21,6 +21,7 @@ class FaceEmbedding:
         self.app = FaceAnalysis(providers=[provider])
         self.app.prepare(ctx_id=-1, det_size=(320, 320))
         self.logger = Logger.get_logger(__name__)
+        self.logger.info("FaceEmbedding model initialized.")
 
 
     def extract_embedding(self, image_bytes: bytes) -> np.ndarray:

@@ -25,6 +25,7 @@ class KafkaConsumer:
         self.__consumer.subscribe(topics)
         self.__running = True
         self.logger = Logger.get_logger(__name__)
+        self.logger.info(f"Subscribed to topics: {topics}")
 
 
     def stop(self):
