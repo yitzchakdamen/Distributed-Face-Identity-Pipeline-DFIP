@@ -33,23 +33,10 @@ class FaceObject:
     timestamp_utc: str
     source_hint: Optional[str] = None
 
-    # def to_dict(self) -> dict:
-    #     """
-    #     Convert the face object into a dict suitable for serialization or insertion to a DB.
-
-    #     Returns:
-    #         A JSON-serializable dictionary of the face object.
-    #     """
-    #     data = asdict(self)
-    #     data["image_bytes"] = self.image_bytes  # keep bytes; caller can Base64 if needed
-    #     return data
-
-
 class NoFacesFoundError(Exception):
     """
     Raised internally when no faces are detected in the provided image.
     """
-
 
 class FaceExtractor:
     """
