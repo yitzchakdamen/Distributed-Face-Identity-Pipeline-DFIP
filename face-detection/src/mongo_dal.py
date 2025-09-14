@@ -66,13 +66,13 @@ class SimpleGridFSWriter:
             raise ValueError(msg) from ex
 
         metadata = {
-            "ext_id": str(payload["image_id"]),
+            "image_id": str(payload["image_id"]),
             "event_ts": str(payload["event_ts"]),
         }
         filename = str(payload["image_id"])
 
         try:
-            file_id = self._fs.put(image_bytes, filename=filename, metadata=metadata)
+            file_id = self._fs.put(image_bytes,metadata=metadata)
             self._logger.info("GridFS store succeeded: file_id=%s filename=%s size=%dB", file_id, filename, len(image_bytes))
             return file_id
         except (PyMongoError, OSError) as ex:

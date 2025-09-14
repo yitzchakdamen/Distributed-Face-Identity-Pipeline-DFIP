@@ -1,4 +1,3 @@
-import io
 import uuid
 import hashlib
 import logging
@@ -9,7 +8,7 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-
+logger = logging.getLogger("face_detection")
 
 @dataclass(frozen=True)
 class FaceObject:
@@ -79,15 +78,14 @@ class FaceExtractor:
         self,
         scale_factor: float = 1.1,
         min_neighbors: int = 5,
-        min_size: Tuple[int, int] = (64, 64),
-        logger: Optional[logging.Logger] = None,
+        min_size: Tuple[int, int] = (30, 30),
         encode_format: str = ".png",
     ) -> None:
         self.scale_factor = scale_factor
         self.min_neighbors = min_neighbors
         self.min_size = min_size
         self.encode_format = encode_format.lower()
-        self.logger = logger or self._default_logger()
+        self.logger = logger 
         cascade_path = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
         self.cascade = cv2.CascadeClassifier(cascade_path)
         if self.cascade.empty():
@@ -167,25 +165,6 @@ class FaceExtractor:
             return []
 
     @staticmethod
-    def _default_logger() -> logging.Logger:
-        """
-        Create a sane default logger if none is provided by the caller.
-
-        Returns:
-            A configured Logger that logs at INFO level to stdout.
-        """
-        logger = logging.getLogger("FaceExtractor")
-        if not logger.handlers:
-            handler = logging.StreamHandler()
-            fmt = logging.Formatter(
-                "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
-            )
-            handler.setFormatter(fmt)
-            logger.addHandler(handler)
-            logger.setLevel(logging.INFO)
-        return logger
-
-    @staticmethod
     def _to_bgr(image: Union[str, bytes, np.ndarray]) -> np.ndarray:
         """
         Convert an input image in various forms to a BGR NumPy array.
@@ -231,23 +210,23 @@ class FaceExtractor:
         ns = uuid.UUID("00000000-0000-0000-0000-000000000000")
         return str(uuid.uuid5(ns, sha))
 
-if __name__ == "__main__":
-    logging.basicConfig(
-        format="%(asctime)s | %(levelname)s | %(message)s", level=logging.INFO
-    )
-    extractor = FaceExtractor()
-    test_image_path = "C:/Users/brdwn/Downloads/IMG_20230801_180311.jpg"  
+# if __name__ == "__main__":
+#     logging.basicConfig(
+#         format="%(asctime)s | %(levelname)s | %(message)s", level=logging.INFO
+#     )
+#     extractor = FaceExtractor()
+#     test_image_path = "C:/Users/brdwn/Downloads/images.jpeg"  
     
-    out_dir = Path(r"C:\Users\brdwn\Downloads\faces_out")
-    out_dir.mkdir(parents=True, exist_ok=True)
+#     out_dir = Path(r"C:\Users\brdwn\Downloads\faces_out")
+#     out_dir.mkdir(parents=True, exist_ok=True)
 
-    faces = extractor.extract_faces(test_image_path, source_hint="group_photo.jpg")
-    for i, face in enumerate(faces):
-        ext = ".png" if face.content_type == "image/png" else ".jpg"
-        out_path = out_dir / f"{i:02d}_{face.face_id}{ext}"
-        out_path.write_bytes(face.image_bytes)
-        logging.info(
-            "Saved face -> %s (bbox=%s, size=%dx%d)",
-            out_path, face.bbox, face.width, face.height
-        )
+#     faces = extractor.extract_faces(test_image_path, source_hint="group_photo.jpg")
+#     for i, face in enumerate(faces):
+#         ext = ".png" if face.content_type == "image/png" else ".jpg"
+#         out_path = out_dir / f"{i:02d}_{face.face_id}{ext}"
+#         out_path.write_bytes(face.image_bytes)
+#         logging.info(
+#             "Saved face -> %s (bbox=%s, size=%dx%d)",
+#             out_path, face.bbox, face.width, face.height
+#         )
     
