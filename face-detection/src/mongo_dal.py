@@ -8,7 +8,6 @@ from utils.config import LOGGER_NAME
 import logging
 
 logger = logging.getLogger(LOGGER_NAME)
-
 ImageInput = Union[bytes, bytearray, memoryview, str]
 
 
