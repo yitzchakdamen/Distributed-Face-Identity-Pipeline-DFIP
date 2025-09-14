@@ -49,8 +49,4 @@ event_processor_service/
 - First appearance triggers an alert for review.
 - Multiple appearances indicate approval.
 
-## Contributions
-Contributions and improvements are welcome!
 
-## Author
-This project was developed by the DFIP team.
