@@ -2,6 +2,7 @@ from confluent_kafka import Producer
 import json
 import logging
 
+
 logger = logging.getLogger(__name__)
 
 class KafkaProducer:
@@ -36,3 +37,4 @@ class KafkaProducer:
     def flush(self):
         """Flush the producer to ensure all messages are sent."""
         self.__producer.flush()
+
