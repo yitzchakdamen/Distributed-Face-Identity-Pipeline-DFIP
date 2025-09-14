@@ -118,10 +118,10 @@ class FaceExtractor:
             A list of FaceObject instances. Empty if no faces are found or on non-fatal errors.
         """
         try:
-            mat = self._to_bgr(image)
-            gray = cv2.cvtColor(mat, cv2.COLOR_BGR2GRAY)
+            image_matrix = self._to_bgr(image)
+            image_gray = cv2.cvtColor(image_matrix, cv2.COLOR_BGR2GRAY)
             faces = self.cascade.detectMultiScale(
-                gray,
+                image_gray,
                 scaleFactor=self.scale_factor,
                 minNeighbors=self.min_neighbors,
                 minSize=self.min_size,
@@ -134,7 +134,7 @@ class FaceExtractor:
 
             outputs: List[FaceObject] = []
             for (x, y, w, h) in faces:
-                crop = mat[y : y + h, x : x + w]
+                crop = image_matrix[y : y + h, x : x + w]
                 ok, buf = cv2.imencode(self.encode_format, crop)
                 if not ok:
                     self.logger.error("Failed to encode a cropped face; skipping segment.")
