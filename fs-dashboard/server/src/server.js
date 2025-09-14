@@ -22,8 +22,10 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Routes
 import rootRoutes from "./routes/rootRoutes.js";
+import healthRoutes from "./routes/healthRoutes.js";
 
 app.use("/", rootRoutes);
+app.use("/", healthRoutes);
 
 // Global error handling middleware - must be last
 app.use(globalErrorHandler);
