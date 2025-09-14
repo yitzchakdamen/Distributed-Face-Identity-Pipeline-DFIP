@@ -9,16 +9,16 @@ logger = logging.getLogger(__name__)
 
 class MongoDBHandler:
     def __init__(self, mongo_uri: str, db_name: str):
-        def __init__(self, mongo_uri: str, db_name: str):
-            self._client = MongoClient(mongo_uri)
-            self._db = self._client[db_name]
-            self._fs = gridfs.GridFS(self._db)
-            logger.info(f"Connected to MongoDB: {mongo_uri}, DB: {db_name}")
+        """Initialize MongoDB connection and GridFS."""
+        self.__client = MongoClient(mongo_uri)
+        self.__db = self.__client[db_name]
+        self.__fs = gridfs.GridFS(self.__db)
+        logger.info(f"Connected to MongoDB: {mongo_uri}, DB: {db_name}")
 
     def download_file(self, file_id: str) -> bytes:
         """Download a file from GridFS by its ID."""
         try:
-            file_obj = self._fs.get(ObjectId(file_id))
+            file_obj = self.__fs.get(ObjectId(file_id))
             logger.info(f"File downloaded: {file_id}")
             return file_obj.read()
         except gridfs.errors.NoFile:
