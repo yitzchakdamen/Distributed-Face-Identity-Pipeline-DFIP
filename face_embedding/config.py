@@ -2,7 +2,8 @@ import os
 
 
 BOOTSTRAP_SERVER = os.getenv("BOOTSTRAP_SERVER", "localhost:9092")
-KAFKA_TOPIC = os.getenv("KAFKA_TOPIC", "image_uploaded")
+KAFKA_CONSUME_TOPIC = os.getenv("KAFKA_TOPIC", "image_uploaded")
+KAFKA_PRODUCE_TOPIC = os.getenv("KAFKA_PRODUCE_TOPIC", "new_vector")
 KAFKA_KEY = os.getenv("KAFKA_KEY", "image_uploaded")
 KAFKA_GROUP_ID = os.getenv("KAFKA_GROUP_ID", "face_embedding")
 

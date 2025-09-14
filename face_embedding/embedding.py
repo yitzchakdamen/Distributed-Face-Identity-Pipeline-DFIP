@@ -6,12 +6,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 class FaceEmbedding:
-    def __init__(self, use_gpu=False):
+    def __init__(self):
         """Initialize the face analysis model."""
-        provider = 'CUDAExecutionProvider' if use_gpu else 'CPUExecutionProvider'
+        provider = 'CPUExecutionProvider'
         self.app = FaceAnalysis(providers=[provider])
-        self.__ctx_id = 0 if use_gpu else -1
-        self.app.prepare(ctx_id=self.__ctx_id, det_size=(640, 640))
+        self.app.prepare(ctx_id=-1, det_size=(320, 320))
 
     def extract_embedding(self, image_bytes: bytes) -> np.ndarray:
         """Extract face embedding from image bytes."""
@@ -28,5 +27,4 @@ class FaceEmbedding:
         except Exception as e:
             logger.error(f"Error extracting embedding: {e}")
             raise 
-
 
