@@ -33,6 +33,7 @@ jobs:
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           appdir: "fs-dashboard/server"
           buildpack: "heroku/nodejs"
+          usedocker: false
 
   deploy-frontend:
     runs-on: ubuntu-latest
@@ -61,3 +62,4 @@ jobs:
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           appdir: "fs-dashboard/client"
           buildpack: "heroku/nodejs"
+          usedocker: false
