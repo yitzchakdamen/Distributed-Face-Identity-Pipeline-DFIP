@@ -1,22 +1,23 @@
 from elasticsearch  import Elasticsearch, helpers
 
-from src.exceptions.exception import NoSearchResult, NoIdentifiedPerson
+from src.exceptions.exception import NoSearchResult, NoIdentifiedPerson, NoElasticConnection
 from src.utils.config import ElasticSearchConfig
 import numpy as np
+
 class ElasticSearchDal:
     def __init__(self):
         URL = ElasticSearchConfig.ELASTIC_URL
         self.REGULAR_INDEX = ElasticSearchConfig.REGULAR_INDEX_NAME
         self.OPTIMIZE_INDEX = ElasticSearchConfig.OPTIMIZE_INDEX_NAME
-        self.es = Elasticsearch(URL)
         self.REGULAR_MAPPING = ElasticSearchConfig.REGULAR_MAPPING
         self.OPTIMIZE_MAPPING = ElasticSearchConfig.OPTIMIZE_MAPPING
 
-        if self.es:
+        self.es = Elasticsearch(URL)
+        if self.es.ping():
             self._create_regular_index()
             self._create_index_with_optimize()
         else:
-            raise Exception()
+            raise NoElasticConnection()
 
     def _create_regular_index(self):
         if not self.es.indices.exists(index = self.REGULAR_INDEX, body = self.REGULAR_MAPPING):
@@ -31,6 +32,7 @@ class ElasticSearchDal:
             return True
         else:
             return False
+
     def search_vector(self, vector : list):
         query = {
             "size": 1,  # רק התוצאה הכי קרובה
