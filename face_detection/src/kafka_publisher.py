@@ -1,11 +1,10 @@
 import json
-import logging
 import time
 from typing import Any, Dict, Iterable, List, Optional,Union
-from utils.config import LOGGER_NAME
+from face_detection.utils.logger import Logger
 from confluent_kafka import Producer, KafkaException, KafkaError
 
-logger = logging.getLogger(LOGGER_NAME)
+logger = Logger.getLogger(__name__)
 JSONLike = Union[Dict[str, Any], List[Any]]
 PayloadLike = Union[JSONLike, str, bytes]
 
