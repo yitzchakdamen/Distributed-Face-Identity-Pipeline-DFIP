@@ -16,7 +16,7 @@ class FaceDetectionApp:
         self.mongo_writer = MongoImageStorage(
             uri=config.MONGO_URI,
             db_name=config.MONGODB_DB_NAME,
-            bucket_name="faces"
+            bucket_name=config.BUCKET_NAME
         )
         self.kafka_publisher = KafkaPublisher(
             bootstrap=config.KAFKA_BOOTSTRAP,
