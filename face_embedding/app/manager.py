@@ -41,11 +41,12 @@ class FaceEmbeddingManager:
         self.producer_topic = producer_topic
         self.logger.info("FaceEmbeddingManager initialized.")
 
-    def build_new_vector(self, image_id: str, camera_id: str, time: str) -> dict:
+    def build_new_vector(self, mongo_id: str, image_id: str, camera_id: str, time: str) -> dict:
         """
         Build a new vector from the image stored in MongoDB.
 
         Args:
+            mongo_id (str): The MongoDB document ID.
             image_id (str): The MongoDB file ID.
             camera_id (str): The camera identifier.
             time (str): The timestamp of the image.
@@ -53,10 +54,11 @@ class FaceEmbeddingManager:
         Returns:
             dict: A dictionary containing the new vector and metadata.
         """
-        image_bytes = self.mongo_handler.download_file(image_id)
+        image_bytes = self.mongo_handler.download_file(mongo_id)
         embedding = self.face_embedding.extract_embedding(image_bytes)
         return {
             "message": "New vector",
+            "mongo_id": mongo_id,
             "image_id": image_id,
             "vector": embedding.tolist(),
             "camera_id": camera_id,
@@ -68,21 +70,22 @@ class FaceEmbeddingManager:
         Process messages from Kafka to extract face embeddings and produce results.
 
         Args:
-            data (dict): The message data from Kafka, expected to contain 'mongo_id', 'camera_id', and 'time'.
+            data (dict): The message data from Kafka, expected to contain 'mongo_id', 'image_id', 'camera_id', and 'time'.
         """
         try:
-            file_id = data.get('mongo_id')
+            mongo_id = data.get('mongo_id')
+            image_id = data.get('image_id')
             camera_id = data.get('camera_id', 'unknown')
-            time = data.get('time', 'unknown')
-            if not file_id:
+            time = data.get('event_ts', 'unknown')
+            if not mongo_id:
                 self.logger.warning("No file_id found in message.")
                 return
 
-            new_vector = self.build_new_vector(file_id, camera_id, time)
+            new_vector = self.build_new_vector(mongo_id, image_id, camera_id, time)
             self.producer.produce(topic=self.producer_topic, message=new_vector)
             self.producer.flush()
 
-            self.logger.info(f"Processed embedding for file_id {file_id}")
+            self.logger.info(f"Processed embedding for file_id {mongo_id}")
 
         except Exception as e:
             self.logger.error(f"Error processing message: {e}")
