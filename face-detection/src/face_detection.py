@@ -1,12 +1,11 @@
-import uuid
-import hashlib
 import logging
 from dataclasses import dataclass, asdict
-from datetime import datetime, timezone
 from typing import List, Optional, Tuple, Union
 
 import cv2
 import numpy as np
+from utils.id_creator import create_stable_face_id, now_utc_iso
+
 logger = logging.getLogger("face_detection")
 
 @dataclass(frozen=True)
@@ -32,6 +31,18 @@ class FaceObject:
     image_bytes: bytes
     timestamp_utc: str
     source_hint: Optional[str] = None
+
+    def to_dict(self) -> dict:
+        """
+        Convert the face object into a dict suitable for serialization or insertion to a DB.
+
+        Returns:
+            A JSON-serializable dictionary of the face object.
+        """
+        data = asdict(self)
+        data["image_bytes"] = self.image_bytes  # keep bytes; caller can Base64 if needed
+        return data
+
 
 class NoFacesFoundError(Exception):
     """
@@ -127,16 +138,16 @@ class FaceExtractor:
                     continue
                 content_type = "image/png" if self.encode_format == ".png" else "image/jpeg"
                 face_bytes = buf.tobytes()
-                face_id = self._stable_uuid(face_bytes) # replaced with util function
+                face_id = create_stable_face_id(face_bytes)
                 outputs.append(
                     FaceObject(
-                        face_id=face_id, # i need to replace this with my util function
+                        face_id=face_id,
                         bbox=(int(x), int(y), int(w), int(h)),
                         width=int(w),
                         height=int(h),
                         content_type=content_type,
                         image_bytes=face_bytes,
-                        timestamp_utc=datetime.now(timezone.utc).isoformat(), # i need to replace this with my util function
+                        timestamp_utc=now_utc_iso(),
                         source_hint=source_hint,
                     )
                 )
@@ -180,18 +191,3 @@ class FaceExtractor:
         elif mat.shape[2] == 4:
             mat = cv2.cvtColor(mat, cv2.COLOR_BGRA2BGR)
         return mat
-
-    @staticmethod
-    def _stable_uuid(content: bytes) -> str:
-        """
-        Produce a deterministic UUID5 from the sha256 of the provided content.
-
-        Args:
-            content: Bytes used to derive a stable identifier.
-
-        Returns:
-            A string UUID that is stable for identical content.
-        """
-        sha = hashlib.sha256(content).hexdigest()
-        ns = uuid.UUID("00000000-0000-0000-0000-000000000000")
-        return str(uuid.uuid5(ns, sha))

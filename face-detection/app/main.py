@@ -1,4 +1,5 @@
 from utils import config
+from utils.factory import create_mongo_payload, create_kafka_payload
 from src.face_detection import FaceExtractor
 import logging
 from src.kafka_publisher import KafkaPublisher
@@ -22,25 +23,18 @@ class FaceDetectionApp:
             topic=config.KAFKA_TOPIC
         )
 
-    def process_image(self, image: Union[str, bytes, bytearray]) -> None: # for short it build util that build the dict messege
+    def process_image(self, image: Union[str, bytes, bytearray]) -> None:
+        """Process image and extract faces with clean factory-based payloads"""
         try:
             faces = self.extractor.extract_faces(image)
             logger.info(f"Extracted {len(faces)} face(s) from the image")
 
             for face in faces:
-                payload = {
-                    "image": face.image_bytes,
-                    "image_id": face.face_id,
-                    "event_ts": face.timestamp_utc
-                }
-                file_id = self.mongo_writer.insert_image(payload)
+                mongo_payload = create_mongo_payload(face)
+                file_id = self.mongo_writer.insert_image(mongo_payload)
                 logger.info(f"Stored face {face.face_id} in MongoDB with ObjectId {file_id}")
 
-                kafka_payload = {
-                    "face_id": face.face_id,
-                    "mongo_id": str(file_id),
-                    "event_ts": face.timestamp_utc
-                }
+                kafka_payload = create_kafka_payload(face, file_id)
                 self.kafka_publisher.publish(kafka_payload)
                 logger.info(f"Published metadata for face {face.face_id} to Kafka")
 
@@ -51,5 +45,5 @@ class FaceDetectionApp:
 
 if __name__ == "__main__":
     app = FaceDetectionApp()
-    test_image_path = "C:/Users/brdwn/Downloads/images.jpeg"  # Update with your test image path
+    test_image_path = "C:/Users/brdwn/Downloads/images.jpeg"
     app.process_image(test_image_path)

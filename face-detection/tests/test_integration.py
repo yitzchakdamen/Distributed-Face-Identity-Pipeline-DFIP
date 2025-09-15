@@ -20,7 +20,7 @@ class TestFaceDetectionApp(unittest.TestCase):
         if os.path.exists(self.test_image.name):
             os.unlink(self.test_image.name)
     
-    @patch('app.main.SimpleGridFSWriter')
+    @patch('app.main.MongoImageStorage')
     @patch('app.main.KafkaPublisher') 
     @patch('app.main.FaceExtractor')
     def test_init_components(self, mock_face_extractor, mock_kafka_publisher, mock_mongo_writer):
@@ -43,7 +43,7 @@ class TestFaceDetectionApp(unittest.TestCase):
         self.assertEqual(kafka_call_args[1]['bootstrap'], "localhost:9092")
         self.assertEqual(kafka_call_args[1]['topic'], "detected-faces")
     
-    @patch('app.main.SimpleGridFSWriter')
+    @patch('app.main.MongoImageStorage')
     @patch('app.main.KafkaPublisher')
     @patch('app.main.FaceExtractor')
     def test_process_image_success(self, mock_face_extractor, mock_kafka_publisher, mock_mongo_writer):
@@ -92,7 +92,7 @@ class TestFaceDetectionApp(unittest.TestCase):
         self.assertEqual(kafka_call_args['mongo_file_id'], "mock_object_id_123")
         self.assertEqual(kafka_call_args['event_ts'], "2024-01-01T12:00:00Z")
     
-    @patch('app.main.SimpleGridFSWriter')
+    @patch('app.main.MongoImageStorage')
     @patch('app.main.KafkaPublisher')
     @patch('app.main.FaceExtractor')
     def test_process_image_multiple_faces(self, mock_face_extractor, mock_kafka_publisher, mock_mongo_writer):
@@ -130,7 +130,7 @@ class TestFaceDetectionApp(unittest.TestCase):
         # Verify Kafka publishing was called 3 times
         self.assertEqual(mock_kafka_instance.publish.call_count, 3)
     
-    @patch('app.main.SimpleGridFSWriter')
+    @patch('app.main.MongoImageStorage')
     @patch('app.main.KafkaPublisher')
     @patch('app.main.FaceExtractor')
     def test_process_image_no_faces(self, mock_face_extractor, mock_kafka_publisher, mock_mongo_writer):
@@ -156,7 +156,7 @@ class TestFaceDetectionApp(unittest.TestCase):
         mock_mongo_instance.insert_image.assert_not_called()
         mock_kafka_instance.publish.assert_not_called()
     
-    @patch('app.main.SimpleGridFSWriter')
+    @patch('app.main.MongoImageStorage')
     @patch('app.main.KafkaPublisher')
     @patch('app.main.FaceExtractor')
     @patch('app.main.logger')
@@ -186,7 +186,7 @@ class TestFaceDetectionApp(unittest.TestCase):
         mock_mongo_instance.insert_image.assert_not_called()
         mock_kafka_instance.publish.assert_not_called()
     
-    @patch('app.main.SimpleGridFSWriter')
+    @patch('app.main.MongoImageStorage')
     @patch('app.main.KafkaPublisher')
     @patch('app.main.FaceExtractor')
     @patch('app.main.logger')
@@ -221,7 +221,7 @@ class TestFaceDetectionApp(unittest.TestCase):
         self.assertIn("Error processing image", error_message)
         self.assertIn("MongoDB connection failed", error_message)
     
-    @patch('app.main.SimpleGridFSWriter')
+    @patch('app.main.MongoImageStorage')
     @patch('app.main.KafkaPublisher')
     @patch('app.main.FaceExtractor')
     @patch('app.main.logger')

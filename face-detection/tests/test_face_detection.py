@@ -108,18 +108,20 @@ class TestFaceExtractor(unittest.TestCase):
             FaceExtractor._to_bgr(123)  # Invalid type
     
     def test_stable_uuid_consistency(self):
-        """Test that _stable_uuid produces consistent results"""
+        """Test that create_stable_face_id produces consistent results"""
+        from utils.id_creator import create_stable_face_id
         content = b"test content"
-        uuid1 = FaceExtractor._stable_uuid(content)
-        uuid2 = FaceExtractor._stable_uuid(content)
+        uuid1 = create_stable_face_id(content)
+        uuid2 = create_stable_face_id(content)
         self.assertEqual(uuid1, uuid2)
     
     def test_stable_uuid_different_content(self):
-        """Test that _stable_uuid produces different results for different content"""
+        """Test that create_stable_face_id produces different results for different content"""
+        from utils.id_creator import create_stable_face_id
         content1 = b"test content 1"
         content2 = b"test content 2"
-        uuid1 = FaceExtractor._stable_uuid(content1)
-        uuid2 = FaceExtractor._stable_uuid(content2)
+        uuid1 = create_stable_face_id(content1)
+        uuid2 = create_stable_face_id(content2)
         self.assertNotEqual(uuid1, uuid2)
 
 
