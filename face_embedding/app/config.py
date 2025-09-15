@@ -25,7 +25,7 @@ ES_URI = f"http://{ES_HOST}:{ES_PORT}"
 MONGO_PROTOCOL = os.getenv("MONGO_PROTOCOL", "mongodb")
 MONGO_HOST = os.getenv("MONGO_HOST", "localhost")
 MONGO_PORT = os.getenv("MONGO_PORT", 27017)
-MONGO_DATABASE = os.getenv("MONGO_DATABASE", "FaceDB")
+MONGO_DATABASE = os.getenv("MONGO_DATABASE", "face_identity")
 MONGO_COLLECTION = os.getenv("MONGO_COLLECTION", "Photo_storage")
 MONGO_URI = f"{MONGO_PROTOCOL}://{MONGO_HOST}:{MONGO_PORT}/"
 
