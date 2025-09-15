@@ -1,12 +1,12 @@
-from utils import config
-from utils.factory import create_mongo_payload, create_kafka_payload
-from src.face_detection import FaceExtractor
-from src.kafka_publisher import KafkaPublisher
-from src.mongo_dal import MongoImageStorage
+from face_detection.utils import config
+from face_detection.utils.factory import create_mongo_payload, create_kafka_payload
+from face_detection.src.face_detection import FaceExtractor
+from face_detection.src.kafka_publisher import KafkaPublisher
+from face_detection.src.mongo_dal import MongoImageStorage
 from typing import Union
-from utils.logger import Logger
+from face_detection.utils.logger import Logger
 
-logger = Logger.getLogger(__name__) #remember to change this to es logger and set up every logger to his class
+logger = Logger.getLogger(__name__) 
 
 
 class FaceDetectionApp:

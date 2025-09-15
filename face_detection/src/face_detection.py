@@ -2,8 +2,8 @@ from dataclasses import dataclass, asdict
 from typing import List, Optional, Tuple, Union
 import cv2
 import numpy as np
-from utils.logger import Logger
-from utils.id_creator import create_stable_face_id, now_utc_iso_ms
+from face_detection.utils.logger import Logger
+from face_detection.utils.id_creator import create_stable_face_id, now_utc_iso_ms
 
 logger = Logger.getLogger(__name__)
 

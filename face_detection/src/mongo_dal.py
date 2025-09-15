@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 import gridfs
 from bson import ObjectId
-from utils.logger import Logger
+from face_detection.utils.logger import Logger
 logger = Logger.getLogger(__name__)
 ImageInput = Union[bytes, bytearray, memoryview, str]
 

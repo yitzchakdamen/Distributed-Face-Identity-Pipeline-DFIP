@@ -9,7 +9,7 @@ COPY ./src /app/src
 COPY ./utils /app/utils
 COPY ./app /app/app
 
-CMD ["python", "-m", "app.main"]
+CMD ["python", "-m", "face_detection.app.main"]
 
 
 # to run this file, use:

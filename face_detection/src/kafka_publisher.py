@@ -1,7 +1,7 @@
 import json
 import time
 from typing import Any, Dict, Iterable, List, Optional,Union
-from utils.logger import Logger
+from face_detection.utils.logger import Logger
 from confluent_kafka import Producer, KafkaException, KafkaError
 
 logger = Logger.getLogger(__name__)
