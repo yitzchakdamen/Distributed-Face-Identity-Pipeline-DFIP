@@ -3,6 +3,7 @@
  * 2. Starts the server
  */
 import { connectMongoDB, closeMongoDB } from "./src/db/mongodb.js";
+import { testSupabaseConnection } from "./src/db/supabase.js";
 import { serverConfig } from "./src/config/server.js";
 import app from "./src/server.js";
 
@@ -28,6 +29,10 @@ async function startServer() {
     // Connect to MongoDB
     console.log("Connecting to MongoDB...");
     await connectMongoDB();
+
+    // Test Supabase connection
+    console.log(" Testing Supabase connection...");
+    await testSupabaseConnection();
 
     app.listen(PORT, HOST, () => {
       console.log(`✔ FaceAlert server running on http://${HOST}:${PORT}`);
