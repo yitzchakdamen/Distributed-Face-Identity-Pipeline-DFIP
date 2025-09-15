@@ -22,7 +22,7 @@ class MongoImageStorage:
         }
     """
 
-    def __init__(self, uri: str, db_name: str, bucket_name: str = "images") -> None:
+    def __init__(self, uri: str, db_name: str, bucket_name: str) -> None:
         """Connect to MongoDB and prepare a GridFS bucket.
 
         Args:
