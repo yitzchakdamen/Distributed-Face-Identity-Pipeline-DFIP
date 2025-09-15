@@ -5,9 +5,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./src /app/src
-COPY ./utils /app/utils
-COPY ./app /app/app
+COPY ./src /app/face_detection/src
+COPY ./utils /app/face_detection/utils
+COPY ./app /app/face_detection/app
 
 CMD ["python", "-m", "face_detection.app.main"]
 
