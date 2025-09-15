@@ -1,0 +1,8 @@
+# Main dependencies for face_embedding service
+insightface
+opencv-python
+pymongo
+gridfs
+confluent-kafka
+elasticsearch
+numpy
