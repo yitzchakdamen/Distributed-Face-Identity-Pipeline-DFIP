@@ -18,7 +18,8 @@ def create_mongo_payload(face: "FaceObject") -> Dict[str, Any]:
     return {
         "image": face.image_bytes,
         "image_id": face.face_id,
-        "event_ts": face.timestamp_utc
+        "event_ts": face.timestamp_utc,
+       
     }
 
 
@@ -36,5 +37,7 @@ def create_kafka_payload(face: "FaceObject", mongo_file_id: Union[str, ObjectId]
     return {
         "image_id": face.face_id,
         "mongo_id": str(mongo_file_id),
-        "event_ts": face.timestamp_utc
+        "camera_id":"123",
+        "event_ts": face.timestamp_utc,
+         "image_capture_time":"21.5.25"
     }
