@@ -4,10 +4,25 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class GeneralConfig:
-    EMBEDDING = "embedding"
+    EMBEDDING = "vector"
     SOURCE = "_source"
     PERSON_ID = "person_id"
     THRESHOLD_SCORE = 0.8
+    @staticmethod
+    def QUERY(_vector) -> dict:
+
+        return  {
+            "size": 1,  # רק התוצאה הכי קרובה
+            "query": {
+                "script_score": {
+                    "query": {"match_all": {}},  # כל המסמכים נבדקים
+                    "script": {
+                        "source": f"cosineSimilarity(params.query_vector, '{GeneralConfig.EMBEDDING}') + 1.0",
+                        "params": {"query_vector": _vector}
+                    }
+                }
+            }
+        }
 
 class ElasticSearchConfig:
     ELASTIC_PORT = os.getenv("ELASTIC_PORT" ,"9200")
@@ -18,7 +33,7 @@ class ElasticSearchConfig:
     REGULAR_MAPPING = {
         "mappings": {
             "properties": {
-                "embedding": {
+                f"{GeneralConfig.EMBEDDING}": {
                     "type": "dense_vector",
                     "dims": 512
                 },
@@ -28,21 +43,6 @@ class ElasticSearchConfig:
             }
         }
     }
-    OPTIMIZE_MAPPING = {
-  "mappings": {
-    "properties": {
-      "person_id": {
-        "type": "keyword"
-      },
-      "embedding": {
-        "type": "dense_vector",
-        "dims": 512,
-        "index": True,
-        "similarity": "cosine"
-      }
-    }
-  }
-}
 
 class KafkaConfig:
     KAFKA_HOST = os.getenv("KAFKA_HOST", "localhost")
