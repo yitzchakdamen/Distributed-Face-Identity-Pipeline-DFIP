@@ -10,6 +10,7 @@ class NoSearchResult(Exception):
 class NoIdentifiedPerson(Exception):
     def __init__(self):
         super().__init__(Errors.NO_IDENTIFIED_PERSON)
+
 class NoElasticConnection(Exception):
     def __init__(self):
         super().__init__(Errors.NO_ELASTIC_CONNECTION)

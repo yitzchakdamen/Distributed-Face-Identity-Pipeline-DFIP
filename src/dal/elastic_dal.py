@@ -15,7 +15,7 @@ class ElasticSearchDal:
         self.es = Elasticsearch(URL)
         if self.es.ping():
             self._create_regular_index()
-            self._create_index_with_optimize()
+            # self._create_index_with_optimize()
         else:
             raise NoElasticConnection()
 
@@ -26,12 +26,12 @@ class ElasticSearchDal:
         else:
             return False
 
-    def _create_index_with_optimize(self):
-        if not self.es.indices.exists(index=self.OPTIMIZE_INDEX, body=self.OPTIMIZE_MAPPING):
-            self.es.indices.create(index=self.OPTIMIZE_INDEX)
-            return True
-        else:
-            return False
+    # def _create_index_with_optimize(self):
+    #     if not self.es.indices.exists(index=self.OPTIMIZE_INDEX, body=self.OPTIMIZE_MAPPING):
+    #         self.es.indices.create(index=self.OPTIMIZE_INDEX)
+    #         return True
+    #     else:
+    #         return False
 
     def search_vector(self, vector : list):
         query = {
@@ -61,20 +61,20 @@ class ElasticSearchDal:
         else:
             raise NoIdentifiedPerson()
 
-    def search_vector_optimization(self, vector : list) :
-        query = {
-            "size": 1,  # מחזיר את 5 הוקטורים הכי דומים
-            "query": {
-                "knn": {
-                    "embedding": {
-                        "vector": vector,
-                        "k": 5
-                    }
-                }
-            }
-        }
-        result = self.es.search(index=self.OPTIMIZE_INDEX, body=query)
-        return result
+    # def search_vector_optimization(self, vector : list) :
+    #     query = {
+    #         "size": 1,  # מחזיר את 5 הוקטורים הכי דומים
+    #         "query": {
+    #             "knn": {
+    #                 "embedding": {
+    #                     "vector": vector,
+    #                     "k": 5
+    #                 }
+    #             }
+    #         }
+    #     }
+    #     result = self.es.search(index=self.OPTIMIZE_INDEX, body=query)
+    #     return result
 
     def add_vector(self, vector : list, person_id):
         doc={
