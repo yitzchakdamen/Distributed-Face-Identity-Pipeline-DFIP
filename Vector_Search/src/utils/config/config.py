@@ -48,7 +48,7 @@ class KafkaConfig:
     KAFKA_HOST = os.getenv("KAFKA_HOST", "localhost")
     KAFKA_PORT = os.getenv("KAFKA_PORT" ,"9092")
 
-    NEW_VECTOR_TOPIC = os.getenv("NEW_VECTOR_TOPIC" ,"new_vector_topic")
+    NEW_VECTOR_TOPIC = os.getenv("NEW_VECTOR_TOPIC" ,"new_vector")
     NEW_VECTOR_PERSON_TOPIC = os.getenv("NEW_VECTOR_PERSON_TOPIC" ,"new_vector_person")
 
 class Errors:
