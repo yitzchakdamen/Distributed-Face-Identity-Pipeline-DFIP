@@ -1,10 +1,10 @@
 from elasticsearch  import Elasticsearch, helpers
 
-from src.exceptions.exception import NoSearchResult, NoIdentifiedPerson, NoElasticConnection, NoAddedVector
-from src.utils.config import ElasticSearchConfig
+from Vector_Search.src.exceptions.exception import NoSearchResult, NoIdentifiedPerson, NoElasticConnection, NoAddedVector
+from Vector_Search.src.utils.config.config import ElasticSearchConfig, GeneralConfig as gen
 import numpy as np
 
-from src.utils.logger import Logger
+from Vector_Search.src.utils.logger import Logger
 
 
 class ElasticSearchDal:
@@ -54,11 +54,11 @@ class ElasticSearchDal:
         hit = self.es.search(index = self.REGULAR_INDEX, body= query)['hits']['hits']
         if not hit:
             raise NoSearchResult()
-        v2 = hit[0]["_source"]["embedding"]
+        v2 = hit[0][gen.SOURCE][gen.EMBEDDING]
         v2_np = np.array(v2)
         similarity_score  = self._cosine_similarity(_vector, v2_np)
-        if similarity_score >= 0.8:
-            person_id = hit[0]["_source"]["person_id"]
+        if similarity_score >= gen.THRESHOLD_SCORE:
+            person_id = hit[0][gen.SOURCE][gen.PERSON_ID]
             return self.generate_result_dict(similarity_score, person_id)
 
         else:

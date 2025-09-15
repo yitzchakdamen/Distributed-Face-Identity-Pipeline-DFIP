@@ -3,6 +3,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+class GeneralConfig:
+    EMBEDDING = "embedding"
+    SOURCE = "_source"
+    PERSON_ID = "person_id"
+    THRESHOLD_SCORE = 0.8
+
 class ElasticSearchConfig:
     ELASTIC_PORT = os.getenv("ELASTIC_PORT" ,"9200")
     ELASTIC_HOST = os.getenv("ELASTIC_HOST", "http://localhost:")

@@ -1,10 +1,10 @@
 import elasticsearch
 
-from src.dal.elastic_dal import ElasticSearchDal
-from src.exceptions.exception import NoIdentifiedPerson, NoAddedVector, NoSearchResult, SearchGotWrong
-from src.main.fetching_data import FetchingData
-from src.main.send_data import SendData
-from src.utils.logger import Logger
+from Vector_Search.src.dal.elastic_dal import ElasticSearchDal
+from Vector_Search.src.exceptions.exception import NoIdentifiedPerson, NoAddedVector, NoSearchResult, SearchGotWrong
+from Vector_Search.src.main.fetching_data import FetchingData
+from Vector_Search.src.main.send_data import SendData
+from Vector_Search.src.utils.logger import Logger
 import hashlib
 import json
 

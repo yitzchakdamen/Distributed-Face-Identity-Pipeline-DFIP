@@ -9,9 +9,9 @@ This file contains the sample code which publishes message to the Kafka brokers.
 # Import all the required packages
 import json
 from kafka import KafkaProducer, errors
-from src.utils.config import KafkaConfig, Errors
-from src.exceptions.exception import NoBrokerConnection
-from src.utils.logger import Logger
+from Vector_Search.src.utils.config.config import KafkaConfig, Errors
+from Vector_Search.src.exceptions.exception import NoBrokerConnection
+from Vector_Search.src.utils.logger import Logger
 
 class Producer:
 
