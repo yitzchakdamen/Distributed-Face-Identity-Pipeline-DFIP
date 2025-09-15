@@ -1,6 +1,6 @@
 # import os
 #
-#
+
 # זה מכיל סיסמה רגישה, כדאי לשים ב-env
 #
 # KAFKA_BOOTSTRAP = os.getenv('KAFKA_BROKER', 'localhost:9092')
