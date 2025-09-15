@@ -1,4 +1,6 @@
 from elasticsearch  import Elasticsearch, helpers
+
+from src.exceptions.exception import NoSearchResult, NoIdentifiedPerson
 from src.utils.config import ElasticSearchConfig
 import numpy as np
 class ElasticSearchDal:
@@ -45,10 +47,17 @@ class ElasticSearchDal:
 
         hit = self.es.search(index = self.REGULAR_INDEX, body= query)['hits']['hits']
         if not hit:
-            return
+            raise NoSearchResult()
         v2 = hit[0]["_source"]["embedding"]
         v2_np = np.array(v2)
-        return self._cosine_similarity(vector, v2_np)
+        similarity_score  = self._cosine_similarity(vector, v2_np)
+        if similarity_score >= 0.8:
+            person_id = hit[0]["_source"]["person_id"]
+            message = {"score" : similarity_score,
+                       "person": person_id}
+            return message
+        else:
+            raise NoIdentifiedPerson()
 
     def search_vector_optimization(self, vector : list) :
         query = {
@@ -65,66 +74,57 @@ class ElasticSearchDal:
         result = self.es.search(index=self.OPTIMIZE_INDEX, body=query)
         return result
 
-    def add_vector(self, vector : list):
-        pass
+    def add_vector(self, vector : list, person_id):
+        doc={
+            "embedding":vector,
+            "person_id": person_id
+        }
+        return self.es.index(index=self.REGULAR_INDEX, id = person_id, document=doc)
 
-    def add_bulk_to_regular(self, vectors):
+    def _add_bulk_to_regular(self, vectors):
         if self.es:
-
-            self.es.indices.put_settings(
-                index=self.REGULAR_INDEX,
-                body={
-                    "index": {
-                        "refresh_interval": "0s"
-                    }
-                }
-            )
-
             actions = []
             for i, vector in enumerate(vectors):
                 actions.append({
                     "_index": self.REGULAR_INDEX,
                     "_id": i +100000,
                     "_source":{
-                        "embedding": vector.tolist()
+                        "embedding": vector.tolist(),
+                        "person_id":f"{i} people"
                     }
                 })
-                if i%1000==0:
+                if i%10000==0:
                     print(i)
-                    result = helpers.bulk(self.es, actions)
+                    helpers.bulk(self.es, actions)
                     actions = []
 
             print("added regular")
 
-            return result
-        else:
-            print("not ping")
-            return 1
-    def add_bulk_to_optimize(self, vectors):
-        if self.es:
-            actions = []
-            for i, vector in enumerate(vectors):
-                actions.append({
-                    "_index": self.OPTIMIZE_INDEX,
-                    "_id": i,
-                    "_source":{
-                        "embedding": vector.tolist()
-                    }
-                })
-            result = helpers.bulk(self.es, actions)
-            print("added optimize")
-            self.es.indices.put_settings(
-                index=self.OPTIMIZE_INDEX,
-                body={
-                    "index": {
-                        "refresh_interval": "0s"  # מיידי
-                    }
-                }
-            )
-            return result
-        else:
-            print("not ping")
-            return 1
+    # def _add_bulk_to_optimize(self, vectors):
+    #     if self.es:
+    #         actions = []
+    #         for i, vector in enumerate(vectors):
+    #             actions.append({
+    #                 "_index": self.OPTIMIZE_INDEX,
+    #                 "_id": i,
+    #                 "_source":{
+    #                     "embedding": vector.tolist()
+    #                 }
+    #             })
+    #         result = helpers.bulk(self.es, actions)
+    #         print("added optimize")
+    #         self.es.indices.put_settings(
+    #             index=self.OPTIMIZE_INDEX,
+    #             body={
+    #                 "index": {
+    #                     "refresh_interval": "0s"  # מיידי
+    #                 }
+    #             }
+    #         )
+    #         return result
+    #     else:
+    #         print("not ping")
+    #         return 1
 
     @staticmethod
     def _cosine_similarity(v1, v2):
@@ -134,11 +134,11 @@ class ElasticSearchDal:
 
 if __name__ == "__main__":
     es = ElasticSearchDal()
-    # print(es.es.indices.delete(index=es.INDEX))
+    # print(es.es.indices.delete(index=es.REGULAR_INDEX))
     vector = np.random.rand(512).tolist()
-    vectors = np.random.rand(100000, 512)
+    # vectors = np.random.rand(100000, 512)
     # print("finish")
-    print(es.add_bulk_to_regular(vectors))
+    # print(es._add_bulk_to_regular(vectors))
     # print(es.add_bulk_to_optimize(vectors))
 
     print(es.search_vector(vector))

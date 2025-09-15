@@ -1,7 +1,6 @@
 from kafka import KafkaConsumer
 from src.utils.config import KafkaConfig
 import json
-
 from src.utils.logger import Logger
 
 

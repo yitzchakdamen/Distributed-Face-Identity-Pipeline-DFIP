@@ -42,5 +42,10 @@ class KafkaConfig:
     KAFKA_HOST = os.getenv("KAFKA_HOST", "localhost")
     KAFKA_PORT = os.getenv("KAFKA_PORT" ,"9092")
 
-    FILE_DATA_TOPIC = os.getenv("FILE_DATA_TOPIC" ,"file_path_and_metadata")
+    NEW_VECTOR_TOPIC = os.getenv("NEW_VECTOR_TOPIC" ,"new_vector_topic")
+    NEW_VECTOR_PERSON_TOPIC = os.getenv("NEW_VECTOR_PERSON_TOPIC" ,"new_vector_person")
 
+class Errors:
+    NO_BROKER_CONNECTION = "No broker connection."
+    NO_SEARCH_RESULT = "Not get a result at all."
+    NO_IDENTIFIED_PERSON = "No such person was identified in the system."
