@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from face_detection.utils.id_creator import create_stable_face_id, now_utc_iso_ms
 from face_detection.utils.logger import Logger
-logger = Logger.getLogger(__name__)
+logger = Logger.get_logger(__name__)
 
 @dataclass(frozen=True)
 class FaceObject:

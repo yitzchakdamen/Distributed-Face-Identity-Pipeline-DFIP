@@ -5,7 +5,7 @@ import gridfs
 from bson import ObjectId
 from face_detection.utils.logger import Logger
 
-logger = Logger.getLogger(__name__)
+logger = Logger.get_logger(__name__)
 ImageInput = Union[bytes, bytearray, memoryview, str]
 
 

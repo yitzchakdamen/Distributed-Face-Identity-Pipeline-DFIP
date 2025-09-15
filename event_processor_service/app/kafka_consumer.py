@@ -1,6 +1,6 @@
 from kafka import KafkaConsumer
 import json
-import config
+from event_processor_service.app import config
 
 class KafkaSubscriber:
     """

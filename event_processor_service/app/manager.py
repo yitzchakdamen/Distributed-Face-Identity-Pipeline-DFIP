@@ -1,13 +1,14 @@
 from event_processor_service.app.kafka_consumer import KafkaSubscriber
 from event_processor_service.app.mongo_client import MongoHandler
 from event_processor_service.app.event_processor import EventProcessor
-import config
+from event_processor_service.app import config
 import logging
 import json
 
 
 logger =  logging.getLogger("config.LOGGER_NAME")
 logging.basicConfig(level=logging.DEBUG)
+logging.getLogger("kafka").setLevel(logging.WARNING)
 
 
 class EventProcessorService(object):
