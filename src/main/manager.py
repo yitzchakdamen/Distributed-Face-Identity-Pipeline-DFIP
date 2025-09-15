@@ -1,5 +1,9 @@
+import elasticsearch
+
 from src.dal.elastic_dal import ElasticSearchDal
-from src.exceptions.exception import NoIdentifiedPerson, NoAddedVector, NoSearchResult
+from src.exceptions.exception import NoIdentifiedPerson, NoAddedVector, NoSearchResult, SearchGotWrong
+from src.main.fetching_data import FetchingData
+from src.main.send_data import SendData
 from src.utils.logger import Logger
 import hashlib
 import json
@@ -10,24 +14,53 @@ class Manager:
         self._es = ElasticSearchDal()
         self.logger = Logger().get_logger()
 
-    def search_vector(self, _vector):
+        self.fetcher = FetchingData()
+        self.vector_registry = None
+        self.send_data = SendData()
+
+    def listen_message(self):
+        listen = True
+        while listen:
+            vector_record = self.fetcher.fetch()
+            vector = vector_record["vector"]
+            try:
+                result = self._search_vector(vector)
+                vector_record = vector_record | result
+                self.send_data.send_data(vector_record)
+                print(vector_record)
+            except SearchGotWrong as e:
+                self.logger.warning(e)
+                print(vector_record)
+
+
+    def _search_vector(self, _vector) -> str:
         try:
-            self._es.search_vector(_vector)
-        except NoIdentifiedPerson() as e:
-            self.logger.info(e)
-            self._add_person_without_id(_vector)
+            _id = self._es.search_vector(_vector)
+            return _id
+        except NoIdentifiedPerson as e:
+            self.logger.warning(e)
+            return self._add_person_without_id(_vector)
+        except elasticsearch.BadRequestError as e:
+            self.logger.warning(e)
+            raise SearchGotWrong
+
         except NoSearchResult as e:
             self.logger.warning(e)
+            return None
 
     def _add_vector(self, _id, _vector):
         try:
-            self._es.add_vector(_vector=_vector, _person_id= _id)
+            return self._es.add_vector(_vector=_vector, _person_id= _id)
         except NoAddedVector as e:
             self.logger.warning(e)
 
     def _add_person_without_id(self, _vector):
-        _id = self._generate_id_by_vector(_vector)
-        return self._add_vector(_id, _vector)
+        try:
+            _id = self._generate_id_by_vector(_vector)
+            return self._add_vector(_id, _vector)
+        except NoAddedVector as e:
+            self.logger.warning(e)
+            raise NoAddedVector(_vector)
 
     @staticmethod
     def _generate_id_by_vector(_vector : list) -> str:

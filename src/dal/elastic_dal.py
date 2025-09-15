@@ -56,15 +56,17 @@ class ElasticSearchDal:
             raise NoSearchResult()
         v2 = hit[0]["_source"]["embedding"]
         v2_np = np.array(v2)
-        similarity_score  = self._cosine_similarity(vector, v2_np)
+        similarity_score  = self._cosine_similarity(_vector, v2_np)
         if similarity_score >= 0.8:
             person_id = hit[0]["_source"]["person_id"]
-            message = {"score" : similarity_score,
-                       "person": person_id}
-            return message
+            return self.generate_result_dict(similarity_score, person_id)
+
         else:
             raise NoIdentifiedPerson()
-
+    @staticmethod
+    def generate_result_dict(_similarity_score, _id):
+        return {"score": _similarity_score,
+                   "person_id": _id}
     # def search_vector_optimization(self, vector : list) :
     #     query = {
     #         "size": 1,  # מחזיר את 5 הוקטורים הכי דומים
@@ -80,14 +82,15 @@ class ElasticSearchDal:
     #     result = self.es.search(index=self.OPTIMIZE_INDEX, body=query)
     #     return result
 
-    def add_vector(self, _vector : list, _person_id) -> bool:
+    def add_vector(self, _vector : list, _person_id) -> dict:
         try:
             doc={
                 "embedding":_vector,
                 "person_id": _person_id
             }
             result = self.es.index(index=self.REGULAR_INDEX, id = _person_id, document=doc)
-            return result["result"] == "created"
+            if result["result"] == "created":
+                return self.generate_result_dict(1, _person_id)
         except Exception() as e:
             self.logger.warning(e)
             raise NoAddedVector(_vector)

@@ -18,3 +18,7 @@ class NoElasticConnection(Exception):
 class NoAddedVector(Exception):
     def __init__(self, _vector):
         super().__init__(Errors.NO_ADDED_VECTOR(_vector))
+
+class SearchGotWrong(Exception):
+    def __init__(self):
+        super().__init__(Errors.SEARCH_GOT_WRONG)

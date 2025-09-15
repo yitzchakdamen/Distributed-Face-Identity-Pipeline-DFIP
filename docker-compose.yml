@@ -2,8 +2,8 @@
 services:
 
   kafka:
-    image: apache/kafka:latest
-    container_name: kafka-broker
+    image: apache/kafka_util:latest
+    container_name: kafka_util-broker
     environment:
       KAFKA_NODE_ID: 1 
       KAFKA_PROCESS_ROLES: broker,controller 
@@ -24,11 +24,11 @@ services:
     image: obsidiandynamics/kafdrop:latest
     container_name: kafdrop
     environment:
-      KAFKA_BROKERCONNECT: kafka-broker:9092
+      KAFKA_BROKERCONNECT: kafka_util-broker:9092
     ports:
       - "9000:9000"
     depends_on:
-      - kafka
+      - kafka_util
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:9.1.3

@@ -15,9 +15,10 @@ from src.utils.logger import Logger
 
 class Producer:
 
-    def __init__(self):
+    def __init__(self, _topic = KafkaConfig.NEW_VECTOR_PERSON_TOPIC):
         self.url = f'{KafkaConfig.KAFKA_HOST}:{KafkaConfig.KAFKA_PORT}'
         self.producer = None
+        self.TOPIC = _topic
         self.logger = Logger().get_logger()
 
 
@@ -34,7 +35,7 @@ class Producer:
         return self.producer
 
     # Publish json messages
-    def publish_message(self, topic, message) -> bool:
+    def publish_message(self, message) -> bool:
         """
         This function will publish message to the topic which is received as a parameter
         :param producer: producer object to publish the message to Kafka servers
@@ -48,7 +49,7 @@ class Producer:
                 raise NoBrokerConnection
             if self.producer is None:
                 self.get_producer_config()
-            self.producer.send(topic, message)
+            self.producer.send(self.TOPIC, message)
             self.producer.flush()
             return True
         except NoBrokerConnection as e:
