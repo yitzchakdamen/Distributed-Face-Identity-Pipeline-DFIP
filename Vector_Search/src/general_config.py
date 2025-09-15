@@ -1,6 +1,7 @@
 # import os
 #
-#
+## mongodb+srv://arieltanami122_db_user:OHod6QgGER7wp09F@facedb.k2ycus.mongodb.net/?retryWrites=true&w=majority&appName=facedb
+
 # זה מכיל סיסמה רגישה, כדאי לשים ב-env
 #
 # KAFKA_BOOTSTRAP = os.getenv('KAFKA_BROKER', 'localhost:9092')

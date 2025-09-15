@@ -35,18 +35,15 @@ class Manager:
 
     def _search_vector(self, _vector) -> str:
         try:
-            _id = self._es.search_vector(_vector)
-            return _id
-        except NoIdentifiedPerson as e:
+            record = self._es.search_vector(_vector)
+            return record
+        except (NoSearchResult, NoIdentifiedPerson) as e :
             self.logger.warning(e)
             return self._add_person_without_id(_vector)
         except elasticsearch.BadRequestError as e:
             self.logger.warning(e)
             raise SearchGotWrong
 
-        except NoSearchResult as e:
-            self.logger.warning(e)
-            return None
 
     def _add_vector(self, _id, _vector):
         try:
