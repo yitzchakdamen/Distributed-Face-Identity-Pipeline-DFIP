@@ -10,6 +10,7 @@ def main():
     manager = FaceEmbeddingManager(
         mongo_uri=config.MONGO_URI,
         db_name=config.MONGO_DATABASE,
+        collection_name=config.MONGO_COLLECTION,
         consumer_config=config.KAFKA_CONSUMER_CONFIG,
         consumer_topic=config.KAFKA_CONSUME_TOPIC,
         producer_config=config.KAFKA_PRODUCER_CONFIG,
