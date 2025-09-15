@@ -1,11 +1,11 @@
-import logging
 from dataclasses import dataclass, asdict
 from typing import List, Optional, Tuple, Union
 import cv2
 import numpy as np
+from utils.logger import Logger
 from utils.id_creator import create_stable_face_id, now_utc_iso_ms
 
-logger = logging.getLogger("face_detection")
+logger = Logger.getLogger(__name__)
 
 @dataclass(frozen=True)
 class FaceObject:

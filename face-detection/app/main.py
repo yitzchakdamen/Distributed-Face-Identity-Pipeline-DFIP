@@ -1,13 +1,12 @@
 from utils import config
 from utils.factory import create_mongo_payload, create_kafka_payload
 from src.face_detection import FaceExtractor
-import logging
 from src.kafka_publisher import KafkaPublisher
 from src.mongo_dal import MongoImageStorage
 from typing import Union
+from utils.logger import Logger
 
-logger = logging.getLogger(config.LOGGER_NAME) #remember to change this to es logger and set up every logger to his class
-logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S") 
+logger = Logger.getLogger(__name__) #remember to change this to es logger and set up every logger to his class
 
 
 class FaceDetectionApp:
