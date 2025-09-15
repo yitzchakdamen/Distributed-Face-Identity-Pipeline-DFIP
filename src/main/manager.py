@@ -1,5 +1,5 @@
 from src.dal.elastic_dal import ElasticSearchDal
-from src.exceptions.exception import NoIdentifiedPerson
+from src.exceptions.exception import NoIdentifiedPerson, NoAddedVector
 from src.utils.logger import Logger
 import hashlib
 import json
@@ -11,8 +11,10 @@ class Manager:
         self.logger = Logger().get_logger()
 
     def add_vector(self, _id, _vector):
-        self._es.add_vector(vector=_vector, person_id= _id)
-        return True
+        try:
+            self._es.add_vector(_vector=_vector, _person_id= _id)
+        except NoAddedVector as e:
+            self.logger.warning(e)
 
     def search_vector(self, _vector):
         try:

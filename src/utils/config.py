@@ -50,3 +50,6 @@ class Errors:
     NO_SEARCH_RESULT = "Not get a result at all."
     NO_IDENTIFIED_PERSON = "No such person was identified in the system."
     NO_ELASTIC_CONNECTION = "The connection with elastic was failed."
+    @staticmethod
+    def NO_ADDED_VECTOR(_vector):
+        return f"The vector \n{_vector} \ndid not added."

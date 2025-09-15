@@ -1,8 +1,11 @@
 from elasticsearch  import Elasticsearch, helpers
 
-from src.exceptions.exception import NoSearchResult, NoIdentifiedPerson, NoElasticConnection
+from src.exceptions.exception import NoSearchResult, NoIdentifiedPerson, NoElasticConnection, NoAddedVector
 from src.utils.config import ElasticSearchConfig
 import numpy as np
+
+from src.utils.logger import Logger
+
 
 class ElasticSearchDal:
     def __init__(self):
@@ -16,8 +19,9 @@ class ElasticSearchDal:
         if self.es.ping():
             self._create_regular_index()
             # self._create_index_with_optimize()
-        else:
-            raise NoElasticConnection()
+        else: raise NoElasticConnection()
+
+        self.logger = Logger().get_logger()
 
     def _create_regular_index(self):
         if not self.es.indices.exists(index = self.REGULAR_INDEX, body = self.REGULAR_MAPPING):
@@ -33,7 +37,7 @@ class ElasticSearchDal:
     #     else:
     #         return False
 
-    def search_vector(self, vector : list):
+    def search_vector(self, _vector : list):
         query = {
             "size": 1,  # רק התוצאה הכי קרובה
             "query": {
@@ -41,7 +45,7 @@ class ElasticSearchDal:
                     "query": {"match_all": {}},  # כל המסמכים נבדקים
                     "script": {
                         "source": "cosineSimilarity(params.query_vector, 'embedding') + 1.0",
-                        "params": {"query_vector": vector}
+                        "params": {"query_vector": _vector}
                     }
                 }
             }
@@ -76,12 +80,17 @@ class ElasticSearchDal:
     #     result = self.es.search(index=self.OPTIMIZE_INDEX, body=query)
     #     return result
 
-    def add_vector(self, vector : list, person_id):
-        doc={
-            "embedding":vector,
-            "person_id": person_id
-        }
-        return self.es.index(index=self.REGULAR_INDEX, id = person_id, document=doc)
+    def add_vector(self, _vector : list, _person_id) -> bool:
+        try:
+            doc={
+                "embedding":_vector,
+                "person_id": _person_id
+            }
+            result = self.es.index(index=self.REGULAR_INDEX, id = _person_id, document=doc)
+            return result["result"] == "created"
+        except Exception() as e:
+            self.logger.warning(e)
+            raise NoAddedVector(_vector)
 
     def _add_bulk_to_regular(self, vectors):
         if self.es:
