@@ -1,7 +1,7 @@
 import logging
 from elasticsearch import Elasticsearch
 from datetime import datetime
-from utils import config
+from face_detection.utils import config
 
 
 
