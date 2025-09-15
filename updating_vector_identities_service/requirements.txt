@@ -1,0 +1,5 @@
+kafka-python
+elasticsearch
+ecs-logging
+
+
