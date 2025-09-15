@@ -1,5 +1,6 @@
-from src.utils.logger import Logger
-from src.utils.kafka_util import producer
+from Vector_Search.src.utils.logger import Logger
+from Vector_Search.src.utils.kafka_util import producer
+
 
 class SendData:
     """

@@ -1,5 +1,5 @@
-from src.utils.config import KafkaConfig
-from src.utils.kafka_util.producer import Producer
+from Vector_Search.src.utils.config.config import KafkaConfig
+from Vector_Search.src.utils.kafka_util.producer import Producer
 import numpy as np
 
 producer = Producer(_topic=KafkaConfig.NEW_VECTOR_TOPIC)

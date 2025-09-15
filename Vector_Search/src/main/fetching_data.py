@@ -1,5 +1,6 @@
-from src.utils.logger import Logger
-from src.utils.kafka_util import consumer
+from Vector_Search.src.utils.logger import Logger
+from Vector_Search.src.utils.kafka_util import consumer
+
 
 class FetchingData:
     """

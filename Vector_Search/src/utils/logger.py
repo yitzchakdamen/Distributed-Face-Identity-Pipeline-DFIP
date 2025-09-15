@@ -1,7 +1,7 @@
 import logging
 from elasticsearch import Elasticsearch
 from datetime import datetime
-from src.utils.config import ElasticSearchConfig, LoggingConfig
+from Vector_Search.src.utils.config.config import ElasticSearchConfig, LoggingConfig
 
 
 class Logger:
