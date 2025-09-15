@@ -1,13 +1,11 @@
-import logging
 from typing import Any, Dict, Union
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 import gridfs
 from bson import ObjectId
-from utils.config import LOGGER_NAME
-import logging
+from face_detection.utils.logger import Logger
 
-logger = logging.getLogger(LOGGER_NAME)
+logger = Logger.getLogger(__name__)
 ImageInput = Union[bytes, bytearray, memoryview, str]
 
 
