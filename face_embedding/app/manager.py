@@ -54,7 +54,7 @@ class FaceEmbeddingManager:
         Returns:
             dict: A dictionary containing the new vector and metadata.
         """
-        image_bytes = self.mongo_handler.download_file(image_id)
+        image_bytes = self.mongo_handler.download_file(mongo_id)
         embedding = self.face_embedding.extract_embedding(image_bytes)
         return {
             "message": "New vector",

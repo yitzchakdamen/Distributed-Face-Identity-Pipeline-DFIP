@@ -2,7 +2,6 @@
 insightface
 opencv-python
 pymongo
-gridfs
 confluent-kafka
 elasticsearch
 numpy
