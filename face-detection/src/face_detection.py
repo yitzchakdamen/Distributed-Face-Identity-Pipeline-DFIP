@@ -9,19 +9,7 @@ logger = logging.getLogger("face_detection")
 
 @dataclass(frozen=True)
 class FaceObject:
-    """
-    Immutable container for a single cropped face.
-
-    Attributes:
-        face_id: Stable UUID derived from the face content (sha256-based UUID5).
-        bbox: Bounding box as (x, y, w, h) in the source image coordinate space.
-        width: Width of the cropped face in pixels.
-        height: Height of the cropped face in pixels.
-        content_type: MIME type of the encoded face image.
-        image_bytes: Encoded image bytes (PNG by default).
-        timestamp_utc: ISO8601 UTC timestamp when the crop was produced.
-        source_hint: Optional hint about the image source (e.g., filename or tag).
-    """
+    """Immutable container for a single cropped face."""
     face_id: str
     bbox: Tuple[int, int, int, int]
     width: int
@@ -32,43 +20,14 @@ class FaceObject:
     source_hint: Optional[str] = None
 
     def to_dict(self) -> dict:
-        """
-        Convert the face object into a dict suitable for serialization or insertion to a DB.
-
-        Returns:
-            A JSON-serializable dictionary of the face object.
-        """
+        """Return a JSON-serializable dictionary of the face object."""
         data = asdict(self)
-        data["image_bytes"] = self.image_bytes  # keep bytes; caller can Base64 if needed
+        data["image_bytes"] = self.image_bytes
         return data
 
 
-class NoFacesFoundError(Exception):
-    """
-    Raised internally when no faces are detected in the provided image.
-    """
-
 class FaceExtractor:
-    """
-    Efficient face detector and cropper for pipeline use.
-
-    This class loads an OpenCV Haar cascade once and provides a robust `extract_faces`
-    method that accepts image inputs in multiple formats, detects faces, and returns
-    clean `FaceObject` instances for downstream persistence (e.g., MongoDB/GridFS).
-
-    Features:
-        - Robust input handling: file path, raw bytes, NumPy array (BGR/RGB/gray).
-        - Tunable detection parameters for performance/precision trade-offs.
-        - Deterministic face IDs based on image content to avoid duplicates.
-        - Comprehensive logging and error handling that won't crash your pipeline.
-
-    Args:
-        scale_factor: Pyramid scale factor for the Haar cascade (typical 1.05–1.2).
-        min_neighbors: Minimum neighbor rectangles to retain a detection.
-        min_size: Minimum face size in pixels (w, h).
-        logger: Optional logger; if None, a module-level logger is configured.
-        encode_format: Output image encoding ('.png' or '.jpg'); PNG is lossless.
-    """
+    """Lean face detector and cropper using OpenCV Haar cascade."""
 
     def __init__(
         self,
@@ -81,13 +40,13 @@ class FaceExtractor:
         self.min_neighbors = min_neighbors
         self.min_size = min_size
         self.encode_format = encode_format.lower()
-        self.logger = logger 
+        if self.encode_format not in (".png", ".jpg", ".jpeg"):
+            raise ValueError("encode_format must be .png, .jpg, or .jpeg")
         cascade_path = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
         self.cascade = cv2.CascadeClassifier(cascade_path)
         if self.cascade.empty():
             raise RuntimeError(f"Failed to load Haar cascade from: {cascade_path}")
-        if self.encode_format not in (".png", ".jpg", ".jpeg"):
-            raise ValueError("encode_format must be one of: .png, .jpg, .jpeg")
+        self.logger = logger
 
     def extract_faces(
         self,
@@ -95,48 +54,23 @@ class FaceExtractor:
         source_hint: Optional[str] = None,
         max_faces: Optional[int] = None,
     ) -> List[FaceObject]:
-        """
-        Detect and crop faces from the provided image.
-
-        The method never raises for the common “no faces” case; it logs a warning
-        and returns an empty list to keep the pipeline flowing. Catastrophic I/O or
-        decode errors are logged and also yield an empty list.
-
-        Args:
-            image: One of:
-                - str: filesystem path to an image file
-                - bytes: raw encoded image bytes (e.g., JPEG/PNG)
-                - np.ndarray: image matrix in BGR/RGB/gray
-            source_hint: Optional label stored in each FaceObject for traceability.
-            max_faces: Optional cap on the number of faces to return (first N by detection order).
-
-        Returns:
-            A list of FaceObject instances. Empty if no faces are found or on non-fatal errors.
-        """
+        """Detect and crop faces; return a list of FaceObject or an empty list on no-detections/errors."""
         try:
-            image_matrix = self._to_bgr(image)
-            image_gray = cv2.cvtColor(image_matrix, cv2.COLOR_BGR2GRAY)
+            bgr = self._to_bgr(image)
+            gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
             faces = self.cascade.detectMultiScale(
-                image_gray,
+                gray,
                 scaleFactor=self.scale_factor,
                 minNeighbors=self.min_neighbors,
                 minSize=self.min_size,
                 flags=cv2.CASCADE_SCALE_IMAGE,
             )
-            if len(faces) == 0:
-                raise NoFacesFoundError("No faces detected in image.")
-            if max_faces is not None and max_faces > 0:
+            if max_faces and max_faces > 0:
                 faces = faces[:max_faces]
-
             outputs: List[FaceObject] = []
             for (x, y, w, h) in faces:
-                crop = image_matrix[y : y + h, x : x + w]
-                ok, buf = cv2.imencode(self.encode_format, crop)
-                if not ok:
-                    self.logger.error("Failed to encode a cropped face; skipping segment.")
-                    continue
-                content_type = "image/png" if self.encode_format == ".png" else "image/jpeg"
-                face_bytes = buf.tobytes()
+                crop = bgr[y:y + h, x:x + w]
+                face_bytes, content_type = self._encode_face_crop(crop)
                 face_id = create_stable_face_id(face_bytes)
                 outputs.append(
                     FaceObject(
@@ -150,30 +84,18 @@ class FaceExtractor:
                         source_hint=source_hint,
                     )
                 )
-            self.logger.info("Extracted %d face(s).", len(outputs))
+            if outputs:
+                self.logger.info("Extracted %d face(s)", len(outputs))
+            else:
+                self.logger.info("No faces extracted")
             return outputs
-
-        except NoFacesFoundError as nf:
-            self.logger.warning("No faces found: %s", str(nf))
-            return []
         except Exception as ex:
-            self.logger.exception("Face extraction failed: %s", str(ex))
+            self.logger.error("Face extraction failed: %s", str(ex))
             return []
 
     @staticmethod
     def _to_bgr(image: Union[str, bytes, np.ndarray]) -> np.ndarray:
-        """
-        Convert an input image in various forms to a BGR NumPy array.
-
-        Args:
-            image: Path, encoded bytes, or NumPy array (BGR/RGB/gray).
-
-        Returns:
-            A NumPy array in BGR color order.
-
-        Raises:
-            ValueError: If the input cannot be decoded into an image matrix.
-        """
+        """Convert path/bytes/array to a valid BGR numpy image."""
         if isinstance(image, np.ndarray):
             mat = image
         elif isinstance(image, str):
@@ -182,11 +104,17 @@ class FaceExtractor:
             arr = np.frombuffer(image, dtype=np.uint8)
             mat = cv2.imdecode(arr, cv2.IMREAD_COLOR)
         else:
-            raise ValueError("Unsupported image type. Provide path, bytes, or np.ndarray.")
-        if mat is None:
-            raise ValueError("Failed to decode image input.")
-        if len(mat.shape) == 2:
-            mat = cv2.cvtColor(mat, cv2.COLOR_GRAY2BGR)
-        elif mat.shape[2] == 4:
-            mat = cv2.cvtColor(mat, cv2.COLOR_BGRA2BGR)
+            raise ValueError("Unsupported image type")
+        if mat is None or not isinstance(mat, np.ndarray) or mat.ndim < 2:
+            raise ValueError("Failed to decode image input")
+        if mat.ndim == 2:
+            return cv2.cvtColor(mat, cv2.COLOR_GRAY2BGR)
         return mat
+
+    def _encode_face_crop(self, crop: np.ndarray) -> Tuple[bytes, str]:
+        """Encode crop to bytes and return (bytes, content_type)."""
+        ok, buf = cv2.imencode(self.encode_format, crop)
+        if not ok:
+            raise RuntimeError(f"Failed to encode face crop as {self.encode_format}")
+        content_type = "image/png" if self.encode_format == ".png" else "image/jpeg"
+        return buf.tobytes(), content_type
