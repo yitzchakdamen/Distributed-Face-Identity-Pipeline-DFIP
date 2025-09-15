@@ -13,7 +13,9 @@ logging.basicConfig(level=logging.DEBUG)
 class EventProcessorService(object):
     def __init__(self):
         self.consumer = KafkaSubscriber(config.KAFKA_TOPIC, config.KAFKA_CONSUMER_GROUP)
+        logger.info(f"Connected to Kafka topic: {config.KAFKA_TOPIC}")
         self.mongo_handler = MongoHandler(config.MONGO_URI, config.MONGO_DB, config.MONGO_COLLECTION)
+        logger.info(f"Connected to MongoDB: {config.MONGO_DB}/{config.MONGO_COLLECTION}")
 
     def consume_messages_from_kafka(self):
         logger.info("Consumer_mongo started listening to Kafka...")
@@ -41,6 +43,7 @@ class EventProcessorService(object):
                     continue
                 event_processor = EventProcessor(msg)
                 doc = event_processor.process_event()
+                logger.info(f"Processed event: {doc}")
                 self.send_to_mongo(doc)
 
         except Exception as e:
@@ -58,4 +61,6 @@ class EventProcessorService(object):
 if __name__ == "__main__":
     service = EventProcessorService()
     service.consume_messages_from_kafka()
+    service.consumer.close()
+    service.mongo_handler.close()
     

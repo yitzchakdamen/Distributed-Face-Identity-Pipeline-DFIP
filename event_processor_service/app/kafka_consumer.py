@@ -17,3 +17,6 @@ class KafkaSubscriber:
     def listen(self):
         for msg in self.consumer:
             yield msg.value
+
+    def close(self):
+        self.consumer.close()
