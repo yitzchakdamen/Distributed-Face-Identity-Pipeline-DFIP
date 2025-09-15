@@ -17,3 +17,13 @@ export const mongoConfig = {
     serverSelectionTimeoutMS: 5000,
   },
 };
+
+export const supabaseConfig = {
+  url: process.env.SUPABASE_URL,
+  key: process.env.SUPABASE_KEY,
+  options: {
+    auth: {
+      persistSession: false, // Disable session persistence for server-side usage
+    },
+  },
+};
