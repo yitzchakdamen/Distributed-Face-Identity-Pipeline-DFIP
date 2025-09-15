@@ -4,12 +4,22 @@ from Vector_Search.src.dal.elastic_dal import ElasticSearchDal
 from Vector_Search.src.exceptions.exception import NoIdentifiedPerson, NoAddedVector, NoSearchResult, SearchGotWrong
 from Vector_Search.src.main.fetching_data import FetchingData
 from Vector_Search.src.main.send_data import SendData
+from Vector_Search.src.utils.config.config import KafkaConfig
 from Vector_Search.src.utils.logger import Logger
 import hashlib
 import json
 
 
 class Manager:
+    """
+    Manage the flow.
+    Listen to 2 topic.
+    Classified the topics to 2 different funcs.
+    1. For new entry people.
+    2. For add new APPROVAL person.
+    For new entry: Search for a similar person face, if not exist, add, with unique ID.
+    For add APPROVAL person, just add with unique ID
+    """
     def __init__(self):
         self._es = ElasticSearchDal()
         self.logger = Logger().get_logger()
@@ -22,16 +32,21 @@ class Manager:
         listen = True
         while listen:
             vector_record = self.fetcher.fetch()
-            vector = vector_record["vector"]
+            self.classified_records(vector_record)
+
+    def classified_records(self, _vector_record):
+        if _vector_record.KafkaConfig.TOPIC == KafkaConfig.NEW_VECTOR_TOPIC:
             try:
+                vector = _vector_record["vector"]
                 result = self._search_vector(vector)
-                vector_record = vector_record | result
+                vector_record = _vector_record | result
                 self.send_data.send_data(vector_record)
                 print(vector_record)
             except SearchGotWrong as e:
                 self.logger.warning(e)
                 print(vector_record)
-
+        elif _vector_record.KafkaConfig.TOPIC == KafkaConfig.NEW_VECTOR_APPROVAL_PERSON:
+            pass
 
     def _search_vector(self, _vector) -> str:
         try:
@@ -43,7 +58,6 @@ class Manager:
         except elasticsearch.BadRequestError as e:
             self.logger.warning(e)
             raise SearchGotWrong
-
 
     def _add_vector(self, _id, _vector):
         try:
