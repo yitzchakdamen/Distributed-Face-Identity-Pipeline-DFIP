@@ -45,5 +45,5 @@ class FaceDetectionApp:
 
 if __name__ == "__main__":
     app = FaceDetectionApp()
-    test_image_path = "C:/Users/brdwn/Downloads/images.jpeg"
+    test_image_path = r"C:\Users\isaac\source\repos\Distributed-Face-Identity-Pipeline-DFIP\data\download.jpg"
     app.process_image(test_image_path)

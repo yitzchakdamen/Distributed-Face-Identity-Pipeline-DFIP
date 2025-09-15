@@ -109,8 +109,9 @@ class VectorProcessor:
         """
         now = np.datetime64('now')
         # ממיר תאריכים
-        date_objs = np.array([np.datetime64(d.replace('/', '-')) for d in dates])
-        seconds = (now - date_objs).astype('timedelta64[s]').astype(float)
+        date_objs = np.array([np.datetime64(d.replace("Z", "")) for d in dates], dtype="datetime64[ms]")
+        seconds = (now - date_objs).astype("timedelta64[s]").astype(float)
+
         
         # חישוב משקלים אקספוננציאליים
         weights = np.exp(-seconds / (decay_days * 24 * 3600))
@@ -138,7 +139,11 @@ class PersonEventAggregator:
         now = datetime.now()
         today = week = month = year = 0
         for d in dates:
-            dt = datetime.strptime(d, "%Y-%m-%d %H:%M:%S")
+            try:
+                dt = datetime.strptime(d, "%Y-%m-%dT%H:%M:%S.%fZ")
+            except ValueError:
+                dt = datetime.strptime(d, "%Y-%m-%dT%H:%M:%SZ")
+
             delta = now - dt
             if delta.days == 0: today += 1
             if delta.days < 7: week += 1
@@ -177,6 +182,7 @@ class FaceIdentityPipeline:
         self.elastic.index_doc(index="image_embeddings", doc=data)
         
         vectors, dates = self.get_all_event_by_person_id(person_id=person_id)
+        print("vectors: ", len(vectors))
 
         self.processing_new_vector(person_id=person_id, vectors=vectors, dates=dates)
         self.send_event_msg(producer=producer, dates=dates, data=data)
@@ -189,7 +195,7 @@ class FaceIdentityPipeline:
         """
         docs = self.elastic.get_docs_by_term("image_embeddings", "person_id", person_id)
         vectors = [doc["vector"] for doc in docs]
-        dates = [doc["Processing_time"] for doc in docs]
+        dates = [doc["time"] for doc in docs]
         return vectors, dates
 
     def processing_new_vector(self, person_id, vectors,  dates):
@@ -216,6 +222,6 @@ if __name__ == "__main__":
     # דוגמת הרצה אמיתית (להחליף לכתובות נכונות)
     pipeline = FaceIdentityPipeline(
         kafka_brokers=['localhost:9092'],
-        es_hosts=['localhost:9200']
+        es_hosts=['http://localhost:9200']
     )
     pipeline.run()
