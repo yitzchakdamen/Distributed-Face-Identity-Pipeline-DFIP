@@ -20,7 +20,7 @@ class FaceEmbeddingManager:
         producer_topic (str): Kafka topic for output.
     """
 
-    def __init__(self, mongo_uri: str, db_name: str, consumer_config: dict, consumer_topic: str, producer_config: dict, producer_topic: str):
+    def __init__(self, mongo_uri: str, db_name: str,  collection_name: str,consumer_config: dict, consumer_topic: str, producer_config: dict, producer_topic: str):
         """
         Initialize MongoDB handler, Face Embedding model, and Kafka consumer/producer.
 
@@ -33,7 +33,7 @@ class FaceEmbeddingManager:
             producer_topic (str): Kafka topic to produce to.
         """
         self.logger = Logger.get_logger(__name__)
-        self.mongo_handler = MongoDBHandler(mongo_uri, db_name)
+        self.mongo_handler = MongoDBHandler(mongo_uri, db_name, collection_name)
         self.face_embedding = FaceEmbedding()
         topics = [consumer_topic]
         self.consumer = KafkaConsumer(consumer_config, topics)

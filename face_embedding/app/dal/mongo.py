@@ -15,7 +15,7 @@ class MongoDBHandler:
         __fs (GridFS): The GridFS instance for file operations.
     """
 
-    def __init__(self, mongo_uri: str, db_name: str):
+    def __init__(self, mongo_uri: str, db_name: str, collection_name: str):
         """
         Initialize MongoDB connection and GridFS.
 
@@ -26,7 +26,7 @@ class MongoDBHandler:
         self.logger = Logger.get_logger(__name__)
         self.__client = MongoClient(mongo_uri)
         self.__db = self.__client[db_name]
-        self.__fs = gridfs.GridFS(self.__db)
+        self.__fs = gridfs.GridFS(self.__db, collection=collection_name)
         self.logger.info(f"Connected to MongoDB: {mongo_uri}, DB: {db_name}")
 
     def download_file(self, file_id: str) -> bytes:
@@ -40,17 +40,13 @@ class MongoDBHandler:
             bytes: The file content as bytes.
 
         Raises:
-            gridfs.errors.NoFile: If no file is found with the given ID.
             Exception: For any other error during download.
         """
         try:
             file_obj = self.__fs.get(ObjectId(file_id))
             self.logger.info(f"File downloaded: {file_id}")
             return file_obj.read()
-        except gridfs.errors.NoFile:
-            self.logger.error(f"No file found with ID: {file_id}")
-            raise
+
         except Exception as e:
             self.logger.error(f"Failed to download file: {e}")
             raise
-   
