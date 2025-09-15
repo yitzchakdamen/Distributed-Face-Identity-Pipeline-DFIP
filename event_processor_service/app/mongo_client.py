@@ -1,7 +1,8 @@
 from pymongo import MongoClient
+import logging
 
 
-logger = Logger.get_logger()
+logger = logging.getLogger("config.LOGGER_NAME")
 
 class MongoHandler:
     def __init__(self, uri: str, db_name: str, collection_name: str):
@@ -41,6 +42,21 @@ class MongoHandler:
         return self.collection.insert_one(doc)
 
 
+
+if __name__ == "__main__":
+    mongo_handler = MongoHandler("mongodb://localhost:27017/", "test_db", "test_collection")
+    test_doc = {"name": "Test", "value": 123}
+    result = mongo_handler.insert_document(test_doc)
+    logger.info(f"Inserted document ID: {result.inserted_id}")
+    print(f"Inserted document ID: {result.inserted_id}")
+
+    client = MongoClient( "mongodb://localhost:27017/")
+    db = client["test_db"]
+    collection = db["test_collection"]
+    results = collection.find({})
+    for doc in results:
+        print(doc)
+    mongo_handler.close()
 
 
 

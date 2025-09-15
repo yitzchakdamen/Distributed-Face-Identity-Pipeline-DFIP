@@ -28,28 +28,24 @@ class EventProcessor:
     @staticmethod
     def calculate_level(Appears: dict):
         """
-        Business logic for risk level based on recent and historical appearances.
-        :param Appears: dict with appearance counts ("Today", "This week", "This month", "This year")
-        :return: str level ('alert', 'active', 'inactive', 'approved', 'pending', 'first')
+        Calculate the level of the event based on appearance statistics.
+        :param Appears: dict with appearance counts
         """
         today = Appears.get("Today", 0)
         week = Appears.get("This week", 0)
         month = Appears.get("This month", 0)
         year = Appears.get("This year", 0)
 
-        if today + week + month + year <= 1:# first ever appearance
-            return "alert"  
+        if  week == today and month == today and year == today :
+            return "alert"  # only seen today
 
-        if today >= 3 or week >= 5:
+        if week - today < 3:
             if month >= 10 or year >= 20:
                 return "approved"  # many appearances both recently and historically
             return "active"  # recent frequent appearances
 
-        if (month >= 5 or year >= 10) and today == 0 and week == 0:
+        if (month >= 5 or year >= 10) and today >= 2 and week == 0:
             return "inactive"  # was seen in the past, not recently
-
-        if 2 <= (today + week + month + year) <= 4:
-            return "pending"  # few appearances
 
         return "unknown"  # unclassified
 
