@@ -39,5 +39,5 @@ def create_kafka_payload(face: "FaceObject", mongo_file_id: Union[str, ObjectId]
         "mongo_id": str(mongo_file_id),
         "camera_id":"123",
         "event_ts": face.timestamp_utc,
-         "image_capture_time":"21.5.25"
+        "image_capture_time":"21.5.25"
     }
