@@ -41,7 +41,6 @@ class FaceDetectionApp:
             logger.error(f"Error processing image: {e}")
 
 
-
 if __name__ == "__main__":
     app = FaceDetectionApp()
     test_image_path = "C:/Users/brdwn/Downloads/images.jpeg"
