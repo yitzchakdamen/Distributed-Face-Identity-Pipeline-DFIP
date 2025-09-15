@@ -451,7 +451,6 @@ package-lock.json
 # Build outputs
 dist/
 build/
-public/
 
 # Environment files
 .env

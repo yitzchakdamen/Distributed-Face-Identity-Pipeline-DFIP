@@ -1,0 +1,46 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Monitor/Screen with subtle gradient -->
+  <rect x="3" y="5" width="26" height="19" rx="2" fill="#1F2937" stroke="#374151" stroke-width="1"/>
+  <rect x="4" y="6" width="24" height="16" fill="url(#screenGradient)"/>
+  
+  <!-- Person silhouette positioned higher -->
+  <circle cx="16" cy="11" r="3" fill="#6B7280"/>
+  <path d="M10 21C10 16.5 12.5 15 16 15C19.5 15 22 16.5 22 21H10Z" fill="#6B7280"/>
+  
+  <!-- Professional square targeting markers with equal spacing -->
+  <path d="M11.5 7.2L11.5 8.7M11.5 7.2L13 7.2" stroke="#10B981" stroke-width="0.7" stroke-linecap="square" filter="url(#glow)"/>
+  <path d="M20.5 7.2L20.5 8.7M20.5 7.2L19 7.2" stroke="#10B981" stroke-width="0.7" stroke-linecap="square" filter="url(#glow)"/>
+  <path d="M11.5 14.8L11.5 13.3M11.5 14.8L13 14.8" stroke="#10B981" stroke-width="0.7" stroke-linecap="square" filter="url(#glow)"/>
+  <path d="M20.5 14.8L20.5 13.3M20.5 14.8L19 14.8" stroke="#10B981" stroke-width="0.7" stroke-linecap="square" filter="url(#glow)"/>
+  
+  <!-- Status indicator with pulse effect -->
+  <circle cx="26" cy="8" r="0.8" fill="#EF4444" filter="url(#redGlow)"/>
+  
+  <!-- Monitor stand with better depth -->
+  <rect x="14" y="24" width="4" height="2" fill="#4B5563" rx="0.5"/>
+  <rect x="11" y="26" width="10" height="1" fill="#6B7280" rx="0.5"/>
+  
+  <!-- Definitions for gradients and effects -->
+  <defs>
+    <linearGradient id="screenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#030712"/>
+    </linearGradient>
+    
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="0.5" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="redGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="0.3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+</svg>
