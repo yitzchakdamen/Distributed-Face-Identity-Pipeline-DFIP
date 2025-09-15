@@ -18,7 +18,7 @@ class Logger:
         cls,
         name: str = "Logger",
         es_host=config.ES_URI,
-        index=config.ES_LOG_INDEX,
+        index=config.ES_INDEX,
         level=logging.DEBUG
     ):
         """
