@@ -106,6 +106,32 @@ heroku domains -a facealert-api
 heroku domains -a facealert-frontend
 ```
 
+#### Add Heroku remotes to Git
+
+Add remotes for both applications:
+
+```bash
+# Add server remote
+heroku git:remote -a facealert-api -r heroku-server
+
+# Add client remote  
+heroku git:remote -a facealert-frontend -r heroku-client
+```
+
+#### Deploy applications
+
+##### Deploy server
+
+```bash
+git push heroku-server `git subtree split --prefix=fs-dashboard/server HEAD`:refs/heads/main --force
+```
+
+##### Deploy client
+
+```bash
+git push heroku-client `git subtree split --prefix=fs-dashboard/client HEAD`:refs/heads/main --force
+```
+
 ### Check that the apps are working
 
 #### Check server app
