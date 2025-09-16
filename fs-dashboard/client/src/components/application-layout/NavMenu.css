@@ -120,8 +120,14 @@
     border-left: none;
     border-top: 1px solid rgba(255, 255, 255, 0.3);
     padding-top: 0.5rem;
+    display: flex;
     justify-content: center;
-    flex-wrap: wrap;
+  }
+  
+  .dropdown-menu {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
 
@@ -131,9 +137,9 @@
     padding: 0.6rem 0.8rem;
   }
   
-  .logout-button {
-    font-size: 0.85rem;
-    padding: 0.4rem 0.8rem;
+  .user-button {
+    font-size: 0.9rem;
+    padding: 0.4rem;
   }
   
   .user-info {
@@ -142,5 +148,10 @@
   
   .user-role {
     font-size: 0.8rem;
+  }
+  
+  .dropdown-item {
+    font-size: 0.85rem;
+    padding: 0.6rem 0.8rem;
   }
 }
