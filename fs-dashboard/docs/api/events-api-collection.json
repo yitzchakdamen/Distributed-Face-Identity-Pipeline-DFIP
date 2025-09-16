@@ -1,0 +1,254 @@
+{
+  "info": {
+    "name": "Events API Collection",
+    "description": "Collection for testing the Events API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "Get Events - Basic",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events",
+              "host": ["{{baseUrl}}"],
+              "path": ["events"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Events - With Pagination",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events?page=1&limit=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["events"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Events - Filter by Level",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events?level=high&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["events"],
+              "query": [
+                {
+                  "key": "level",
+                  "value": "high"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Events - Date Range",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events?startDate=2023-09-01T00:00:00.000Z&endDate=2023-09-30T23:59:59.999Z",
+              "host": ["{{baseUrl}}"],
+              "path": ["events"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2023-09-01T00:00:00.000Z"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2023-09-30T23:59:59.999Z"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Events - By Camera",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events?cameraId=camera_123",
+              "host": ["{{baseUrl}}"],
+              "path": ["events"],
+              "query": [
+                {
+                  "key": "cameraId",
+                  "value": "camera_123"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Event by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Event Image",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/image",
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}", "image"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Download Event Image",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/image?download=true&format=png",
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "{{eventId}}", "image"],
+              "query": [
+                {
+                  "key": "download",
+                  "value": "true"
+                },
+                {
+                  "key": "format",
+                  "value": "png"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Statistics",
+      "item": [
+        {
+          "name": "Get Events Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "stats"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Events Count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/count",
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "count"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Events Stats - Filtered",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/events/stats?level=high&startDate=2023-09-01T00:00:00.000Z",
+              "host": ["{{baseUrl}}"],
+              "path": ["events", "stats"],
+              "query": [
+                {
+                  "key": "level",
+                  "value": "high"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2023-09-01T00:00:00.000Z"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-set eventId variable if not set",
+          "if (!pm.variables.get('eventId')) {",
+          "    pm.variables.set('eventId', '64f8b2c1e4b0a1b2c3d4e5f6');",
+          "}"
+        ]
+      }
+    }
+  ]
+}
