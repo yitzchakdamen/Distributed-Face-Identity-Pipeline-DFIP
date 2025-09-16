@@ -40,18 +40,12 @@ export default defineConfig(({ mode }) => ({
     },
     
     // Minimize bundle size
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: mode === 'production', // Remove console logs in production only
-        drop_debugger: true // Remove debugger statements
-      }
-    }
+    minify: 'esbuild' // Use esbuild instead of terser for better compatibility
   },
   
   define: {
     __API_URL__: JSON.stringify(mode === 'production' ? 'https://api.facealert.live' : 'http://localhost:3000'),
-    __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
+    __APP_VERSION__: JSON.stringify('1.0.0'),
     __BUILD_DATE__: JSON.stringify(new Date().toISOString())
   },
   

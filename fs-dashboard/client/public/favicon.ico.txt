@@ -1,0 +1,3 @@
+<!-- This would normally be a binary ICO file, but we'll create a reference -->
+<!-- favicon.ico should be a 16x16 or 32x32 pixel icon file in ICO format -->
+<!-- For now, we'll ensure the SVG is properly configured for Google -->
