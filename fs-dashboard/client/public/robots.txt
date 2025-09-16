@@ -6,12 +6,16 @@ Allow: /
 Allow: /login
 Allow: /register  
 Allow: /about
+Allow: /about.html
 Allow: /features
+Allow: /features.html
 Allow: /pricing
 Allow: /contact
 Allow: /privacy-policy
 Allow: /terms-of-service
 Allow: /sitemap.xml
+Allow: /humans.txt
+Allow: /ai-info.txt
 
 # Disallow sensitive areas
 Disallow: /admin/
