@@ -18,19 +18,43 @@ const EventImageModal: React.FC<EventImageModalProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isOpen && event.image_id) {
+    if (isOpen && event._id) {
       loadEventImage();
     }
-  }, [isOpen, event.image_id]);
+    
+    // Cleanup blob URL when modal closes
+    return () => {
+      if (imageUrl && imageUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(imageUrl);
+      }
+    };
+  }, [isOpen, event._id]);
 
   const loadEventImage = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      // Build image URL - assuming the backend serves images at /images/:id
-      const imageURL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'}/images/${event.image_id}`;
-      setImageUrl(imageURL);
+      // Build image URL using the event ID, not the image_id
+      const token = localStorage.getItem('token');
+      const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+      const imageURL = `${baseURL}/events/${event._id}/image`;
+      
+      // For images with auth, we need to handle the authorization properly
+      const response = await fetch(imageURL, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to load image: ${response.status} ${response.statusText}`);
+      }
+      
+      // Create blob URL for the image
+      const blob = await response.blob();
+      const blobURL = URL.createObjectURL(blob);
+      setImageUrl(blobURL);
       setLoading(false);
     } catch (err: any) {
       setError(err.message || "Failed to load image");
