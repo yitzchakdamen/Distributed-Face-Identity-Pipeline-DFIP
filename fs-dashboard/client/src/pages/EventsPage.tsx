@@ -81,9 +81,9 @@ const EventsPage: React.FC = () => {
                 <button 
                   className="view-image-btn"
                   onClick={() => handleViewImage(event)}
-                  disabled={!event.image_id}
+                  disabled={!event._id}
                 >
-                  {event.image_id ? 'View Image' : 'No Image Available'}
+                  View Image
                 </button>
               </div>
             </div>
