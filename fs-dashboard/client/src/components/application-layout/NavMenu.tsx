@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./NavMenu.css";
@@ -34,11 +34,25 @@ const NavMenu: React.FC = () => {
       <Link to="/cameras" className="nav-link">Cameras</Link>
       
       <div className="user-menu">
-        <span className="user-info">Welcome, {user?.name}</span>
-        <span className="user-role">({user?.role})</span>
-        <button onClick={handleLogout} className="logout-button">
-          Logout
-        </button>
+        <div className="user-dropdown">
+          <button 
+            className="user-button" 
+            onClick={toggleDropdown}
+            aria-label="User menu"
+          >
+            <span className="user-info">{user?.name}</span>
+            <span className="user-role">({user?.role})</span>
+            <span className={`dropdown-arrow ${dropdownOpen ? 'open' : ''}`}>▼</span>
+          </button>
+          
+          {dropdownOpen && (
+            <div className="dropdown-menu">
+              <button onClick={handleLogout} className="dropdown-item logout">
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );

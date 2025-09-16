@@ -17,12 +17,31 @@
 }
 
 .user-menu {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  position: relative;
   margin-left: 1rem;
   padding-left: 1rem;
   border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.user-dropdown {
+  position: relative;
+}
+
+.user-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.user-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .user-info {
@@ -34,19 +53,51 @@
   opacity: 0.8;
 }
 
-.logout-button {
-  background: #e74c3c;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
+.dropdown-arrow {
+  font-size: 0.7rem;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
   border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  min-width: 120px;
+  z-index: 1000;
+  margin-top: 0.5rem;
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
   cursor: pointer;
   font-size: 0.9rem;
   transition: background-color 0.2s ease;
 }
 
-.logout-button:hover {
-  background: #c0392b;
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item.logout {
+  color: #e74c3c;
+  border-top: 1px solid #eee;
+}
+
+.dropdown-item.logout:hover {
+  background-color: #fdf2f2;
 }
 
 /* Responsive design for mobile */
