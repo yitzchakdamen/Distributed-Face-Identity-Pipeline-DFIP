@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getAllCameras } from "../services/cameraService";
 import CameraAssignment from "../components/CameraAssignment";
+import UserCreationForm from "../components/UserCreationForm";
 import type { IUser } from "../@types/User";
 import type { ICamera } from "../@types/Camera";
 import "./UserManagementPage.css";
