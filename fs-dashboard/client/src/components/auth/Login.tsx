@@ -31,7 +31,7 @@ const Login: React.FC = () => {
   return (
     <div className="auth-container">
       <div className="auth-form">
-        <h2>Login to DFIP Dashboard</h2>
+        <h2>Login to FaceAlert system</h2>
         
         {error && <div className="error-message">{error}</div>}
         

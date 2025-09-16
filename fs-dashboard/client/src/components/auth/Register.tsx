@@ -34,7 +34,7 @@ const Register: React.FC = () => {
   return (
     <div className="auth-container">
       <div className="auth-form">
-        <h2>Register for FaceAlert</h2>
+        <h2>Register for FaceAlert system</h2>
         
         {error && <div className="error-message">{error}</div>}
         
