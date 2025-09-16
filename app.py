@@ -33,8 +33,26 @@ def get_persons():
                 img_data = base64.b64encode(grid_out.read()).decode("utf-8")
                 persons[person_id]["images"].append(f"data:image/jpeg;base64,{img_data}")
 
-    # מחזיר רשימה של אנשים
-    return jsonify(list(persons.values()))
+    # ====== סטטיסטיקות ======
+    num_persons = len(persons)
+    total_images = sum(len(p["images"]) for p in persons.values())
+    avg_images_per_person = total_images / num_persons if num_persons > 0 else 0
+    max_images = max((len(p["images"]) for p in persons.values()), default=0)
+    min_images = min((len(p["images"]) for p in persons.values() if p["images"]), default=0)
+
+    stats = {
+        "total_persons": num_persons,
+        "total_images": total_images,
+        "avg_images_per_person": avg_images_per_person,
+        "max_images_for_single_person": max_images,
+        "min_images_for_single_person": min_images
+    }
+
+    # ====== תשובה ל-API ======
+    return jsonify({
+        "persons": list(persons.values()),
+        "stats": stats
+    })
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

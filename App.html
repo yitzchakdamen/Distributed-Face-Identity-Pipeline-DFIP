@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <title>דשבורד אנשים</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; direction: rtl; }
     h1 { text-align: center; }
+    .stats { background: #e9f5ff; padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #b6dfff; }
     .person { background: #fff; padding: 15px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     .person h2 { margin: 0 0 10px 0; font-size: 16px; }
     .images { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -14,6 +15,11 @@
 </head>
 <body>
   <h1>דשבורד אנשים</h1>
+
+  <!-- מקום להצגת סטטיסטיקות -->
+  <div id="stats" class="stats"></div>
+
+  <!-- מקום להצגת אנשים -->
   <div id="container"></div>
 
   <script>
@@ -24,19 +30,31 @@
         return data;
       } catch (err) {
         console.error("שגיאה בטעינת הנתונים:", err);
-        return [];
+        return { persons: [], stats: {} };
       }
     }
 
-    function renderData(data) {
+    function renderStats(stats) {
+      const statsDiv = document.getElementById('stats');
+      statsDiv.innerHTML = `
+        <h2>סטטיסטיקה כללית</h2>
+        <p>סה"כ אנשים: ${stats.total_persons}</p>
+        <p>סה"כ תמונות: ${stats.total_images}</p>
+        <p>ממוצע תמונות לאדם: ${stats.avg_images_per_person.toFixed(2)}</p>
+        <p>מקסימום תמונות לאדם: ${stats.max_images_for_single_person}</p>
+        <p>מינימום תמונות לאדם: ${stats.min_images_for_single_person}</p>
+      `;
+    }
+
+    function renderPersons(persons) {
       const container = document.getElementById('container');
       container.innerHTML = '';
 
-      data.forEach(person => {
+      persons.forEach(person => {
         const div = document.createElement('div');
         div.className = 'person';
 
-        div.innerHTML = `<h2>${person.person_id} (${person.images.length} תמונות)</h2>`;
+        div.innerHTML = `<h2>אדם ${person.person_id} (${person.images.length} תמונות)</h2>`;
         const imagesDiv = document.createElement('div');
         imagesDiv.className = 'images';
 
@@ -53,7 +71,8 @@
 
     async function init() {
       const data = await fetchData();
-      renderData(data);
+      renderStats(data.stats);
+      renderPersons(data.persons);
     }
 
     init();

@@ -23,7 +23,7 @@ class FaceDetectionApp:
             topic=config.KAFKA_TOPIC
         )
 
-    def process_image(self, image: Union[str, bytes, bytearray, 'np.ndarray']) -> None:
+    def process_image(self, image: Union[str, bytes, bytearray]) -> None:
         """Process image and extract faces with clean factory-based payloads"""
         try:
             faces = self.extractor.extract_faces(image)
