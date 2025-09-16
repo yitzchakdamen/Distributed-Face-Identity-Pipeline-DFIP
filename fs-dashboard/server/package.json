@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
+    "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
@@ -25,7 +26,8 @@
     "helmet": "^8.1.0",
     "joi": "^18.0.1",
     "jsonwebtoken": "^9.0.2",
-    "mongodb": "^6.19.0"
+    "mongodb": "^6.19.0",
+    "multer": "^2.0.2"
   },
   "author": "r-el",
   "license": "ISC"
