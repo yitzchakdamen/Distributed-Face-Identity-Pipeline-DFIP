@@ -84,11 +84,21 @@
   text-align: left;
   cursor: pointer;
   font-size: 0.9rem;
+  text-decoration: none;
+  color: #333;
   transition: background-color 0.2s ease;
 }
 
 .dropdown-item:hover {
   background-color: #f8f9fa;
+}
+
+.dropdown-item.settings {
+  color: #3498db;
+}
+
+.dropdown-item.settings:hover {
+  background-color: #e8f4fd;
 }
 
 .dropdown-item.logout {
