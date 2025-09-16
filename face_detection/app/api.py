@@ -98,28 +98,43 @@ async def websocket_image_endpoint(websocket: WebSocket):
     await websocket.accept()
     client_host = websocket.client.host if websocket.client else "unknown"
     logger.info(f"WebSocket connection accepted from {client_host}")
-    closed = False
 
     try:
         while True:
             try:
                 image_bytes = await websocket.receive_bytes()
                 face_detection_app.process_image(image_bytes)
-                logger.info(f"Image processed successfully from {client_host}, size={len(image_bytes)} bytes")
-                await websocket.send_text("Image processed successfully")
+                logger.info(f"Image processed from {client_host}, size={len(image_bytes)} bytes")
+
+                try:
+                    await websocket.send_text("Image processed successfully")
+                except Exception as e:
+                    logger.warning(f"Client disconnected before response could be sent: {e}")
+                    break
+
+            except WebSocketDisconnect:
+                logger.info(f"Client disconnected: {client_host}")
+                break
 
             except Exception as e:
-                logger.error(f"Failed to process image from {client_host}: {e}")
-                await websocket.send_text("Error processing image")
-
-    except WebSocketDisconnect:
-        logger.info(f"WebSocket disconnected from {client_host}")
-        closed = True
+                logger.error(f"Error processing image from {client_host}: {e}")
+                try:
+                    await websocket.send_text("Error processing image")
+                except Exception:
+                    logger.warning("Client disconnected before error message could be sent.")
+                break
 
     except Exception as e:
         logger.exception(f"Unexpected WebSocket error from {client_host}: {e}")
-        if not closed:
+        try:
             await websocket.close(code=status.WS_1011_INTERNAL_ERROR)
-            
+        except Exception:
+            logger.warning("WebSocket already closed or failed to close cleanly.")
+
+
+
+
+   
+    
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
