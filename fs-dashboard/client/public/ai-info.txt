@@ -1,0 +1,16 @@
+# OpenAI Language Models
+
+These models are used for various AI functionalities within the Face Alert system.
+
+## Model Information
+- GPT-4: Used for advanced text analysis and natural language processing
+- DALL-E: Used for generating security-related imagery and visual assets
+- Whisper: Used for audio processing in security surveillance applications
+
+## Security & Privacy
+All AI model interactions are secured and comply with data protection regulations.
+No sensitive surveillance data is sent to external AI services without proper encryption and user consent.
+
+## Integration
+The Face Alert system integrates these AI capabilities seamlessly into the security workflow,
+providing enhanced threat detection and automated reporting capabilities.

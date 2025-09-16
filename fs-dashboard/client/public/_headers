@@ -1,0 +1,53 @@
+# Security and Performance Headers for Face Alert
+
+/*
+  # Security Headers
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  
+  # Content Security Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none';
+  
+  # Performance Headers
+  Cache-Control: public, max-age=31536000, immutable
+  
+  # HSTS Header
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+# Static Assets Caching
+/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Images Caching
+*.jpg
+  Cache-Control: public, max-age=2592000
+  Content-Type: image/jpeg
+
+*.png
+  Cache-Control: public, max-age=2592000
+  Content-Type: image/png
+
+*.svg
+  Cache-Control: public, max-age=31536000
+  Content-Type: image/svg+xml
+
+# API Endpoints
+/api/*
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Robots-Tag: noindex
+
+# Sitemap
+/sitemap.xml
+  Content-Type: application/xml
+  Cache-Control: public, max-age=86400
+
+# Robots
+/robots.txt
+  Content-Type: text/plain
+  Cache-Control: public, max-age=86400
