@@ -40,13 +40,7 @@ export default defineConfig(({ mode }) => ({
     },
     
     // Minimize bundle size
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true, // Always remove console logs in production
-        drop_debugger: true // Remove debugger statements
-      }
-    }
+    minify: 'esbuild' // Use esbuild instead of terser for better compatibility
   },
   
   define: {
