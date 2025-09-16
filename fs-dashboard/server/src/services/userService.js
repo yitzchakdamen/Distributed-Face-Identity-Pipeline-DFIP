@@ -67,8 +67,25 @@ export async function getUserByEmail(email) {
   return new User(data);
 }
 
+/**
+ * Get user by username
+ * @param {string} username - Username
+ * @returns {Object|null} - User object or null if not found
+ */
+export async function getUserByUsername(username) {
+  const validatedUsername = validate(username, usernameSchema);
 
-    const { data, error } = await supabase.from("users").select("*").eq("email", email).single();
+  const { data, error } = await supabase.from("users").select("*").eq("username", validatedUsername).single();
+
+  if (error) {
+    if (error.code === "PGRST116") return null; // User not found
+
+    throw new Error(`Database error: ${error.message}`);
+  }
+
+  return new User(data);
+}
+
 
     if (error) {
       if (error.code === "PGRST116") return null;
