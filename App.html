@@ -8,16 +8,22 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --primary: #4361ee;
-      --primary-dark: #3a56d4;
-      --secondary: #7209b7;
-      --light: #f8f9fa;
-      --dark: #212529;
-      --gray: #6c757d;
-      --success: #4cc9f0;
+      --primary: #4a6cf7;
+      --primary-light: #eef2ff;
+      --secondary: #6b7280;
+      --accent: #10b981;
+      --light: #f9fafb;
+      --dark: #1f2937;
+      --gray: #9ca3af;
+      --success: #10b981;
+      --warning: #f59e0b;
       --border-radius: 16px;
-      --box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      --border-radius-sm: 8px;
+      --box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      --box-shadow-hover: 0 8px 30px rgba(0,0,0,0.1);
       --transition: all 0.3s ease;
+      --glass-bg: rgba(255, 255, 255, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.2);
     }
 
     * {
@@ -28,110 +34,99 @@
 
     body {
       font-family: 'Inter', Arial, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+      background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
       padding: 20px;
       direction: rtl;
       color: var(--dark);
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
     .container {
-      max-width: 1600px;
+      max-width: 1800px;
       margin: 0 auto;
     }
 
     header {
       text-align: center;
       margin-bottom: 40px;
-      padding: 20px;
+      padding: 30px 20px;
+      position: relative;
     }
 
     h1 {
-      font-size: 2.5rem;
+      font-size: 2.8rem;
       font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 10px;
+      color: var(--dark);
+      margin-bottom: 15px;
       position: relative;
       display: inline-block;
-    }
-
-    h1:after {
-      content: '';
-      position: absolute;
-      bottom: -10px;
-      right: 0;
-      width: 60%;
-      height: 4px;
-      background: linear-gradient(to right, var(--primary), var(--success));
-      border-radius: 2px;
+      letter-spacing: -0.5px;
     }
 
     .subtitle {
-      color: var(--gray);
-      font-size: 1.1rem;
+      color: var(--secondary);
+      font-size: 1.2rem;
       margin-top: 15px;
+      font-weight: 400;
     }
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 25px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
       margin-bottom: 50px;
     }
 
     .stat-card {
-      background: white;
-      padding: 25px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      padding: 24px;
       border-radius: var(--border-radius);
       box-shadow: var(--box-shadow);
       transition: var(--transition);
       position: relative;
       overflow: hidden;
+      z-index: 1;
     }
 
     .stat-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-    }
-
-    .stat-card:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 5px;
-      height: 100%;
-      background: linear-gradient(to bottom, var(--primary), var(--secondary));
+      transform: translateY(-5px);
+      box-shadow: var(--box-shadow-hover);
     }
 
     .stat-card h2 {
       font-size: 1rem;
-      margin-bottom: 15px;
-      color: var(--primary);
+      margin-bottom: 16px;
+      color: var(--secondary);
       display: flex;
       align-items: center;
       gap: 10px;
+      font-weight: 500;
     }
 
     .stat-card h2 i {
       font-size: 1.2rem;
+      color: var(--primary);
     }
 
     .stat-card .stat-value {
-      font-size: 2.2rem;
+      font-size: 2.4rem;
       font-weight: 700;
       color: var(--dark);
-      margin-bottom: 5px;
+      margin-bottom: 8px;
     }
 
     .stat-card .stat-desc {
       font-size: 0.9rem;
-      color: var(--gray);
+      color: var(--secondary);
     }
 
     .gallery-container {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 30px;
     }
 
@@ -146,39 +141,50 @@
     }
 
     .person-card:hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 20px 35px rgba(0,0,0,0.15);
+      transform: translateY(-8px);
+      box-shadow: var(--box-shadow-hover);
     }
 
     .person-header {
-      background: linear-gradient(to right, var(--primary), var(--secondary));
-      color: white;
-      padding: 15px;
+      background: white;
+      color: var(--dark);
+      padding: 16px;
       font-size: 1.1rem;
       font-weight: 600;
       text-align: center;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-bottom: 1px solid #f3f4f6;
     }
 
     .person-header .person-id {
-      font-weight: 700;
+      font-weight: 600;
+      color: var(--primary);
     }
 
     .person-header .image-count {
-      background: rgba(255, 255, 255, 0.2);
+      background: var(--primary-light);
+      color: var(--primary);
       padding: 6px 12px;
       border-radius: 20px;
       font-size: 0.9rem;
       display: flex;
       align-items: center;
       gap: 6px;
+      font-weight: 500;
+    }
+
+    .person-image-container {
+      width: 100%;
+      height: 220px;
+      overflow: hidden;
+      position: relative;
     }
 
     .person-image {
       width: 100%;
-      height: 200px; /* גובה מופחת */
+      height: 100%;
       object-fit: cover;
       display: block;
       transition: var(--transition);
@@ -189,15 +195,16 @@
     }
 
     .person-footer {
-      padding: 12px;
+      padding: 16px;
       text-align: center;
       font-size: 0.9rem;
-      color: var(--gray);
-      background: var(--light);
+      color: var(--secondary);
+      background: white;
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 8px;
+      transition: var(--transition);
     }
 
     /* Lightbox */
@@ -211,7 +218,7 @@
       display: none;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
+      z-index: 10000;
       flex-direction: column;
       opacity: 0;
       transition: opacity 0.3s ease;
@@ -227,42 +234,42 @@
       flex-direction: column;
       align-items: center;
       width: 95%;
-      max-width: 1600px;
+      max-width: 1400px;
       height: 95vh;
     }
 
     .lightbox-img-container {
       width: 100%;
-      height: 95vh; /* כמעט כל גובה המסך */
+      height: 85vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
     }
 
     .lightbox img {
-      max-width: 90%;   /* יותר רחב */
-      max-height: 95%;  /* יותר גבוה */
+      max-width: 90%;
+      max-height: 90%;
       object-fit: contain;
       border-radius: 8px;
-      box-shadow: 0 5px 35px rgba(0,0,0,0.5); /* יותר מודגש */
-      transition: transform 0.3s ease, max-width 0.3s ease, max-height 0.3s ease;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      animation: zoomIn 0.3s ease forwards;
     }
 
-    .lightbox.active img {
-      transform: scale(1.05);
+    @keyframes zoomIn {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
-
-
 
     .lightbox .close {
       color: white;
-      font-size: 30px;
+      font-size: 28px;
       cursor: pointer;
       position: absolute;
       top: 20px;
       left: 20px;
-      z-index: 1001;
-      background: rgba(0,0,0,0.5);
+      z-index: 10001;
+      background: rgba(255,255,255,0.1);
       width: 50px;
       height: 50px;
       border-radius: 50%;
@@ -270,23 +277,25 @@
       justify-content: center;
       align-items: center;
       transition: var(--transition);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
     }
 
     .lightbox .close:hover {
-      background: rgba(0,0,0,0.7);
+      background: rgba(255,255,255,0.2);
       transform: rotate(90deg);
     }
 
     .lightbox .nav {
       color: white;
-      font-size: 40px;
+      font-size: 32px;
       cursor: pointer;
       user-select: none;
       padding: 0 20px;
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      background: rgba(0,0,0,0.5);
+      background: rgba(255,255,255,0.1);
       width: 60px;
       height: 60px;
       border-radius: 50%;
@@ -294,18 +303,21 @@
       justify-content: center;
       align-items: center;
       transition: var(--transition);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
     }
 
     .lightbox .nav:hover {
-      background: rgba(0,0,0,0.7);
+      background: rgba(255,255,255,0.2);
+      transform: translateY(-50%) scale(1.05);
     }
 
     .lightbox .nav.nav-left {
-      left: 30px;
+      left: 20px;
     }
 
     .lightbox .nav.nav-right {
-      right: 30px;
+      right: 20px;
     }
 
     .lightbox-controls {
@@ -319,11 +331,13 @@
 
     .lightbox-counter {
       color: white;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       margin-top: 15px;
-      background: rgba(0,0,0,0.5);
+      background: rgba(255,255,255,0.1);
       padding: 8px 20px;
       border-radius: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
     }
 
     .lightbox-thumbnails {
@@ -332,61 +346,70 @@
       margin-top: 20px;
       overflow-x: auto;
       max-width: 100%;
-      padding: 10px;
-      background: rgba(255,255,255,0.1);
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
       border-radius: 12px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
     }
 
     .lightbox-thumbnail {
-      width: 80px;
-      height: 80px;
+      width: 70px;
+      height: 70px;
       object-fit: cover;
       border-radius: 8px;
       cursor: pointer;
       opacity: 0.6;
       transition: var(--transition);
+      border: 2px solid transparent;
     }
 
     .lightbox-thumbnail:hover, .lightbox-thumbnail.active {
       opacity: 1;
-      border: 3px solid white;
+      border: 2px solid var(--primary);
       transform: scale(1.1);
     }
 
     .lightbox-person-info {
       color: white;
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       margin-bottom: 20px;
       text-align: center;
-      background: rgba(0,0,0,0.5);
-      padding: 12px 30px;
-      border-radius: 30px;
+      background: rgba(255,255,255,0.1);
+      padding: 12px 25px;
+      border-radius: 25px;
       display: flex;
       align-items: center;
       gap: 15px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
     }
 
     .lightbox-person-info .person-image-count {
-      font-size: 1.2rem;
+      font-size: 1rem;
       background: var(--primary);
-      padding: 6px 15px;
+      padding: 6px 14px;
       border-radius: 20px;
     }
 
     /* Responsive adjustments */
     @media (max-width: 1200px) {
       .gallery-container {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       }
     }
 
     @media (max-width: 992px) {
       .gallery-container {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       }
       
-      .person-image {
-        height: 180px;
+      .person-image-container {
+        height: 200px;
+      }
+
+      h1 {
+        font-size: 2.4rem;
       }
     }
 
@@ -396,16 +419,17 @@
       }
       
       .stats {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      }
-      
-      .gallery-container {
-        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 20px;
       }
       
-      .person-image {
-        height: 160px;
+      .gallery-container {
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 20px;
+      }
+      
+      .person-image-container {
+        height: 180px;
       }
       
       .person-header {
@@ -415,7 +439,7 @@
       }
       
       .lightbox .nav {
-        font-size: 30px;
+        font-size: 24px;
         width: 50px;
         height: 50px;
       }
@@ -429,9 +453,14 @@
       }
       
       .lightbox-person-info {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
         flex-direction: column;
         gap: 10px;
+      }
+
+      .lightbox-thumbnail {
+        width: 60px;
+        height: 60px;
       }
     }
 
@@ -442,6 +471,7 @@
       
       header {
         margin-bottom: 30px;
+        padding: 20px 10px;
       }
       
       h1 {
@@ -450,21 +480,28 @@
       
       .stats {
         grid-template-columns: 1fr;
-        gap: 15px;
+        gap: 16px;
       }
       
       .gallery-container {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 15px;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 16px;
       }
       
-      .person-image {
-        height: 140px;
+      .person-image-container {
+        height: 160px;
       }
       
       .lightbox-thumbnail {
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
+      }
+
+      .lightbox .close {
+        top: 15px;
+        left: 15px;
+        width: 45px;
+        height: 45px;
       }
     }
 
@@ -480,10 +517,10 @@
     .spinner {
       width: 50px;
       height: 50px;
-      border: 5px solid rgba(0, 0, 0, 0.1);
+      border: 4px solid rgba(0, 0, 0, 0.1);
       border-radius: 50%;
       border-top-color: var(--primary);
-      animation: spin 1s ease-in-out infinite;
+      animation: spin 1s linear infinite;
     }
 
     @keyframes spin {
@@ -491,21 +528,50 @@
     }
 
     /* Animation for cards */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes fadeInUp {
+      from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
     }
 
     .stat-card, .person-card {
-      animation: fadeIn 0.5s ease-out forwards;
+      animation: fadeInUp 0.5s ease-out forwards;
       opacity: 0;
     }
 
-    .person-card:nth-child(2) { animation-delay: 0.1s; }
-    .person-card:nth-child(3) { animation-delay: 0.2s; }
-    .person-card:nth-child(4) { animation-delay: 0.3s; }
-    .person-card:nth-child(5) { animation-delay: 0.4s; }
-    .person-card:nth-child(6) { animation-delay: 0.5s; }
+    .person-card:nth-child(2) { animation-delay: 0.05s; }
+    .person-card:nth-child(3) { animation-delay: 0.1s; }
+    .person-card:nth-child(4) { animation-delay: 0.15s; }
+    .person-card:nth-child(5) { animation-delay: 0.2s; }
+    .person-card:nth-child(6) { animation-delay: 0.25s; }
+    .person-card:nth-child(7) { animation-delay: 0.3s; }
+    .person-card:nth-child(8) { animation-delay: 0.35s; }
+    .person-card:nth-child(9) { animation-delay: 0.4s; }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.05);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary-light);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
   </style>
 </head>
 <body>
@@ -603,7 +669,7 @@
         };
         
         // Simulate network delay
-        // await new Promise(resolve => setTimeout(resolve, 1000));
+        // await new Promise(resolve => setTimeout(resolve, 800));
         
         // return mockData;
         
@@ -653,10 +719,10 @@
       
       if (persons.length === 0) {
         container.innerHTML = `
-          <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-            <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #6c757d; margin-bottom: 15px;"></i>
-            <h3 style="color: #6c757d;">לא נמצאו אנשים</h3>
-            <p>אין נתונים להצגה כרגע</p>
+          <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: white; border-radius: var(--border-radius); border: 1px solid #f3f4f6; box-shadow: var(--box-shadow);">
+            <i class="fas fa-exclamation-circle" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px;"></i>
+            <h3 style="color: var(--dark); margin-bottom: 10px;">לא נמצאו אנשים</h3>
+            <p style="color: var(--secondary);">אין נתונים להצגה כרגע</p>
           </div>
         `;
         return;
@@ -667,16 +733,18 @@
       persons.forEach((person, index) => {
         const div = document.createElement('div');
         div.className = 'person-card';
-        div.style.animationDelay = `${index * 0.1}s`;
+        div.style.animationDelay = `${index * 0.05}s`;
         div.innerHTML = `
           <div class="person-header">
-            <span class="person-id"> ${person.person_id.substring(0, 10)}...</span>
+            <span class="person-id">${person.person_id.substring(0, 10)}...</span>
             <span class="image-count">
               <i class="fas fa-images"></i>
               ${person.images.length} תמונות
             </span>
           </div>
-          <img class="person-image" src="${person.images[0]}" alt="Person ${person.person_id.substring(0, 10)}">
+          <div class="person-image-container">
+            <img class="person-image" src="${person.images[0]}" alt="Person ${person.person_id}">
+          </div>
           <div class="person-footer">
             <i class="fas fa-expand"></i>
             לחץ לצפייה בתמונות גדולות
@@ -720,7 +788,17 @@
       const lightboxPersonId = document.getElementById('lightbox-person-id');
       const lightboxPersonCount = document.getElementById('lightbox-person-count');
       
-      lightboxImg.src = lightboxImages[currentIndex];
+      // Add fade effect when changing images
+      if (lightboxImg.src) {
+        lightboxImg.style.opacity = 0;
+        setTimeout(() => {
+          lightboxImg.src = lightboxImages[currentIndex];
+          lightboxImg.style.opacity = 1;
+        }, 200);
+      } else {
+        lightboxImg.src = lightboxImages[currentIndex];
+      }
+      
       lightboxCounter.textContent = `${currentIndex + 1} / ${lightboxImages.length}`;
       lightboxPersonId.textContent = `אדם ${currentPersonId}`;
       lightboxPersonCount.textContent = `${lightboxImages.length} תמונות`;

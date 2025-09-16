@@ -8,3 +8,5 @@ python -m Vector_Search.src.main.main
 python -m updating_vector_identities_service.main
 
 python -m event_processor_service.app.manager    
+
+python -m camera_uploader.app.main    

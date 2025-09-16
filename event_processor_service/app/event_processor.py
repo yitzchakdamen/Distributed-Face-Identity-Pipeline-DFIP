@@ -40,7 +40,7 @@ class EventProcessor:
             return "alert"  # only seen today
 
         if week - today < 3:
-            if month >= 10 or year >= 20:
+            if month - today >= 10 or year - today >= 20:
                 return "approved"  # many appearances both recently and historically
             return "active"  # recent frequent appearances
 

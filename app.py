@@ -53,6 +53,46 @@ def get_persons():
         "persons": list(persons.values()),
         "stats": stats
     })
+    
+    
+@app.route("/api/alerts")
+def get_alerts():
+    alerts = list(db.Event.find({}, {
+        "person_id": 1,
+        "time": 1,
+        "level": 1,
+        "image_id": 1,
+        "camera_id": 1,
+        "message": 1
+    }).sort("time", -1))  # מיון מהחדש לישן
+
+    result = []
+    for a in alerts:
+        alert_data = {
+            "person_id": a.get("person_id"),
+            "time": a.get("time"),
+            "level": a.get("level"),
+            "image_id": a.get("image_id"),
+            "camera_id": a.get("camera_id"),
+            "message": a.get("message"),
+            "image": None  # ברירת מחדל אם לא נמצאה תמונה
+        }
+
+        # אם יש image_id ננסה להביא את התמונה מ-GridFS
+        image_id = a.get("image_id")
+        if image_id:
+            file_doc = db["Photo_storage.files"].find_one({"metadata.image_id": image_id})
+            if file_doc:
+                try:
+                    grid_out = fs.get(file_doc["_id"])
+                    img_data = base64.b64encode(grid_out.read()).decode("utf-8")
+                    alert_data["image"] = f"data:image/jpeg;base64,{img_data}"
+                except Exception as e:
+                    print(f"בעיה בקריאת תמונה: {e}")
+
+        result.append(alert_data)
+
+    return jsonify({"alerts": result})
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

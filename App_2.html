@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת התרעות</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --alert-color: #e63946;
+            --info-color: #4cc9f0;
+            --background-color: #f8f9fa;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            direction: ltr; /* Changed to LTR for code structure */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h1 {
+            font-size: 28px;
+            color: var(--primary-color);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background-color: var(--card-color);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .filter-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .alert-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .alert-card {
+            background-color: var(--card-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .alert-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .alert-level {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .level-alert {
+            background-color: rgba(230, 57, 70, 0.15);
+            color: var(--alert-color);
+        }
+
+        .level-info {
+            background-color: rgba(76, 201, 240, 0.15);
+            color: var(--info-color);
+        }
+
+        .alert-time {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .alert-image {
+            height: 200px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+        }
+
+        .alert-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .no-image {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .alert-body {
+            padding: 15px;
+        }
+
+        .alert-message {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .alert-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #777;
+        }
+
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: var(--alert-color);
+            background-color: rgba(230, 57, 70, 0.1);
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .refresh-btn {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+            transition: background-color 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background-color: #3651d3;
+        }
+
+        @media (max-width: 768px) {
+            .alert-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .refresh-btn {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-bell"></i> מערכת התרעות</h1>
+            <button class="refresh-btn" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i> רענן התרעות
+            </button>
+        </header>
+
+        <div class="controls">
+            <button class="filter-btn active" data-filter="all">הכל</button>
+            <button class="filter-btn" data-filter="alert">התרעות</button>
+            <button class="filter-btn" data-filter="info">מידע</button>
+        </div>
+
+        <div id="alertsContainer" class="alert-cards">
+            <div class="loading">
+                <i class="fas fa-spinner fa-spin"></i> טוען התרעות...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const alertsContainer = document.getElementById('alertsContainer');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            let currentAlerts = [];
+            let currentFilter = 'all';
+
+            // Fetch alerts from server
+            async function fetchAlerts() {
+                try {
+                    alertsContainer.innerHTML = `
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin"></i> טוען התרעות...
+                        </div>
+                    `;
+                    
+                    const response = await fetch('http://127.0.0.1:5000/api/alerts');
+                    
+                    if (!response.ok) {
+                        throw new Error(`שגיאה בטעינת ההתרעות: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    currentAlerts = data.alerts || [];
+                    
+                    displayAlerts(currentAlerts);
+                } catch (error) {
+                    console.error('Error fetching alerts:', error);
+                    alertsContainer.innerHTML = `
+                        <div class="error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <p>${error.message || 'אירעה שגיאה בטעינת ההתרעות'}</p>
+                            <p>נסה לרענן את הדף או לבדוק את החיבור לשרת</p>
+                        </div>
+                    `;
+                }
+            }
+
+            // Display alerts based on current filter
+            function displayAlerts(alerts) {
+                if (alerts.length === 0) {
+                    alertsContainer.innerHTML = `
+                        <div class="loading">
+                            <i class="fas fa-check-circle"></i> אין התרעות להצגה
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const filteredAlerts = currentFilter === 'all' 
+                    ? alerts 
+                    : alerts.filter(alert => alert.level === currentFilter);
+                
+                if (filteredAlerts.length === 0) {
+                    alertsContainer.innerHTML = `
+                        <div class="loading">
+                            <i class="fas fa-info-circle"></i> אין התרעות מסוג זה
+                        </div>
+                    `;
+                    return;
+                }
+                
+                alertsContainer.innerHTML = '';
+                
+                filteredAlerts.forEach(alert => {
+                    const alertCard = document.createElement('div');
+                    alertCard.className = 'alert-card';
+                    
+                    // Format date and time
+                    const alertDate = new Date(alert.time);
+                    const formattedDate = alertDate.toLocaleDateString('he-IL');
+                    const formattedTime = alertDate.toLocaleTimeString('he-IL');
+                    
+                    alertCard.innerHTML = `
+                        <div class="alert-header">
+                            <span class="alert-level level-${alert.level}">${alert.level}</span>
+                            <span class="alert-time">${formattedDate} ${formattedTime}</span>
+                        </div>
+                        <div class="alert-image">
+                            ${alert.image 
+                                ? `<img src="${alert.image}" alt="Alert image">` 
+                                : `<div class="no-image"><i class="fas fa-image"></i> No image available</div>`
+                            }
+                        </div>
+                        <div class="alert-body">
+                            <p class="alert-message">${alert.message}</p>
+                            <div class="alert-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">מזהה אדם:</span>
+                                    <span>${alert.person_id.substring(0, 10)}...</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">מזהה מצלמה:</span>
+                                    <span>${alert.camera_id}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">מזהה תמונה:</span>
+                                    <span>${alert.image_id.substring(0, 10)}...</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    alertsContainer.appendChild(alertCard);
+                });
+            }
+
+            // Set up filter buttons
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.getAttribute('data-filter');
+                    displayAlerts(currentAlerts);
+                });
+            });
+
+            // Set up refresh button
+            refreshBtn.addEventListener('click', fetchAlerts);
+
+            // Initial fetch
+            fetchAlerts();
+            
+            // Optional: Auto-refresh every 30 seconds
+            setInterval(fetchAlerts, 30000);
+        });
+    </script>
+</body>
+</html>
