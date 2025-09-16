@@ -9,6 +9,7 @@ import HomePage from "./pages/HomePage";
 import EventsPage from "./pages/EventsPage";
 import CamerasPage from "./pages/CamerasPage";
 import SettingsPage from "./pages/SettingsPage";
+import UserManagementPage from "./pages/UserManagementPage";
 import "./App.css";
 
 function App() {
