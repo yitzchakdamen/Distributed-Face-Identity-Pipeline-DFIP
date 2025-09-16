@@ -8,6 +8,7 @@ import Register from "./components/auth/Register";
 import HomePage from "./pages/HomePage";
 import EventsPage from "./pages/EventsPage";
 import CamerasPage from "./pages/CamerasPage";
+import SettingsPage from "./pages/SettingsPage";
 import "./App.css";
 
 function App() {
