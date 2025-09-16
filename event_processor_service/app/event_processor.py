@@ -1,4 +1,8 @@
 
+from event_processor_service.app import config
+import logging
+logger =  logging.getLogger(config.LOGGER_NAME)
+
 class EventProcessor:
     def __init__(self, kafka_message: dict):
         """
@@ -7,7 +11,7 @@ class EventProcessor:
         """
         self.kafka_message = kafka_message
 
-     
+
 
     def process_event(self):
         """
@@ -35,17 +39,22 @@ class EventProcessor:
         week = Appears.get("This week", 0)
         month = Appears.get("This month", 0)
         year = Appears.get("This year", 0)
+        
+        logger.debug(f"Calculating level with Appears data: Today={today}, This week={week}, This month={month}, This year={year}")
 
         if  week == today and month == today and year == today :
+            if today >= 3:
+                return "alert multiple"  # seen today multiple times
             return "alert"  # only seen today
 
-        if week - today < 3:
+        if week - today > 3:
             if month - today >= 10 or year - today >= 20:
                 return "approved"  # many appearances both recently and historically
             return "active"  # recent frequent appearances
 
         if (month >= 5 or year >= 10) and today >= 2 and week == 0:
             return "inactive"  # was seen in the past, not recently
+        
 
         return "unknown"  # unclassified
 

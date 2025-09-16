@@ -6,7 +6,7 @@ import logging
 import json
 
 
-logger =  logging.getLogger("config.LOGGER_NAME")
+logger =  logging.getLogger(config.LOGGER_NAME)
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger("kafka").setLevel(logging.WARNING)
 

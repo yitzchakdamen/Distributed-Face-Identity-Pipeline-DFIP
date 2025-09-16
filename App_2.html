@@ -26,7 +26,7 @@
         body {
             background-color: var(--background-color);
             color: var(--text-color);
-            direction: ltr; /* Changed to LTR for code structure */
+            direction: ltr;
         }
 
         .container {
@@ -205,6 +205,40 @@
             background-color: #3651d3;
         }
 
+        .refresh-btn.loading {
+            background-color: #9baaf0;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(-100px);
+            opacity: 0;
+            transition: transform 0.3s, opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .notification.success {
+            border-left: 4px solid #4caf50;
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--alert-color);
+        }
+
         @media (max-width: 768px) {
             .alert-cards {
                 grid-template-columns: 1fr;
@@ -218,6 +252,11 @@
             
             .refresh-btn {
                 margin-left: 0;
+            }
+            
+            .notification {
+                left: 20px;
+                right: 20px;
             }
         }
     </style>
@@ -244,23 +283,44 @@
         </div>
     </div>
 
+    <div id="notification" class="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText"></span>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const alertsContainer = document.getElementById('alertsContainer');
             const refreshBtn = document.getElementById('refreshBtn');
             const filterBtns = document.querySelectorAll('.filter-btn');
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
             
             let currentAlerts = [];
             let currentFilter = 'all';
+            let isLoading = false;
+
+            // Show notification function
+            function showNotification(message, isError = false) {
+                notification.className = isError ? 'notification error' : 'notification success';
+                notificationText.textContent = message;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
 
             // Fetch alerts from server
             async function fetchAlerts() {
+                if (isLoading) return;
+                
+                isLoading = true;
+                refreshBtn.classList.add('loading');
+                
                 try {
-                    alertsContainer.innerHTML = `
-                        <div class="loading">
-                            <i class="fas fa-spinner fa-spin"></i> טוען התרעות...
-                        </div>
-                    `;
+                    // Keep the current content visible while loading
+                    const previousContent = alertsContainer.innerHTML;
                     
                     const response = await fetch('http://127.0.0.1:5000/api/alerts');
                     
@@ -272,15 +332,14 @@
                     currentAlerts = data.alerts || [];
                     
                     displayAlerts(currentAlerts);
+                    showNotification('ההתרעות עודכנו בהצלחה');
                 } catch (error) {
                     console.error('Error fetching alerts:', error);
-                    alertsContainer.innerHTML = `
-                        <div class="error">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <p>${error.message || 'אירעה שגיאה בטעינת ההתרעות'}</p>
-                            <p>נסה לרענן את הדף או לבדוק את החיבור לשרת</p>
-                        </div>
-                    `;
+                    showNotification('אירעה שגיאה בטעינת ההתרעות', true);
+                    // Don't clear the content on error - keep the previous alerts visible
+                } finally {
+                    isLoading = false;
+                    refreshBtn.classList.remove('loading');
                 }
             }
 
