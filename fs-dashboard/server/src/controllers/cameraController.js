@@ -230,34 +230,20 @@ export class CameraController {
    */
   static async assignCamera(req, res) {
     try {
-      // Validate camera ID parameter
-      const { error: idError, value: idValue } = schema.validate(
-        {
-          camera_id: req.params.camera_id,
-        },
-        cameraIdSchema
-      );
-      if (idError) {
+      // Validate camera ID parameter - this is a string from URL params
+      const camera_id = req.params.camera_id;
+      if (!camera_id) {
         return res.status(400).json({
           success: false,
-          message: "Invalid camera ID",
-          errors: idError.details.map((detail) => detail.message),
+          message: "Camera ID is required",
         });
       }
 
       // Validate request body
-      const { error: bodyError, value: bodyValue } = schema.validate(req.body, assignCameraSchema);
-      if (bodyError) {
-        return res.status(400).json({
-          success: false,
-          message: "Validation error",
-          errors: bodyError.details.map((detail) => detail.message),
-        });
-      }
+      const validatedData = validate(req.body, assignCameraSchema);
 
       const { id: userId, role } = req.user;
-      const { camera_id } = idValue;
-      const { user_id } = bodyValue;
+      const { user_id } = validatedData;
 
       // Assign camera
       const assignment = await CameraService.assignCameraToUser(camera_id, user_id, userId, role);
@@ -270,7 +256,7 @@ export class CameraController {
     } catch (error) {
       console.error("Assign camera error:", error);
       const statusCode = error.message.includes("permissions") ? 403 : 400;
-      res.status(statusCode).json({
+      res.status(500).json({
         success: false,
         message: error.message,
       });
