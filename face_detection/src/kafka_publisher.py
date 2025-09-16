@@ -4,7 +4,7 @@ from typing import Any, Dict, Iterable, List, Optional,Union
 from face_detection.utils.logger import Logger
 from confluent_kafka import Producer, KafkaException, KafkaError
 
-logger = Logger.getLogger(__name__)
+logger = Logger.get_logger(__name__)
 JSONLike = Union[Dict[str, Any], List[Any]]
 PayloadLike = Union[JSONLike, str, bytes]
 

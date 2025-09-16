@@ -6,7 +6,7 @@ from face_detection.src.kafka_publisher import KafkaPublisher
 from face_detection.src.mongo_dal import MongoImageStorage
 from typing import Union
 
-logger = Logger.getLogger(__name__)
+logger = Logger.get_logger(__name__)
 
 
 class FaceDetectionApp:
