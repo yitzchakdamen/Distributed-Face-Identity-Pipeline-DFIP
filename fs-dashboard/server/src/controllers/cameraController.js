@@ -1,7 +1,7 @@
-import { CameraSer      // Validate request body
-      const { error, value } = validate(req.body, createCameraSchema);
-      if (error) {e } from "../services/cameraService.js";
+import { CameraService } from "../services/cameraService.js";
 import { validate } from "../services/validationService.js";
+
+import Joi from "joi";
 import {
   createCameraSchema,
   updateCameraSchema,
@@ -19,17 +19,19 @@ export class CameraController {
   static async createCamera(req, res) {
     try {
       // Validate request body
-      const { error, value } = validationService.validate(createCameraSchema, req.body);
-      if (error)
+      const { error, value } = validate(req.body, createCameraSchema);
+      if (error) {
         return res.status(400).json({
           success: false,
           message: "Validation error",
           errors: error.details.map((detail) => detail.message),
         });
+      }
 
       // Get user info from token
       const { userId, role } = req.user;
 
+      // Create camera
       const camera = await CameraService.createCamera(value, userId, role);
 
       res.status(201).json({
@@ -54,7 +56,7 @@ export class CameraController {
   static async getCameras(req, res) {
     try {
       // Validate query parameters
-      const { error, value } = validationService.validate(getCamerasQuerySchema, req.query);
+      const { error, value } = validate(req.query, getCamerasQuerySchema);
       if (error) {
         return res.status(400).json({
           success: false,
@@ -91,15 +93,16 @@ export class CameraController {
   static async getCameraById(req, res) {
     try {
       // Validate camera ID parameter
-      const { error, value } = validationService.validate(cameraIdSchema, {
+      const { error, value } = validate({
         camera_id: req.params.camera_id,
-      });
-      if (error)
+      }, cameraIdSchema);
+      if (error) {
         return res.status(400).json({
           success: false,
           message: "Invalid camera ID",
           errors: error.details.map((detail) => detail.message),
         });
+      }
 
       const { userId, role } = req.user;
       const { camera_id } = value;
@@ -130,24 +133,29 @@ export class CameraController {
   static async updateCamera(req, res) {
     try {
       // Validate camera ID parameter
-      const { error: idError, value: idValue } = validationService.validate(cameraIdSchema, {
+      const { error: idError, value: idValue } = validate({
         camera_id: req.params.camera_id,
-      });
-      if (idError)
+      }, cameraIdSchema);
+      if (idError) {
         return res.status(400).json({
           success: false,
           message: "Invalid camera ID",
           errors: idError.details.map((detail) => detail.message),
         });
+      }
 
       // Validate request body
-      const { error: bodyError, value: bodyValue } = validationService.validate(updateCameraSchema, req.body);
-      if (bodyError)
+      const { error: bodyError, value: bodyValue } = validate(
+        req.body,
+        updateCameraSchema
+      );
+      if (bodyError) {
         return res.status(400).json({
           success: false,
           message: "Validation error",
           errors: bodyError.details.map((detail) => detail.message),
         });
+      }
 
       const { userId, role } = req.user;
       const { camera_id } = idValue;
@@ -178,15 +186,16 @@ export class CameraController {
   static async deleteCamera(req, res) {
     try {
       // Validate camera ID parameter
-      const { error, value } = validationService.validate(cameraIdSchema, {
+      const { error, value } = validate({
         camera_id: req.params.camera_id,
-      });
-      if (error)
+      }, cameraIdSchema);
+      if (error) {
         return res.status(400).json({
           success: false,
           message: "Invalid camera ID",
           errors: error.details.map((detail) => detail.message),
         });
+      }
 
       const { userId, role } = req.user;
       const { camera_id } = value;
@@ -216,18 +225,22 @@ export class CameraController {
   static async assignCamera(req, res) {
     try {
       // Validate camera ID parameter
-      const { error: idError, value: idValue } = validationService.validate(cameraIdSchema, {
+      const { error: idError, value: idValue } = validate({
         camera_id: req.params.camera_id,
-      });
-      if (idError)
+      }, cameraIdSchema);
+      if (idError) {
         return res.status(400).json({
           success: false,
           message: "Invalid camera ID",
           errors: idError.details.map((detail) => detail.message),
         });
+      }
 
       // Validate request body
-      const { error: bodyError, value: bodyValue } = validationService.validate(assignCameraSchema, req.body);
+      const { error: bodyError, value: bodyValue } = validate(
+        req.body,
+        assignCameraSchema
+      );
       if (bodyError) {
         return res.status(400).json({
           success: false,
@@ -266,20 +279,24 @@ export class CameraController {
   static async removeAssignment(req, res) {
     try {
       // Validate camera ID parameter
-      const { error: idError, value: idValue } = validationService.validate(cameraIdSchema, {
+      const { error: idError, value: idValue } = validate({
         camera_id: req.params.camera_id,
-      });
-      if (idError)
+      }, cameraIdSchema);
+      if (idError) {
         return res.status(400).json({
           success: false,
           message: "Invalid camera ID",
           errors: idError.details.map((detail) => detail.message),
         });
+      }
 
       // Validate user ID parameter
-      const { error: userError, value: userValue } = validationService.validate(
-        { user_id: assignCameraSchema.extract("user_id") },
-        { user_id: req.params.user_id }
+      const userIdSchema = Joi.object({
+        user_id: Joi.string().uuid().required()
+      });
+      const { error: userError, value: userValue } = validate(
+        { user_id: req.params.user_id },
+        userIdSchema
       );
       if (userError) {
         return res.status(400).json({
@@ -318,15 +335,16 @@ export class CameraController {
   static async getCameraAssignments(req, res) {
     try {
       // Validate camera ID parameter
-      const { error, value } = validationService.validate(cameraIdSchema, {
+      const { error, value } = validate({
         camera_id: req.params.camera_id,
-      });
-      if (error)
+      }, cameraIdSchema);
+      if (error) {
         return res.status(400).json({
           success: false,
           message: "Invalid camera ID",
           errors: error.details.map((detail) => detail.message),
         });
+      }
 
       const { userId, role } = req.user;
       const { camera_id } = value;
