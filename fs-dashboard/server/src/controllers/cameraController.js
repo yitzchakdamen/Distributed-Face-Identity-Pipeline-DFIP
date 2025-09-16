@@ -29,7 +29,7 @@ export class CameraController {
       }
 
       // Get user info from token
-      const { userId, role } = req.user;
+      const { id: userId, role } = req.user;
 
       // Create camera
       const camera = await CameraService.createCamera(value, userId, role);
@@ -65,7 +65,7 @@ export class CameraController {
         });
       }
 
-      const { userId, role } = req.user;
+      const { id: userId, role } = req.user;
 
       // Get cameras for user
       const cameras = await CameraService.getCamerasForUser(userId, role);
@@ -104,7 +104,7 @@ export class CameraController {
         });
       }
 
-      const { userId, role } = req.user;
+      const { id: userId, role } = req.user;
       const { camera_id } = value;
 
       // Get camera
@@ -157,7 +157,7 @@ export class CameraController {
         });
       }
 
-      const { userId, role } = req.user;
+      const { id: userId, role } = req.user;
       const { camera_id } = idValue;
 
       // Update camera
@@ -197,7 +197,7 @@ export class CameraController {
         });
       }
 
-      const { userId, role } = req.user;
+      const { id: userId, role } = req.user;
       const { camera_id } = value;
 
       // Delete camera
@@ -249,7 +249,7 @@ export class CameraController {
         });
       }
 
-      const { userId, role } = req.user;
+      const { id: userId, role } = req.user;
       const { camera_id } = idValue;
       const { user_id } = bodyValue;
 
@@ -306,7 +306,7 @@ export class CameraController {
         });
       }
 
-      const { userId, role } = req.user;
+      const { id: userId, role } = req.user;
       const { camera_id } = idValue;
       const { user_id } = userValue;
 
@@ -346,7 +346,7 @@ export class CameraController {
         });
       }
 
-      const { userId, role } = req.user;
+      const { id: userId, role } = req.user;
       const { camera_id } = value;
 
       // Get assignments
