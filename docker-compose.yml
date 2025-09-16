@@ -2,23 +2,34 @@
 services:
 
   kafka:
-    image: apache/kafka:latest
+    image: bitnami/kafka:3.6
     container_name: kafka-broker-face-identity
+    hostname: kafka
     environment:
-      KAFKA_NODE_ID: 1 
-      KAFKA_PROCESS_ROLES: broker,controller 
-      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093 
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092 
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER 
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093 
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1 
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1 
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1 
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0 
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true 
+      KAFKA_ENABLE_KRAFT: "yes"
+      KAFKA_CFG_NODE_ID: "1"
+      KAFKA_CFG_PROCESS_ROLES: broker,controller
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_KRAFT_CLUSTER_ID: "w6ZxY2VhbmZpc2gtY2x1c3Rlci1pZC1kZXYxMjM0NTY="
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+      KAFKA_CFG_GROUP_INITIAL_REBALANCE_DELAY_MS: "0"
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
     ports:
       - "9092:9092"
       - "9093:9093"
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
 
   kafdrop:
     image: obsidiandynamics/kafdrop:latest
@@ -72,10 +83,19 @@ services:
       ES_PORT: 9200
     ports:
       - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import socket; s=socket.socket(); s.settimeout(2); s.connect((\"localhost\",8000)); s.close()'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
     depends_on:
-      - kafka
-      - mongodb
-      - elasticsearch
+      kafka:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      elasticsearch:
+        condition: service_started
 
   camera_uploader:
     build:
@@ -87,7 +107,10 @@ services:
       ES_HOST: elasticsearch
       ES_PORT: 9200
     depends_on:
-      - face_detection
+      face_detection:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_started
 
   event_processor_service:
     build:
@@ -103,8 +126,10 @@ services:
       MONGO_COLLECTION: Event
       LOGGER_NAME: event_processor_service_logger
     depends_on:
-      - kafka
-      - mongodb
+      kafka:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
 
   face_embedding:
     build:
@@ -125,9 +150,12 @@ services:
       MONGO_DATABASE: face_identity
       MONGO_COLLECTION: Photo_storage
     depends_on:
-      - kafka
-      - mongodb
-      - elasticsearch
+      kafka:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      elasticsearch:
+        condition: service_started
 
   updating_vector_identities_service:
     build:
@@ -146,8 +174,10 @@ services:
       ELASTICSEARCH_INDEX_LOG: logging
       ELASTICSEARCH_MAPPING_IMAGE_EMBEDDINGS: updating_vector_identities_service/config/elasticsearch_mapping.json
     depends_on:
-      - kafka
-      - elasticsearch
+      kafka:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_started
 
   vector_search:
     build:
@@ -165,6 +195,8 @@ services:
       NEW_VECTOR_PERSON_TOPIC: new_vector_person
       NEW_VECTOR_APPROVAL_PERSON: new_vector_approval_person
     depends_on:
-      - kafka
-      - elasticsearch
+      kafka:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_started
 

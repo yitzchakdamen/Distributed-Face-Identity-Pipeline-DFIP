@@ -1,7 +1,7 @@
-from config import config
-from config.logger_config import LoggerConfig
+from updating_vector_identities_service.config import config
+from updating_vector_identities_service.config.logger_config import LoggerConfig
 import logging
-from src.management import Management
+from updating_vector_identities_service.src.management import Management
 from updating_vector_identities_service.utils.kafka_tools import KafkaTools
 from updating_vector_identities_service.utils.dal_elasticsearch import ElasticSearchDal
 from config.config import LOGGER_NAME
