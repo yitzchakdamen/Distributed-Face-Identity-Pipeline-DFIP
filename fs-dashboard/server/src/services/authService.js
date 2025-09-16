@@ -1,6 +1,10 @@
 import bcrypt from "bcrypt";
 import { authConfig } from "../config/auth.js";
+import jwt from "jsonwebtoken";
 const BCRYPT_SALT_ROUNDS = authConfig.bcryptSaltRounds;
+const DEFAULT_TOKEN_EXPIRATION = authConfig.jwtExpiresIn;
+const JWT_SECRET = authConfig.jwtSecret;
+
 /**
  * Hash a password using bcrypt
  *
@@ -40,3 +44,39 @@ async function comparePassword(password, hash) {
     throw new Error("Failed to compare password: " + error.message);
   }
 }
+
+/**
+ * Generate a JWT token for a user
+ *
+ * @param {Object} user - User object
+ * @param {string} user.id - User ID
+ * @param {string} user.username - Username
+ * @param {string} user.name - User name
+ * @param {string} user.email - User email
+ * @param {string} user.role - User role
+ * @returns {string} - JWT token
+ * @throws {Error} - If token generation fails
+ */
+function generateToken(user) {
+  if (!authConfig.jwtSecret) throw new Error("JWT_SECRET not configured in environment variables");
+  if (!user || !user.id || !user.username || !user.name || !user.email || !user.role) {
+    throw new Error("User object must contain id, username, name, email, and role");
+  }
+
+  try {
+    const payload = {
+      id: user.id,
+      username: user.username,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+
+    const expiresIn = DEFAULT_TOKEN_EXPIRATION;
+
+    return jwt.sign(payload, JWT_SECRET, { expiresIn });
+  } catch (error) {
+    throw new Error("Failed to generate token: " + error.message);
+  }
+}
+
