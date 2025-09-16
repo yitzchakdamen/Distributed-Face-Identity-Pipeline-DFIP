@@ -48,7 +48,7 @@ heroku config:set BCRYPT_SALT_ROUNDS=10 -a facealert-api
 
 # Supabase configuration (REQUIRED)
 heroku config:set SUPABASE_URL=your-supabase-project-url -a facealert-api
-heroku config:set SUPABASE_ANON_KEY=your-supabase-anon-key -a facealert-api
+heroku config:set SUPABASE_KEY=your-supabase-anon-key -a facealert-api
 
 # MongoDB configuration
 heroku config:set MONGODB_URI=your-mongodb-connection-string -a facealert-api
