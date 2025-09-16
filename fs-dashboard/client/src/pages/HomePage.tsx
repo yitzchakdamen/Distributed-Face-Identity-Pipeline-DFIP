@@ -33,7 +33,7 @@ const HomePage: React.FC = () => {
             <div className="stat-number">48</div>
           </div>
           
-          <div className="stat-card">
+          <div className="stat-card danger">
             <h3>High Risk Alerts</h3>
             <div className="stat-number">3</div>
           </div>
