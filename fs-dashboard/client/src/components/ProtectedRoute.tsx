@@ -1,5 +1,6 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
+import "./ProtectedRoute.css";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
