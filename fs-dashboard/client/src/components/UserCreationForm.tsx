@@ -1,7 +1,6 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { createUser } from "../services/userService";
-import { AuthContext } from "../context/AuthContext";
-import type { IUser } from "../@types/User";
+import { useAuth } from "../context/AuthContext";
 import "./UserCreationForm.css";
 
 interface UserFormData {
