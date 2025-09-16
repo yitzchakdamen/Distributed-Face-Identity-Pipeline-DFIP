@@ -62,6 +62,13 @@ const NavMenu: React.FC = () => {
           
           {dropdownOpen && (
             <div className="dropdown-menu">
+              <Link 
+                to="/settings" 
+                className="dropdown-item settings"
+                onClick={() => setDropdownOpen(false)}
+              >
+                Settings
+              </Link>
               <button onClick={handleLogout} className="dropdown-item logout">
                 Logout
               </button>
