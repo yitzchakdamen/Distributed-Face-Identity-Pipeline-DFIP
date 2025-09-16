@@ -44,6 +44,13 @@
   letter-spacing: 0.5px;
 }
 
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #3498db;
+  margin-bottom: 0.5rem;
+}
+
 .stat-card.danger {
   background: linear-gradient(135deg, #e74c3c, #c0392b);
   color: white;
