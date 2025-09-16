@@ -1,0 +1,86 @@
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import "./NavMenu.css";
+
+const NavMenu: React.FC = () => {
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+    setDropdownOpen(false);
+  };
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <nav className="nav-menu">
+        <Link to="/login" className="nav-link">Login</Link>
+        <Link to="/register" className="nav-link">Register</Link>
+      </nav>
+    );
+  }
+
+  return (
+    <nav className="nav-menu">
+      <Link to="/" className="nav-link">Dashboard</Link>
+      <Link to="/events" className="nav-link">Events</Link>
+      <Link to="/cameras" className="nav-link">Cameras</Link>
+      {user?.role === 'admin' && (
+        <Link to="/users" className="nav-link">Users</Link>
+      )}
+      
+      <div className="user-menu">
+        <div className="user-dropdown" ref={dropdownRef}>
+          <button 
+            className="user-button" 
+            onClick={toggleDropdown}
+            aria-label="User menu"
+          >
+            <span className="user-info">{user?.name}</span>
+            <span className="user-role">({user?.role})</span>
+            <span className={`dropdown-arrow ${dropdownOpen ? 'open' : ''}`}>▼</span>
+          </button>
+          
+          {dropdownOpen && (
+            <div className="dropdown-menu">
+              <Link 
+                to="/settings" 
+                className="dropdown-item settings"
+                onClick={() => setDropdownOpen(false)}
+              >
+                Settings
+              </Link>
+              <button onClick={handleLogout} className="dropdown-item logout">
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default NavMenu;
