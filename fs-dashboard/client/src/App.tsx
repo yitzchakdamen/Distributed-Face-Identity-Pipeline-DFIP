@@ -34,6 +34,11 @@ function App() {
                 <SettingsPage />
               </ProtectedRoute>
             } />
+            <Route path="/users" element={
+              <ProtectedRoute>
+                <UserManagementPage />
+              </ProtectedRoute>
+            } />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="*" element={<NotFoundPage />} />
