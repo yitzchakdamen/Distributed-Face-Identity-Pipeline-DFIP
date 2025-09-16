@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { getAllEvents } from "../services/eventService";
 import type { IEvent } from "../@types/Event";
+import EventImageModal from "../components/EventImageModal";
 import "./EventsPage.css";
 
 const EventsPage: React.FC = () => {
   const [events, setEvents] = useState<IEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -28,6 +31,16 @@ const EventsPage: React.FC = () => {
 
     fetchEvents();
   }, []);
+
+  const handleViewImage = (event: IEvent) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEvent(null);
+  };
 
   if (loading) {
     return <div className="loading">Loading events...</div>;
@@ -63,10 +76,28 @@ const EventsPage: React.FC = () => {
                 <p><strong>Detection Type:</strong> {event.metadata.detection_type}</p>
                 <p><strong>Processing Time:</strong> {event.metadata.processing_time_ms}ms</p>
               </div>
+              
+              <div className="event-actions">
+                <button 
+                  className="view-image-btn"
+                  onClick={() => handleViewImage(event)}
+                  disabled={!event.image_id}
+                >
+                  {event.image_id ? 'View Image' : 'No Image Available'}
+                </button>
+              </div>
             </div>
           ))
         )}
       </div>
+
+      {selectedEvent && (
+        <EventImageModal
+          event={selectedEvent}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+        />
+      )}
     </div>
   );
 };
