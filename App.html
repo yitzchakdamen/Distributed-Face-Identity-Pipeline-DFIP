@@ -2,80 +2,530 @@
 <html lang="he">
 <head>
   <meta charset="UTF-8">
-  <title>דשבורד אנשים</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>דשבורד אנשים מתקדם</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; direction: rtl; }
-    h1 { text-align: center; }
-    .stats { background: #e9f5ff; padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #b6dfff; }
-    .person { background: #fff; padding: 15px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .person h2 { margin: 0 0 10px 0; font-size: 16px; }
-    .images { display: flex; flex-wrap: wrap; gap: 10px; }
-    .images img { width: 150px; height: 150px; object-fit: cover; border: 1px solid #ccc; border-radius: 4px; }
+    :root {
+      --primary-color: #4361ee;
+      --secondary-color: #3f37c9;
+      --success-color: #4cc9f0;
+      --light-color: #f8f9fa;
+      --dark-color: #212529;
+      --gray-color: #6c757d;
+      --border-radius: 12px;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+      direction: rtl;
+      color: var(--dark-color);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      font-size: 2.2rem;
+      margin: 0;
+    }
+
+    .controls {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-box input {
+      padding: 10px 40px 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 30px;
+      width: 250px;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-color);
+    }
+
+    .view-options {
+      display: flex;
+      background: white;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+    }
+
+    .view-option {
+      padding: 10px 15px;
+      background: white;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .view-option.active {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin: 10px 0;
+    }
+
+    .stat-label {
+      color: var(--gray-color);
+      font-size: 0.9rem;
+    }
+
+    .persons-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .person-card {
+      background: white;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
+    }
+
+    .person-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .person-header {
+      padding: 15px;
+      background: var(--primary-color);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .person-id {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .image-count {
+      background: white;
+      color: var(--primary-color);
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+
+    .person-images {
+      padding: 15px;
+    }
+
+    .images-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .person-img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .person-img:hover {
+      transform: scale(1.05);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      max-width: 90%;
+      max-height: 90%;
+    }
+
+    .modal-img {
+      max-width: 100%;
+      max-height: 80vh;
+      border-radius: 8px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: white;
+      font-size: 2rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .close-modal:hover {
+      color: var(--success-color);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      font-size: 1.2rem;
+      color: var(--gray-color);
+    }
+
+    .error-message {
+      background: #ffebee;
+      color: #c62828;
+      padding: 15px;
+      border-radius: var(--border-radius);
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .refresh-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .refresh-btn:hover {
+      background: var(--secondary-color);
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .persons-container {
+        grid-template-columns: 1fr;
+      }
+      
+      header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .controls {
+        justify-content: center;
+      }
+      
+      .search-box input {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>דשבורד אנשים</h1>
+  <div class="container">
+    <header>
+      <h1><i class="fas fa-users"></i> דשבורד אנשים מתקדם</h1>
+      <div class="controls">
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="חפש אדם לפי מזהה...">
+          <i class="fas fa-search"></i>
+        </div>
+        <div class="view-options">
+          <button class="view-option active" id="gridView"><i class="fas fa-th"></i></button>
+          <button class="view-option" id="listView"><i class="fas fa-list"></i></button>
+        </div>
+        <button class="refresh-btn" id="refreshBtn"><i class="fas fa-sync-alt"></i> רענן נתונים</button>
+      </div>
+    </header>
 
-  <!-- מקום להצגת סטטיסטיקות -->
-  <div id="stats" class="stats"></div>
+    <div id="stats" class="stats-grid"></div>
 
-  <!-- מקום להצגת אנשים -->
-  <div id="container"></div>
+    <div id="container" class="persons-container"></div>
+
+    <div class="modal" id="imageModal">
+      <span class="close-modal" id="closeModal">&times;</span>
+      <div class="modal-content">
+        <img class="modal-img" id="modalImage" src="" alt="תצוגה מוגדלת">
+      </div>
+    </div>
+  </div>
 
   <script>
+    // נתונים לדוגמה למקרה שהשרת לא זמין
+    const sampleData = {
+      persons: [
+        {
+          person_id: 1,
+          images: [
+            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80",
+            "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80",
+            "https://images.unsplash.com/photo-1513956589380-bad6acb9b9d4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80"
+          ]
+        },
+        {
+          person_id: 2,
+          images: [
+            "https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80",
+            "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80"
+          ]
+        },
+        {
+          person_id: 3,
+          images: [
+            "https://images.unsplash.com/photo-1567532939604-b6b5b0db1604?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80",
+            "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80",
+            "https://images.unsplash.com/photo-1519764622345-23439dd774f7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80",
+            "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80"
+          ]
+        }
+      ],
+      stats: {
+        total_persons: 3,
+        total_images: 9,
+        avg_images_per_person: 3,
+        max_images_for_single_person: 4,
+        min_images_for_single_person: 2
+      }
+    };
+
+    let currentView = 'grid';
+    let allPersons = [];
+
     async function fetchData() {
       try {
+        showLoading();
+        // ניסוי להתחבר לשרת המקומי
         const res = await fetch('http://localhost:5000/api/persons');
+        
+        if (!res.ok) {
+          throw new Error(`שגיאת שרת: ${res.status}`);
+        }
+        
         const data = await res.json();
+        hideLoading();
         return data;
       } catch (err) {
-        console.error("שגיאה בטעינת הנתונים:", err);
-        return { persons: [], stats: {} };
+        console.error("שגיאה בטעינת הנתונים מהשרת, משתמש בנתוני דוגמה:", err);
+        // החזרת נתוני דוגמה במקרה של שגיאה
+        hideLoading();
+        return sampleData;
       }
+    }
+
+    function showLoading() {
+      const container = document.getElementById('container');
+      container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> טוען נתונים...</div>';
+    }
+
+    function hideLoading() {
+      // הטעינה תוסר כאשר נתוני הדשבורד יותאמו
     }
 
     function renderStats(stats) {
       const statsDiv = document.getElementById('stats');
       statsDiv.innerHTML = `
-        <h2>סטטיסטיקה כללית</h2>
-        <p>סה"כ אנשים: ${stats.total_persons}</p>
-        <p>סה"כ תמונות: ${stats.total_images}</p>
-        <p>ממוצע תמונות לאדם: ${stats.avg_images_per_person.toFixed(2)}</p>
-        <p>מקסימום תמונות לאדם: ${stats.max_images_for_single_person}</p>
-        <p>מינימום תמונות לאדם: ${stats.min_images_for_single_person}</p>
+        <div class="stat-card">
+          <div class="stat-value">${stats.total_persons}</div>
+          <div class="stat-label">סה"כ אנשים</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${stats.total_images}</div>
+          <div class="stat-label">סה"כ תמונות</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${stats.avg_images_per_person.toFixed(2)}</div>
+          <div class="stat-label">ממוצע תמונות לאדם</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${stats.max_images_for_single_person}</div>
+          <div class="stat-label">מקסימום תמונות לאדם</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">${stats.min_images_for_single_person}</div>
+          <div class="stat-label">מינימום תמונות לאדם</div>
+        </div>
       `;
     }
 
-    function renderPersons(persons) {
+    function renderPersons(persons, viewType = 'grid') {
       const container = document.getElementById('container');
+      
+      if (persons.length === 0) {
+        container.innerHTML = '<div class="error-message">לא נמצאו אנשים להצגה</div>';
+        return;
+      }
+      
       container.innerHTML = '';
-
+      
       persons.forEach(person => {
-        const div = document.createElement('div');
-        div.className = 'person';
-
-        div.innerHTML = `<h2>אדם ${person.person_id} (${person.images.length} תמונות)</h2>`;
-        const imagesDiv = document.createElement('div');
-        imagesDiv.className = 'images';
-
-        person.images.forEach(imgSrc => {
-          const img = document.createElement('img');
-          img.src = imgSrc;
-          imagesDiv.appendChild(img);
+        const card = document.createElement('div');
+        card.className = 'person-card';
+        
+        card.innerHTML = `
+          <div class="person-header">
+            <span class="person-id">אדם ${person.person_id}</span>
+            <span class="image-count">${person.images.length} תמונות</span>
+          </div>
+          <div class="person-images">
+            <div class="images-grid">
+              ${person.images.map(imgSrc => `
+                <img src="${imgSrc}" alt="תמונת אדם ${person.person_id}" class="person-img">
+              `).join('')}
+            </div>
+          </div>
+        `;
+        
+        // הוספת מאזיני אירועים לתמונות
+        const images = card.querySelectorAll('.person-img');
+        images.forEach(img => {
+          img.addEventListener('click', () => openModal(img.src));
         });
-
-        div.appendChild(imagesDiv);
-        container.appendChild(div);
+        
+        container.appendChild(card);
       });
+    }
+
+    function openModal(src) {
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImage');
+      modalImg.src = src;
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('imageModal');
+      modal.style.display = 'none';
+    }
+
+    function filterPersons(searchTerm) {
+      const filtered = allPersons.filter(person => 
+        person.person_id.toString().includes(searchTerm)
+      );
+      renderPersons(filtered, currentView);
+    }
+
+    function switchView(viewType) {
+      currentView = viewType;
+      renderPersons(allPersons, viewType);
+      
+      // עדכון הכפתורים
+      document.getElementById('gridView').classList.toggle('active', viewType === 'grid');
+      document.getElementById('listView').classList.toggle('active', viewType === 'list');
     }
 
     async function init() {
       const data = await fetchData();
+      allPersons = data.persons;
       renderStats(data.stats);
-      renderPersons(data.persons);
+      renderPersons(data.persons, currentView);
+      
+      // הגדרת מאזיני אירועים
+      document.getElementById('searchInput').addEventListener('input', (e) => {
+        filterPersons(e.target.value);
+      });
+      
+      document.getElementById('gridView').addEventListener('click', () => switchView('grid'));
+      document.getElementById('listView').addEventListener('click', () => switchView('list'));
+      
+      document.getElementById('refreshBtn').addEventListener('click', async () => {
+        const data = await fetchData();
+        allPersons = data.persons;
+        renderStats(data.stats);
+        renderPersons(data.persons, currentView);
+        document.getElementById('searchInput').value = '';
+      });
+      
+      document.getElementById('closeModal').addEventListener('click', closeModal);
+      
+      // סגירת מודל בלחיצה מחוץ לתמונה
+      document.getElementById('imageModal').addEventListener('click', (e) => {
+        if (e.target.id === 'imageModal') closeModal();
+      });
     }
 
-    init();
+    // אתחול הדשבורד כאשר הדף נטען
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
