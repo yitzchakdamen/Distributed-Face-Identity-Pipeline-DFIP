@@ -10,7 +10,16 @@ fatal: Could not read from remote repository.
 
 ## Root Cause
 
-This error indicates that the Heroku deployment action cannot connect to the Heroku apps properly. This can be caused by:
+The deployment fails with "Invalid credentials provided" error, indicating that the `HEROKU_API_KEY` secret in GitHub is invalid or expired.
+
+**Current Error:**
+```
+Error: Invalid credentials provided.
+Error ID: unauthorized
+The token provided to HEROKU_API_KEY is invalid.
+```
+
+This can be caused by:
 
 1. **Missing or incorrect GitHub Secrets**
 2. **Heroku apps don't exist**
@@ -29,18 +38,22 @@ Ensure the following secrets are set correctly:
 - `HEROKU_FRONTEND_APP_NAME` - Frontend app name (without .herokuapp.com)
 - `HEROKU_EMAIL` - Your Heroku account email
 
-### 2. Get Heroku API Key
+### 2. Get New Heroku API Key (CRITICAL FIX)
+
+The current `HEROKU_API_KEY` is invalid. Generate a new one:
 
 ```bash
 # Install Heroku CLI if not installed
 curl https://cli-assets.heroku.com/install.sh | sh
 
-# Login to Heroku
+# Login to Heroku (this will open browser)
 heroku login
 
-# Get API key
+# Get a fresh API key
 heroku auth:token
 ```
+
+**Important**: Copy the entire output token and update `HEROKU_API_KEY` in GitHub secrets immediately.
 
 ### 3. Create Heroku Apps (if they don't exist)
 

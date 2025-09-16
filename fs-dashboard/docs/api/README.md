@@ -9,6 +9,10 @@ This API provides authentication, user management, and camera management service
 - **[Camera Management API](./camera-api-documentation.md)** - Complete documentation for camera CRUD operations and user assignments
 - **[Authentication & User Management](#user-authentication)** - User registration, login, and role management
 
+## Quick Fixes
+
+- **[Heroku Deployment Issues](../deploy/HEROKU_TROUBLESHOOTING.md)** - Fix "Invalid credentials" and deployment failures
+
 ## Postman Collections
 
 ### Camera API Collection
