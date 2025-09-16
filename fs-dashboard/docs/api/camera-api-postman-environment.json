@@ -1,0 +1,91 @@
+{
+	"id": "camera-api-environment",
+	"name": "Camera API Environment",
+	"values": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:5000",
+			"description": "Base URL for the API server",
+			"enabled": true
+		},
+		{
+			"key": "user_email",
+			"value": "operator@example.com",
+			"description": "Email for login (operator role)",
+			"enabled": true
+		},
+		{
+			"key": "user_password",
+			"value": "password123",
+			"description": "Password for login",
+			"enabled": true
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"description": "JWT token from login response (auto-populated)",
+			"enabled": true
+		},
+		{
+			"key": "camera_name",
+			"value": "Test Camera",
+			"description": "Camera name for creating new cameras",
+			"enabled": true
+		},
+		{
+			"key": "camera_id",
+			"value": "CAM_TEST_001",
+			"description": "Unique camera identifier",
+			"enabled": true
+		},
+		{
+			"key": "connection_string",
+			"value": "rtsp://192.168.1.100:554/stream",
+			"description": "Camera connection string",
+			"enabled": true
+		},
+		{
+			"key": "created_camera_id",
+			"value": "",
+			"description": "ID of created camera (auto-populated)",
+			"enabled": true
+		},
+		{
+			"key": "camera_id_param",
+			"value": "",
+			"description": "Camera ID for URL parameters (use created_camera_id value)",
+			"enabled": true
+		},
+		{
+			"key": "page",
+			"value": "1",
+			"description": "Page number for pagination",
+			"enabled": true
+		},
+		{
+			"key": "limit",
+			"value": "10",
+			"description": "Items per page for pagination",
+			"enabled": true
+		},
+		{
+			"key": "updated_camera_name",
+			"value": "Updated Test Camera",
+			"description": "Updated camera name",
+			"enabled": true
+		},
+		{
+			"key": "updated_connection_string",
+			"value": "rtsp://192.168.1.101:554/stream",
+			"description": "Updated camera connection string",
+			"enabled": true
+		},
+		{
+			"key": "viewer_user_id",
+			"value": "",
+			"description": "User ID of viewer to assign camera to",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment"
+}
