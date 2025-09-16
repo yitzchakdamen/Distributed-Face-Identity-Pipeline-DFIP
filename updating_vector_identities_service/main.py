@@ -65,7 +65,7 @@ class ElasticManager:
         :param doc: The document (dict)
         :param doc_id: Optional document ID (str)
         """
-        self.client.index(index=index, body=doc, id=doc_id)
+        self.client.index(index=index, body=doc, id=doc_id, refresh=True)
 
     def get_docs_by_term(self, index, term_field, term_value, size=1000):
         """
@@ -177,6 +177,7 @@ class FaceIdentityPipeline:
         Process incoming data and update Elasticsearch.
         """
         person_id = data["person_id"]
+        data.pop("message")
 
         # 1. עדכון אינדקס התמונה 
         self.elastic.index_doc(index="image_embeddings", doc=data)

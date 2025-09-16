@@ -1,7 +1,6 @@
 
 python -m  face_detection.app.main
 
-
 python -m face_embedding.app.main      
 
 python -m Vector_Search.src.main.main    

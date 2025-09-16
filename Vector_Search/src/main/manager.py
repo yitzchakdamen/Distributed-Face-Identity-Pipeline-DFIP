@@ -12,6 +12,7 @@ import json
 class Manager:
     def __init__(self):
         self._es = ElasticSearchDal()
+        
         self.logger = Logger().get_logger()
 
         self.fetcher = FetchingData()

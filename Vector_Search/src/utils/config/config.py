@@ -28,7 +28,7 @@ class ElasticSearchConfig:
     ELASTIC_PORT = os.getenv("ELASTIC_PORT" ,"9200")
     ELASTIC_HOST = os.getenv("ELASTIC_HOST", "http://localhost:")
     ELASTIC_URL = ELASTIC_HOST + ELASTIC_PORT
-    REGULAR_INDEX_NAME = os.getenv("REGULAR_INDEX_NAME" ,"regular_vector_identification")
+    REGULAR_INDEX_NAME = os.getenv("REGULAR_INDEX_NAME" ,"persons")
     OPTIMIZE_INDEX_NAME = os.getenv("OPTIMIZE_INDEX_NAME" ,"optimize_vector_identification")
     REGULAR_MAPPING = {
         "mappings": {

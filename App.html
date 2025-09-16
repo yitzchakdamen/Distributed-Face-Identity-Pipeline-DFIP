@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <title>דשבורד אנשים</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
+    h1 { text-align: center; }
+    .person { background: #fff; padding: 15px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .person h2 { margin: 0 0 10px 0; font-size: 16px; }
+    .images { display: flex; flex-wrap: wrap; gap: 10px; }
+    .images img { width: 150px; height: 150px; object-fit: cover; border: 1px solid #ccc; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>דשבורד אנשים</h1>
+  <div id="container"></div>
+
+  <script>
+    async function fetchData() {
+      try {
+        const res = await fetch('http://localhost:5000/api/persons');
+        const data = await res.json();
+        return data;
+      } catch (err) {
+        console.error("שגיאה בטעינת הנתונים:", err);
+        return [];
+      }
+    }
+
+    function renderData(data) {
+      const container = document.getElementById('container');
+      container.innerHTML = '';
+
+      data.forEach(person => {
+        const div = document.createElement('div');
+        div.className = 'person';
+
+        div.innerHTML = `<h2>${person.person_id} (${person.images.length} תמונות)</h2>`;
+        const imagesDiv = document.createElement('div');
+        imagesDiv.className = 'images';
+
+        person.images.forEach(imgSrc => {
+          const img = document.createElement('img');
+          img.src = imgSrc;
+          imagesDiv.appendChild(img);
+        });
+
+        div.appendChild(imagesDiv);
+        container.appendChild(div);
+      });
+    }
+
+    async function init() {
+      const data = await fetchData();
+      renderData(data);
+    }
+
+    init();
+  </script>
+</body>
+</html>

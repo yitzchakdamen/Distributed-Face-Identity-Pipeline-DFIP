@@ -1,3 +1,4 @@
+import cv2
 from face_detection.utils import config
 from face_detection.utils.factory import create_mongo_payload, create_kafka_payload
 from face_detection.src.face_detection import FaceExtractor
@@ -22,7 +23,7 @@ class FaceDetectionApp:
             topic=config.KAFKA_TOPIC
         )
 
-    def process_image(self, image: Union[str, bytes, bytearray]) -> None:
+    def process_image(self, image: Union[str, bytes, bytearray, 'np.ndarray']) -> None:
         """Process image and extract faces with clean factory-based payloads"""
         try:
             faces = self.extractor.extract_faces(image)
@@ -41,8 +42,30 @@ class FaceDetectionApp:
             logger.error(f"Error processing image: {e}")
 
 
+def main(app):
+    cap = cv2.VideoCapture(0)
+
+    if not cap.isOpened():
+        print("לא מצליח לפתוח מצלמה")
+        return
+
+    try:
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                print("לא הצלחתי לקרוא פריים")
+                break
+
+            # שליחת הפריים ישירות לעיבוד
+            app.process_image(frame)
+
+    except KeyboardInterrupt:
+        print("יציאה...")
+    finally:
+        cap.release()
+        cv2.destroyAllWindows()
+
 
 if __name__ == "__main__":
     app = FaceDetectionApp()
-    test_image_path = r"C:\Users\isaac\source\repos\Distributed-Face-Identity-Pipeline-DFIP\data\download.jpg"
-    app.process_image(test_image_path)
+    main(app)
