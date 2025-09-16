@@ -6,7 +6,7 @@ const Logo: React.FC = () => {
   return (
     <div className="logo">
       <Link to="/">
-        <img src="/face-icon.svg" alt="DFIP Logo" />
+        <img src="/logo.svg" alt="DFIP Logo" />
         <span>DFIP Dashboard</span>
       </Link>
     </div>
