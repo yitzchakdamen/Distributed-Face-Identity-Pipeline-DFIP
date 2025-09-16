@@ -6,9 +6,11 @@ import type { ICamera } from "../@types/Camera";
 import "./CamerasPage.css";
 
 const CamerasPage: React.FC = () => {
+  const { user } = useAuth();
   const [cameras, setCameras] = useState<ICamera[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"cameras" | "create">("cameras");
 
   useEffect(() => {
     const fetchCameras = async () => {
