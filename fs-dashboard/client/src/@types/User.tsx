@@ -4,8 +4,8 @@ export interface IUser {
   name: string;
   email: string;
   role: "admin" | "operator" | "viewer";
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface LoginCredentials {
