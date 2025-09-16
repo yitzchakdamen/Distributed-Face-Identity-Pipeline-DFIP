@@ -214,7 +214,7 @@ async function main() {
   
   await createSampleEvents();
   // Note: Uncomment the next line if you want to create sample images too
-  // await createSampleImages();
+  await createSampleImages();
   
   console.log("\n✨ All done! You can now test the Events API with sample data.");
   process.exit(0);
