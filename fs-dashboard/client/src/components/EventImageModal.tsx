@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { getEventImage } from "../services/eventService";
 import type { IEvent } from "../@types/Event";
 import "./EventImageModal.css";
 
