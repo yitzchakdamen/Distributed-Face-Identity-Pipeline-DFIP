@@ -6,7 +6,8 @@ Provides a FastAPI endpoint for receiving base64-encoded images, decoding, and p
 Logs all operations and errors using the project logger.
 """
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect, status
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import base64
 import re
@@ -44,7 +45,7 @@ def clean_base64_string(b64_string: str) -> str:
     return b64_string
 
 
-@app.post("/upload-image")
+@app.post("/camera/upload-image")
 async def receive_base64_image(data: ImageData, request: Request):
     """
     Receive a base64-encoded image via POST, decode and process it.
@@ -88,3 +89,33 @@ async def receive_base64_image(data: ImageData, request: Request):
     except Exception as e:
         logger.exception(f"Unexpected error: {e}")
         return {"error": "Internal server error"}
+    
+@app.websocket("/upload-image")
+async def websocket_image_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    client_host = websocket.client.host if websocket.client else "unknown"
+    logger.info(f"WebSocket connection accepted from {client_host}")
+
+    try:
+        while True:
+            try:
+                image_bytes = await websocket.receive_bytes()
+            except Exception as e:
+                logger.warning(f"Failed to receive bytes from {client_host}: {e}")
+                await websocket.close(code=status.WS_1003_UNSUPPORTED_DATA)
+                break
+
+            try:
+                face_detection_app.process_image(image_bytes)
+                logger.info(f"Image processed successfully from {client_host}, size={len(image_bytes)} bytes")
+                await websocket.send_text("Image processed successfully")
+            except Exception as e:
+                logger.error(f"Failed to process image from {client_host}: {e}")
+                await websocket.send_text("Error processing image")
+
+    except WebSocketDisconnect:
+        logger.info(f"WebSocket disconnected from {client_host}")
+
+    except Exception as e:
+        logger.exception(f"Unexpected WebSocket error from {client_host}: {e}")
+        await websocket.close(code=status.WS_1011_INTERNAL_ERROR)
