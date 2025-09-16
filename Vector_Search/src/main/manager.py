@@ -1,13 +1,10 @@
-import elasticsearch
-
-from Vector_Search.src.dal.elastic_dal import ElasticSearchDal
-from Vector_Search.src.exceptions.exception import NoIdentifiedPerson, NoAddedVector, NoSearchResult, SearchGotWrong
+from Vector_Search.src.main.vector_store import VectorStore
+from Vector_Search.src.exceptions.exception import SearchGotWrong
 from Vector_Search.src.main.fetching_data import FetchingData
-from Vector_Search.src.main.send_data import SendData
+from Vector_Search.src.main.vector_producer import VectorProducer
 from Vector_Search.src.utils.config.config import KafkaConfig
 from Vector_Search.src.utils.logger import Logger
-import hashlib
-import json
+
 
 
 class Manager:
@@ -21,12 +18,11 @@ class Manager:
     For add APPROVAL person, just add with unique ID
     """
     def __init__(self):
-        self._es = ElasticSearchDal()
         self.logger = Logger().get_logger()
 
         self.fetcher = FetchingData()
-        self.vector_registry = None
-        self.send_data = SendData()
+        self.vector_store = VectorStore()
+        self.vector_producer = VectorProducer()
 
     def listen_message(self):
         listen = True
@@ -35,48 +31,23 @@ class Manager:
             self.classified_records(vector_record)
 
     def classified_records(self, _vector_record):
-        if _vector_record.KafkaConfig.TOPIC == KafkaConfig.NEW_VECTOR_TOPIC:
-            try:
-                vector = _vector_record["vector"]
-                result = self._search_vector(vector)
-                vector_record = _vector_record | result
-                self.send_data.send_data(vector_record)
-                print(vector_record)
-            except SearchGotWrong as e:
-                self.logger.warning(e)
-                print(vector_record)
-        elif _vector_record.KafkaConfig.TOPIC == KafkaConfig.NEW_VECTOR_APPROVAL_PERSON:
-            pass
+        merged_result_vector_record = None
+        if _vector_record[KafkaConfig.TOPIC] == KafkaConfig.NEW_VECTOR_TOPIC:
+            merged_result_vector_record = self.new_entry(_vector_record[KafkaConfig.VALUE])
+        elif _vector_record[KafkaConfig.TOPIC] == KafkaConfig.NEW_VECTOR_APPROVAL_PERSON:
+            merged_result_vector_record = self.new_approval_person(_vector_record[KafkaConfig.VALUE])
 
-    def _search_vector(self, _vector) -> str:
+        if merged_result_vector_record is not None:
+            self.vector_producer.send_vector(merged_result_vector_record)
+        print(merged_result_vector_record)
+
+    def new_entry(self, _vector_record):
         try:
-            record = self._es.search_vector(_vector)
-            return record
-        except (NoSearchResult, NoIdentifiedPerson) as e :
+            return self.vector_store.search_vector(_vector_record)
+        except SearchGotWrong as e:
             self.logger.warning(e)
-            return self._add_person_without_id(_vector)
-        except elasticsearch.BadRequestError as e:
-            self.logger.warning(e)
-            raise SearchGotWrong
+            print(_vector_record)
 
-    def _add_vector(self, _id, _vector):
-        try:
-            return self._es.add_vector(_vector=_vector, _person_id= _id)
-        except NoAddedVector as e:
-            self.logger.warning(e)
-
-    def _add_person_without_id(self, _vector):
-        try:
-            _id = self._generate_id_by_vector(_vector)
-            return self._add_vector(_id, _vector)
-        except NoAddedVector as e:
-            self.logger.warning(e)
-            raise NoAddedVector(_vector)
-
-    @staticmethod
-    def _generate_id_by_vector(_vector : list) -> str:
-        str_vector = json.dumps(_vector).encode('utf-8')
-        hash_id =hashlib.sha256(str_vector).hexdigest()
-        return hash_id
-
+    def new_approval_person(self, _vector_record):
+        return self.vector_store.create_approval_person(_vector_record)
 
