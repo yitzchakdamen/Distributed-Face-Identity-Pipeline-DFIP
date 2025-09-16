@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getAllCameras } from "../services/cameraService";
+import CameraAssignment from "../components/CameraAssignment";
 import type { IUser } from "../@types/User";
 import type { ICamera } from "../@types/Camera";
 import "./UserManagementPage.css";
@@ -123,10 +124,13 @@ const UserManagementPage: React.FC = () => {
       {selectedUser && (
         <div className="assignment-section">
           <h3>Camera Assignment for {selectedUser.name}</h3>
-          <p>This feature will allow assigning specific cameras to this user.</p>
-          <div className="future-feature">
-            <span>🚧 Feature under development 🚧</span>
-          </div>
+          <CameraAssignment />
+        </div>
+      )}
+      
+      {!selectedUser && (
+        <div className="camera-assignment-section">
+          <CameraAssignment />
         </div>
       )}
     </div>
