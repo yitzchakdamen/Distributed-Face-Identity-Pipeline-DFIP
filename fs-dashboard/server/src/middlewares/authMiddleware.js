@@ -53,3 +53,28 @@ export function requireRole(roles) {
     next();
   };
 }
+
+/**
+ * Middleware to check if user can access user resource by ID
+ * Users can only access their own resources unless they are admin
+ * Use after authenticateToken middleware
+ */
+export function canAccessUser(req, res, next) {
+  try {
+    if (!req.user) return next(new ApiError(401, "Authentication required"));
+
+    const targetUserId = req.params.id;
+    const currentUser = req.user;
+
+    // Admin can access any user resource
+    if (currentUser.role === "admin") return next();
+
+    // Regular users can only access their own resources
+    if (currentUser.id !== targetUserId)
+      return next(new ApiError(403, "Forbidden: You can only access your own profile"));
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
