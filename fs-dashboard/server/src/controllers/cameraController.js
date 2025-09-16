@@ -1,5 +1,7 @@
-import { CameraService } from "../services/cameraService.js";
-import { validationService } from "../services/validationService.js";
+import { CameraSer      // Validate request body
+      const { error, value } = validate(req.body, createCameraSchema);
+      if (error) {e } from "../services/cameraService.js";
+import { validate } from "../services/validationService.js";
 import {
   createCameraSchema,
   updateCameraSchema,
