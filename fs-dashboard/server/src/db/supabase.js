@@ -17,7 +17,7 @@ const supabase = createClient(supabaseConfig.url, supabaseConfig.key, supabaseCo
 async function testSupabaseConnection() {
   try {
     // Simple query to test connection
-    const { data, error } = await supabase.from("players").select("id").limit(1);
+    const { data, error } = await supabase.from("users").select("id").limit(1);
 
     if (error && error.code !== "PGRST116") {
       // PGRST116 means table doesn't exist yet, which is OK
