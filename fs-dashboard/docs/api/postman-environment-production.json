@@ -1,0 +1,25 @@
+{
+  "id": "fs-dashboard-prod",
+  "name": "FS Dashboard Production",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.facealert.live",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}
