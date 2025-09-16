@@ -1,0 +1,157 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: face-detection
+  namespace: dfip
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: face-detection
+  namespace: dfip
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/placeholder/dfip.git
+    contextDir: .
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: face_detection/Dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: face-detection:latest
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: camera-uploader
+  namespace: dfip
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: camera-uploader
+  namespace: dfip
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/placeholder/dfip.git
+    contextDir: .
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: camera_uploader/Dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: camera-uploader:latest
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: event-processor
+  namespace: dfip
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: event-processor
+  namespace: dfip
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/placeholder/dfip.git
+    contextDir: .
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: event_processor_service/Dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: event-processor:latest
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: face-embedding
+  namespace: dfip
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: face-embedding
+  namespace: dfip
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/placeholder/dfip.git
+    contextDir: .
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: face_embedding/Dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: face-embedding:latest
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: updating-vector-identities
+  namespace: dfip
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: updating-vector-identities
+  namespace: dfip
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/placeholder/dfip.git
+    contextDir: .
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: updating_vector_identities_service/Dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: updating-vector-identities:latest
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: vector-search
+  namespace: dfip
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: vector-search
+  namespace: dfip
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/placeholder/dfip.git
+    contextDir: .
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Vector_Search/Dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: vector-search:latest
+
+

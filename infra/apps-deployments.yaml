@@ -1,0 +1,239 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: face-detection
+  namespace: dfip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: face-detection
+  template:
+    metadata:
+      labels:
+        app: face-detection
+    spec:
+      containers:
+      - name: face-detection
+        image: image-registry.openshift-image-registry.svc:5000/dfip/face-detection:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: LOGGER_NAME
+          value: face_detection_logger
+        - name: MONGO_URI
+          value: mongodb://mongodb:27017
+        - name: MONGODB_DB_NAME
+          value: face_identity
+        - name: COLLECTION_NAME
+          value: Photo_storage
+        - name: KAFKA_BOOTSTRAP
+          value: kafka:9092
+        - name: KAFKA_TOPIC
+          value: image_uploaded
+        - name: ES_HOST
+          value: elasticsearch
+        - name: ES_PORT
+          value: "9200"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: face-detection
+  namespace: dfip
+spec:
+  selector:
+    app: face-detection
+  ports:
+  - port: 8000
+    targetPort: 8000
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: face-detection
+  namespace: dfip
+spec:
+  to:
+    kind: Service
+    name: face-detection
+  port:
+    targetPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: camera-uploader
+  namespace: dfip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: camera-uploader
+  template:
+    metadata:
+      labels:
+        app: camera-uploader
+    spec:
+      containers:
+      - name: camera-uploader
+        image: image-registry.openshift-image-registry.svc:5000/dfip/camera-uploader:latest
+        env:
+        - name: SERVER_URL
+          value: ws://face-detection:8000/camera/upload-image
+        - name: ES_HOST
+          value: elasticsearch
+        - name: ES_PORT
+          value: "9200"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-processor
+  namespace: dfip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: event-processor
+  template:
+    metadata:
+      labels:
+        app: event-processor
+    spec:
+      containers:
+      - name: event-processor
+        image: image-registry.openshift-image-registry.svc:5000/dfip/event-processor:latest
+        env:
+        - name: KAFKA_BROKER
+          value: kafka:9092
+        - name: KAFKA_TOPIC
+          value: event
+        - name: KAFKA_CONSUMER_GROUP
+          value: event_consumer_group
+        - name: MONGO_URI
+          value: mongodb://mongodb:27017/
+        - name: MONGO_DB
+          value: face_identity
+        - name: MONGO_COLLECTION
+          value: Event
+        - name: LOGGER_NAME
+          value: event_processor_service_logger
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: face-embedding
+  namespace: dfip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: face-embedding
+  template:
+    metadata:
+      labels:
+        app: face-embedding
+    spec:
+      containers:
+      - name: face-embedding
+        image: image-registry.openshift-image-registry.svc:5000/dfip/face-embedding:latest
+        env:
+        - name: BOOTSTRAP_SERVER
+          value: kafka:9092
+        - name: KAFKA_CONSUME_TOPIC
+          value: image_uploaded
+        - name: KAFKA_PRODUCE_TOPIC
+          value: new_vector
+        - name: KAFKA_KEY
+          value: image_uploaded
+        - name: KAFKA_GROUP_ID
+          value: face_embedding
+        - name: ES_HOST
+          value: elasticsearch
+        - name: ES_PORT
+          value: "9200"
+        - name: ES_INDEX
+          value: logger
+        - name: MONGO_PROTOCOL
+          value: mongodb
+        - name: MONGO_CLUSTER_ADDRESS
+          value: mongodb:27017
+        - name: MONGO_DATABASE
+          value: face_identity
+        - name: MONGO_COLLECTION
+          value: Photo_storage
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: updating-vector-identities
+  namespace: dfip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: updating-vector-identities
+  template:
+    metadata:
+      labels:
+        app: updating-vector-identities
+    spec:
+      containers:
+      - name: updating-vector-identities
+        image: image-registry.openshift-image-registry.svc:5000/dfip/updating-vector-identities:latest
+        env:
+        - name: LOGGER_NAME
+          value: podcast_content_monitoring_system
+        - name: BOOTSTRAP_SERVERS
+          value: kafka:9092
+        - name: KAFKA_TOPIC_FILE_METADATA
+          value: file-metadata
+        - name: KAFKA_TOPIC_INCOME_PROCESSING
+          value: icome-processing
+        - name: KAFKA_GROUP_ID_FILE_METADATA
+          value: information_consumption_processing
+        - name: ELASTICSEARCH_HOST
+          value: http://elasticsearch:9200
+        - name: ELASTICSEARCH_INDEX_IMAGE_EMBEDDINGS
+          value: image_embeddings
+        - name: ELASTICSEARCH_INDEX_PERSONS
+          value: persons
+        - name: ELASTICSEARCH_INDEX_LOG
+          value: logging
+        - name: ELASTICSEARCH_MAPPING_IMAGE_EMBEDDINGS
+          value: updating_vector_identities_service/config/elasticsearch_mapping.json
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vector-search
+  namespace: dfip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vector-search
+  template:
+    metadata:
+      labels:
+        app: vector-search
+    spec:
+      containers:
+      - name: vector-search
+        image: image-registry.openshift-image-registry.svc:5000/dfip/vector-search:latest
+        env:
+        - name: ELASTIC_HOST
+          value: "http://elasticsearch:"
+        - name: ELASTIC_PORT
+          value: "9200"
+        - name: REGULAR_INDEX_NAME
+          value: persons
+        - name: OPTIMIZE_INDEX_NAME
+          value: optimize_vector_identification
+        - name: KAFKA_HOST
+          value: kafka
+        - name: KAFKA_PORT
+          value: "9092"
+
+

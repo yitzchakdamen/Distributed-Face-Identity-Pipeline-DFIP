@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafdrop
+  namespace: dfip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafdrop
+  template:
+    metadata:
+      labels:
+        app: kafdrop
+    spec:
+      containers:
+      - name: kafdrop
+        image: obsidiandynamics/kafdrop:latest
+        ports:
+        - containerPort: 9000
+        env:
+        - name: KAFKA_BROKERCONNECT
+          value: kafka:9092
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafdrop
+  namespace: dfip
+spec:
+  selector:
+    app: kafdrop
+  ports:
+  - port: 9000
+    targetPort: 9000
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: kafdrop
+  namespace: dfip
+spec:
+  to:
+    kind: Service
+    name: kafdrop
+  port:
+    targetPort: 9000
+
+

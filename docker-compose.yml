@@ -8,9 +8,9 @@ services:
       KAFKA_NODE_ID: 1 
       KAFKA_PROCESS_ROLES: broker,controller 
       KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093 
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092 #kafka-broker-face-identity:9092 
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092 
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER 
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093  #kafka-broker-face-identity:9092 
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093 
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1 
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1 
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1 
@@ -24,14 +24,14 @@ services:
     image: obsidiandynamics/kafdrop:latest
     container_name: kafdrop-face-identity
     environment:
-      KAFKA_BROKERCONNECT: kafka-broker-face-identity:9092
+      KAFKA_BROKERCONNECT: kafka:9092
     ports:
       - "9000:9000"
     depends_on:
       - kafka
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:9.1.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
     container_name: elasticsearch-face-identity
     environment:
       discovery.type: single-node 
@@ -41,12 +41,12 @@ services:
       - "9200:9200"
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:9.1.3
+    image: docker.elastic.co/kibana/kibana:8.12.2
     container_name: kibana-face-identity
     ports:
       - "5601:5601"
     environment:
-      ELASTICSEARCH_HOSTS: http://elasticsearch:9200/
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
     depends_on:
       - elasticsearch
 
@@ -55,4 +55,116 @@ services:
     container_name: mongodb-face-identity
     ports:
       - "27017:27017"
+
+  face_detection:
+    build:
+      context: .
+      dockerfile: face_detection/Dockerfile
+    container_name: face-detection-service
+    environment:
+      LOGGER_NAME: face_detection_logger
+      MONGO_URI: mongodb://mongodb:27017
+      MONGODB_DB_NAME: face_identity
+      COLLECTION_NAME: Photo_storage
+      KAFKA_BOOTSTRAP: kafka:9092
+      KAFKA_TOPIC: image_uploaded
+      ES_HOST: elasticsearch
+      ES_PORT: 9200
+    ports:
+      - "8000:8000"
+    depends_on:
+      - kafka
+      - mongodb
+      - elasticsearch
+
+  camera_uploader:
+    build:
+      context: .
+      dockerfile: camera_uploader/Dockerfile
+    container_name: camera-uploader-service
+    environment:
+      SERVER_URL: ws://face_detection:8000/camera/upload-image
+      ES_HOST: elasticsearch
+      ES_PORT: 9200
+    depends_on:
+      - face_detection
+
+  event_processor_service:
+    build:
+      context: .
+      dockerfile: event_processor_service/Dockerfile
+    container_name: event-processor-service
+    environment:
+      KAFKA_BROKER: kafka:9092
+      KAFKA_TOPIC: event
+      KAFKA_CONSUMER_GROUP: event_consumer_group
+      MONGO_URI: mongodb://mongodb:27017/
+      MONGO_DB: face_identity
+      MONGO_COLLECTION: Event
+      LOGGER_NAME: event_processor_service_logger
+    depends_on:
+      - kafka
+      - mongodb
+
+  face_embedding:
+    build:
+      context: .
+      dockerfile: face_embedding/Dockerfile
+    container_name: face-embedding-service
+    environment:
+      BOOTSTRAP_SERVER: kafka:9092
+      KAFKA_CONSUME_TOPIC: image_uploaded
+      KAFKA_PRODUCE_TOPIC: new_vector
+      KAFKA_KEY: image_uploaded
+      KAFKA_GROUP_ID: face_embedding
+      ES_HOST: elasticsearch
+      ES_PORT: 9200
+      ES_INDEX: logger
+      MONGO_PROTOCOL: mongodb
+      MONGO_CLUSTER_ADDRESS: mongodb:27017
+      MONGO_DATABASE: face_identity
+      MONGO_COLLECTION: Photo_storage
+    depends_on:
+      - kafka
+      - mongodb
+      - elasticsearch
+
+  updating_vector_identities_service:
+    build:
+      context: .
+      dockerfile: updating_vector_identities_service/Dockerfile
+    container_name: updating-vector-identities-service
+    environment:
+      LOGGER_NAME: podcast_content_monitoring_system
+      BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_TOPIC_FILE_METADATA: file-metadata
+      KAFKA_TOPIC_INCOME_PROCESSING: icome-processing
+      KAFKA_GROUP_ID_FILE_METADATA: information_consumption_processing
+      ELASTICSEARCH_HOST: http://elasticsearch:9200
+      ELASTICSEARCH_INDEX_IMAGE_EMBEDDINGS: image_embeddings
+      ELASTICSEARCH_INDEX_PERSONS: persons
+      ELASTICSEARCH_INDEX_LOG: logging
+      ELASTICSEARCH_MAPPING_IMAGE_EMBEDDINGS: updating_vector_identities_service/config/elasticsearch_mapping.json
+    depends_on:
+      - kafka
+      - elasticsearch
+
+  vector_search:
+    build:
+      context: .
+      dockerfile: Vector_Search/Dockerfile
+    container_name: vector-search-service
+    environment:
+      ELASTIC_HOST: "http://elasticsearch:"
+      ELASTIC_PORT: "9200"
+      REGULAR_INDEX_NAME: persons
+      OPTIMIZE_INDEX_NAME: optimize_vector_identification
+      KAFKA_HOST: kafka
+      KAFKA_PORT: "9092"
+      NEW_VECTOR_TOPIC: new_vector
+      NEW_VECTOR_PERSON_TOPIC: new_vector_person
+      NEW_VECTOR_APPROVAL_PERSON: new_vector_approval_person
+    depends_on:
+      - kafka
+      - elasticsearch
 
