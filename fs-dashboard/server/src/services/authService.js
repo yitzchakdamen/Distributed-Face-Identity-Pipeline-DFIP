@@ -147,3 +147,50 @@ async function registerUser(username, password, name, email, role = "viewer") {
   }
 }
 
+/**
+ * Login a user with username and password
+ *
+ * @param {string} username - Username
+ * @param {string} password - Password
+ * @returns {Promise<Object>} - User object with token
+ * @throws {ApiError} - If login fails
+ */
+async function loginUser(username, password) {
+  const { getUserByUsername } = await import("./userService.js");
+
+  const validatedData = validate({ username, password }, loginUserSchema);
+
+  try {
+    const existingUser = await getUserByUsername(validatedData.username);
+
+    // Check if user exists
+    if (!existingUser) throw new ApiError(401, "Invalid username or password");
+
+    if (!existingUser.password)
+      throw new ApiError(401, "User exists but has no password set. Please contact administrator.");
+
+    const isPasswordValid = await comparePassword(validatedData.password, existingUser.password);
+    if (!isPasswordValid) {
+      throw new ApiError(401, "Invalid username or password");
+    }
+
+    const token = generateToken(existingUser);
+
+    return {
+      user: {
+        id: existingUser.id,
+        username: existingUser.username,
+        name: existingUser.name,
+        email: existingUser.email,
+        role: existingUser.role,
+      },
+      token,
+    };
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+
+    throw new ApiError(500, "Login failed: " + error.message);
+  }
+}
+
+export { hashPassword, comparePassword, generateToken, verifyToken, registerUser, loginUser };
