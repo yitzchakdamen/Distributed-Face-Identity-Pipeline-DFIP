@@ -25,11 +25,13 @@ import rootRoutes from "./routes/rootRoutes.js";
 import healthRoutes from "./routes/healthRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import imageRoutes from "./routes/imageRoutes.js";
 
 app.use("/", rootRoutes);
 app.use("/", healthRoutes);
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
+app.use("/images", imageRoutes);
 
 // Global error handling middleware - must be last
 app.use(globalErrorHandler);

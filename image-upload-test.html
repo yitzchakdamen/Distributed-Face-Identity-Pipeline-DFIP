@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .upload-section {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        input[type="file"] {
+            margin: 10px 0;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Upload Test</h1>
+    
+    <div class="upload-section">
+        <h3>Upload Image File</h3>
+        <input type="file" id="imageFile" accept="image/*">
+        <br>
+        <button onclick="uploadFile()">Upload File</button>
+    </div>
+    
+    <div class="upload-section">
+        <h3>Upload Base64 Image</h3>
+        <textarea id="base64Input" placeholder="Paste base64 image data here..." rows="5" style="width: 100%; margin: 10px 0;"></textarea>
+        <br>
+        <button onclick="uploadBase64()">Upload Base64</button>
+    </div>
+    
+    <div id="result"></div>
+
+    <script>
+        const SERVER_URL = 'http://localhost:3000';
+        
+        async function uploadFile() {
+            const fileInput = document.getElementById('imageFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showResult('Please select a file', 'error');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            try {
+                showResult('Uploading...', 'info');
+                const response = await fetch(`${SERVER_URL}/images/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showResult(`Success: ${JSON.stringify(result, null, 2)}`, 'success');
+                } else {
+                    showResult(`Error: ${JSON.stringify(result, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResult(`Network Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function uploadBase64() {
+            const base64Input = document.getElementById('base64Input');
+            const base64Data = base64Input.value.trim();
+            
+            if (!base64Data) {
+                showResult('Please enter base64 image data', 'error');
+                return;
+            }
+            
+            try {
+                showResult('Uploading...', 'info');
+                const response = await fetch(`${SERVER_URL}/images/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ image: base64Data })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showResult(`Success: ${JSON.stringify(result, null, 2)}`, 'success');
+                } else {
+                    showResult(`Error: ${JSON.stringify(result, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResult(`Network Error: ${error.message}`, 'error');
+            }
+        }
+        
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+        
+        // Add sample base64 image for testing
+        document.getElementById('base64Input').value = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+    </script>
+</body>
+</html>

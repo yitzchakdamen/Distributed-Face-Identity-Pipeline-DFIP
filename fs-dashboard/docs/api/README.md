@@ -148,6 +148,51 @@ Authorization: Bearer <your-jwt-token>
 }
 ```
 
+### Images
+
+#### Upload Image
+
+- **POST** `/images/upload`
+- **Description**: Upload image for face detection processing
+- **Content-Type**: `multipart/form-data` OR `application/json`
+
+**Option 1: File Upload (multipart/form-data)**
+
+```bash
+curl -X POST http://localhost:3000/images/upload \
+  -F "image=@path/to/image.jpg"
+```
+
+**Option 2: Base64 JSON**
+
+```json
+{
+  "image": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD..."
+}
+```
+
+- **Response (Success)**:
+
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Image received successfully.",
+    "size_bytes": 12345
+  },
+  "message": "Image processed successfully"
+}
+```
+
+- **Response (Data Service Unavailable)**:
+
+```json
+{
+  "error": "Data service is not available",
+  "details": "Please ensure the data service is running on port 8000"
+}
+```
+
 ### Health
 
 #### Health Check
