@@ -67,6 +67,50 @@
     <!-- Schema.org structured data - Comprehensive -->
     <script type="application/ld+json" src="/schema.json"></script>
     
+    <!-- Organization Schema with clear logo references -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Face Alert Security Solutions",
+        "alternateName": "Face Alert",
+        "url": "https://facealert.security",
+        "logo": [
+          {
+            "@type": "ImageObject",
+            "url": "https://facealert.security/logo.svg",
+            "width": 512,
+            "height": 512,
+            "caption": "Face Alert Security Logo"
+          },
+          {
+            "@type": "ImageObject", 
+            "url": "https://facealert.security/face-icon.svg",
+            "width": 512,
+            "height": 512,
+            "caption": "Face Alert Icon"
+          },
+          {
+            "@type": "ImageObject",
+            "url": "https://facealert.security/favicon.svg", 
+            "width": 512,
+            "height": 512,
+            "caption": "Face Alert Favicon"
+          }
+        ],
+        "sameAs": [
+          "https://twitter.com/facealertsec",
+          "https://linkedin.com/company/facealert-security",
+          "https://github.com/facealert"
+        ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "+1-800-FACE-ALERT",
+          "contactType": "customer service"
+        }
+      }
+    </script>
+    
     <!-- Additional Performance & SEO optimizations -->
     <meta name="google-site-verification" content="abcd1234567890efghijklmnopqrstuvwxyz12345" />
     <meta name="msvalidate.01" content="your-bing-verification-code" />
