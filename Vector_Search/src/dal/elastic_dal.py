@@ -21,8 +21,8 @@ class ElasticSearchDal:
         self.logger = Logger().get_logger()
 
     def _create_regular_index(self):
-        if not self.es.indices.exists(index = self.REGULAR_INDEX, body = self.REGULAR_MAPPING):
-            self.es.indices.create(index = self.REGULAR_INDEX)
+        if not self.es.indices.exists(index = self.REGULAR_INDEX):
+            self.es.indices.create(index = self.REGULAR_INDEX, body= self.REGULAR_MAPPING)
             return True
         else:
             return False
@@ -45,7 +45,7 @@ class ElasticSearchDal:
     @staticmethod
     def generate_result_dict(_similarity_score, _id):
         return {"score": _similarity_score,
-                   "person_id": _id}
+                "person_id": _id}
 
     def add_vector(self, _vector : list, _person_id) -> dict:
         try:
@@ -53,7 +53,7 @@ class ElasticSearchDal:
                 f"{gen.EMBEDDING}":_vector,
                 "person_id": _person_id
             }
-            result = self.es.index(index=self.REGULAR_INDEX, id = _person_id, document=doc)
+            result = self.es.index(index=self.REGULAR_INDEX, id =_person_id, document=doc, refresh=True)
             if result["result"] == "created":
                 return self.generate_result_dict(1, _person_id)
         except Exception() as e:

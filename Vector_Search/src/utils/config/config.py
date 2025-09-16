@@ -29,7 +29,7 @@ class ElasticSearchConfig:
     ELASTIC_PORT = os.getenv("ELASTIC_PORT" ,"9200")
     ELASTIC_HOST = os.getenv("ELASTIC_HOST", "http://localhost:")
     ELASTIC_URL = ELASTIC_HOST + ELASTIC_PORT
-    REGULAR_INDEX_NAME = os.getenv("REGULAR_INDEX_NAME" ,"regular_vector_identification")
+    REGULAR_INDEX_NAME = os.getenv("REGULAR_INDEX_NAME" ,"persons")
     OPTIMIZE_INDEX_NAME = os.getenv("OPTIMIZE_INDEX_NAME" ,"optimize_vector_identification")
     REGULAR_MAPPING = {"settings": {
             "number_of_shards": 1,
@@ -53,8 +53,10 @@ class KafkaConfig:
     KAFKA_HOST = os.getenv("KAFKA_HOST", "localhost")
     KAFKA_PORT = os.getenv("KAFKA_PORT" ,"9092")
 
+
     TOPIC = "topic"
     VALUE = "value"
+
 
     NEW_VECTOR_TOPIC = os.getenv("NEW_VECTOR_TOPIC" ,"new_vector")
     NEW_VECTOR_PERSON_TOPIC = os.getenv("NEW_VECTOR_PERSON_TOPIC" ,"new_vector_person")
