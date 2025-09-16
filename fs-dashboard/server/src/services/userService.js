@@ -114,13 +114,17 @@ export async function getUserById(id) {
  */
 async function getUserByUsername(username) {
   try {
-    if (!username) throw new ApiError(400, "Username is required");
+    const validatedUsername = validate(username, usernameSchema);
 
-    const { data, error } = await supabase.from("users").select("*").eq("username", username).single();
+    const { data, error: dbError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("username", validatedUsername)
+      .single();
 
-    if (error) {
-      if (error.code === "PGRST116") return null;
-      throw error;
+    if (dbError) {
+      if (dbError.code === "PGRST116") return null;
+      throw dbError;
     }
 
     return data ? new User(data) : null;
