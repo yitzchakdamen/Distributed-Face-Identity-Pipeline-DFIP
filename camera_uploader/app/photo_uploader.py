@@ -70,8 +70,17 @@ class CameraUploader:
             image_bytes = self.encode_image_to_bytes(frame)
             self.ws.send(image_bytes, opcode=websocket.ABNF.OPCODE_BINARY)
             self.logger.info(f"Sent binary image of size {len(image_bytes)} bytes to WebSocket server")
+        except websocket.WebSocketConnectionClosedException:
+            self.logger.warning("WebSocket connection closed by server. Trying to reconnect...")
+            try:
+                self.connect() 
+                self.ws.send(image_bytes, opcode=websocket.ABNF.OPCODE_BINARY)
+                self.logger.info("Reconnected and sent image successfully")
+            except Exception as reconnect_error:
+                self.logger.error(f"Failed to reconnect and send image: {reconnect_error}")
         except Exception as e:
             self.logger.error(f"Failed to send image over WebSocket: {e}")
+
 
     def main(self, interval: int = 1):
         """
