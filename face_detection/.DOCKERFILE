@@ -9,4 +9,4 @@ COPY . /app/face_detection/
 
 EXPOSE 8000
 
-CMD ["uvicorn", "face_detection.app.api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "face_detection.app.api"]
