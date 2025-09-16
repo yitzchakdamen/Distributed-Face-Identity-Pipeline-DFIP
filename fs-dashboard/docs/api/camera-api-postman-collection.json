@@ -1,0 +1,341 @@
+{
+	"info": {
+		"_postman_id": "camera-api-collection",
+		"name": "Camera Management API",
+		"description": "Collection for testing Camera Management API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user_email}}\",\n    \"password\": \"{{user_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login to get JWT token"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.token) {",
+									"        pm.environment.set('jwt_token', response.token);",
+									"        console.log('JWT token saved to environment');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Camera Management",
+			"item": [
+				{
+					"name": "Create Camera",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{camera_name}}\",\n    \"camera_id\": \"{{camera_id}}\",\n    \"connection_string\": \"{{connection_string}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/cameras",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"cameras"
+							]
+						},
+						"description": "Create a new camera (operator or admin only)"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.data && response.data.id) {",
+									"        pm.environment.set('created_camera_id', response.data.id);",
+									"        console.log('Camera ID saved to environment:', response.data.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Get All Cameras",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/cameras?page={{page}}&limit={{limit}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"cameras"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{page}}"
+								},
+								{
+									"key": "limit",
+									"value": "{{limit}}"
+								}
+							]
+						},
+						"description": "Get cameras accessible to the authenticated user"
+					}
+				},
+				{
+					"name": "Get Camera by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/cameras/{{camera_id_param}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"cameras",
+								"{{camera_id_param}}"
+							]
+						},
+						"description": "Get a specific camera by ID"
+					}
+				},
+				{
+					"name": "Update Camera",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{updated_camera_name}}\",\n    \"connection_string\": \"{{updated_connection_string}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/cameras/{{camera_id_param}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"cameras",
+								"{{camera_id_param}}"
+							]
+						},
+						"description": "Update an existing camera (operator or admin only)"
+					}
+				},
+				{
+					"name": "Delete Camera",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/cameras/{{camera_id_param}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"cameras",
+								"{{camera_id_param}}"
+							]
+						},
+						"description": "Delete a camera (operator or admin only)"
+					}
+				}
+			]
+		},
+		{
+			"name": "Camera Assignments",
+			"item": [
+				{
+					"name": "Assign Camera to User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"{{viewer_user_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/cameras/{{camera_id_param}}/assign",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"cameras",
+								"{{camera_id_param}}",
+								"assign"
+							]
+						},
+						"description": "Assign a camera to a viewer user (operator or admin only)"
+					}
+				},
+				{
+					"name": "Remove Camera Assignment",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/cameras/{{camera_id_param}}/assign/{{viewer_user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"cameras",
+								"{{camera_id_param}}",
+								"assign",
+								"{{viewer_user_id}}"
+							]
+						},
+						"description": "Remove camera assignment from a user (operator or admin only)"
+					}
+				},
+				{
+					"name": "Get Camera Assignments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/cameras/{{camera_id_param}}/assignments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"cameras",
+								"{{camera_id_param}}",
+								"assignments"
+							]
+						},
+						"description": "Get all user assignments for a camera (operator or admin only)"
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:5000"
+		}
+	]
+}
