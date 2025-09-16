@@ -2,6 +2,9 @@ import bcrypt from "bcrypt";
 import { authConfig } from "../config/auth.js";
 import jwt from "jsonwebtoken";
 import { ApiError } from "../middlewares/errorHandler.js";
+import { validate } from "./validationService.js";
+import { createUserSchema, loginUserSchema } from "../schemas/userSchemas.js";
+
 const BCRYPT_SALT_ROUNDS = authConfig.bcryptSaltRounds;
 const DEFAULT_TOKEN_EXPIRATION = authConfig.jwtExpiresIn;
 const JWT_SECRET = authConfig.jwtSecret;
@@ -98,6 +101,49 @@ function verifyToken(token) {
     if (error.name === "TokenExpiredError") throw new ApiError(401, "Token has expired");
     else if (error.name === "JsonWebTokenError") throw new ApiError(401, "Invalid token");
     else throw new ApiError(401, "Token verification failed");
+  }
+}
+
+/**
+ * Register a new user
+ *
+ * @param {string} username - Username
+ * @param {string} password - Password
+ * @param {string} name - Full name
+ * @param {string} email - Email address
+ * @param {string} [role='viewer'] - User role
+ * @returns {Promise<Object>} - User object with token
+ * @throws {ApiError} - If registration fails
+ */
+async function registerUser(username, password, name, email, role = "viewer") {
+  // dynamic import: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import
+  const { createUser, getUserByUsername } = await import("./userService.js");
+
+  const validatedData = validate({ username, password, name, email, role }, createUserSchema);
+
+  try {
+    // Check if username already exists
+    const existingUser = await getUserByUsername(validatedData.username);
+    if (existingUser) throw new ApiError(409, "Username already exists");
+
+    const newUser = await createUser(validatedData);
+
+    const token = generateToken(newUser);
+
+    return {
+      user: {
+        id: newUser.id,
+        username: newUser.username,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+      },
+      token,
+    };
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+
+    throw new ApiError(500, "Registration failed: " + error.message);
   }
 }
 
