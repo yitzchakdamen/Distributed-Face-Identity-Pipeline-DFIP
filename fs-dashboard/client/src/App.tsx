@@ -1,13 +1,31 @@
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import ApplicationLayout from "./components/application-layout/ApplicationLayout";
+import NotFoundPage from "./components/application-layout/NotFoundPage";
+import Login from "./components/auth/Login";
+import Register from "./components/auth/Register";
+import HomePage from "./pages/HomePage";
+import EventsPage from "./pages/EventsPage";
+import CamerasPage from "./pages/CamerasPage";
 import "./App.css";
-import Navbar from "./components/Navbar";
-import MainContent from "./components/MainContent";
 
 function App() {
   return (
-    <div className="app">
-      <Navbar />
-      <MainContent />
-    </div>
+    <AuthProvider>
+      <Router>
+        <ApplicationLayout>
+          <Routes>
+            <Route index element={<HomePage />} />
+            <Route path="/events" element={<EventsPage />} />
+            <Route path="/cameras" element={<CamerasPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </ApplicationLayout>
+      </Router>
+    </AuthProvider>
   );
 }
 
