@@ -2,7 +2,41 @@
 
 ## Overview
 
-This API provides authentication and user management services for the Face Alert Dashboard system.
+This API provides authentication, user management, and camera management services for the Face Alert Dashboard system.
+
+## Available API Documentation
+
+- **[Camera Management API](./camera-api-documentation.md)** - Complete documentation for camera CRUD operations and user assignments
+- **[Authentication & User Management](#user-authentication)** - User registration, login, and role management
+
+## Postman Collections
+
+### Camera API Collection
+
+Import the following files into Postman to test the Camera Management API:
+
+1. **Collection**: `camera-api-postman-collection.json`
+   - Contains all camera management endpoints
+   - Includes authentication, CRUD operations, and user assignments
+   - Automatic token management with test scripts
+
+2. **Environment**: `camera-api-postman-environment.json`
+   - Pre-configured variables for testing
+   - Update `base_url`, `user_email`, and `user_password` as needed
+   - Auto-populated variables for created resources
+
+### How to Use Postman Collection
+
+1. Import both collection and environment files into Postman
+2. Select the "Camera API Environment" in Postman
+3. Update environment variables:
+   - `base_url`: Your server URL (default: http://localhost:5000)
+   - `user_email`: Valid operator or admin email
+   - `user_password`: Password for the user
+4. Run "Login" request first to get JWT token
+5. Use other requests to test camera functionality
+
+**Note**: The JWT token is automatically saved to environment variables after successful login.
 
 ## Base URLs
 
