@@ -1,0 +1,41 @@
+# Humans.txt - The people behind Face Alert Security
+
+/* TEAM */
+
+CEO & Founder: Ariel Cohen
+Site: https://facealert.security
+Twitter: @arielcohen_sec
+Location: Tel Aviv, Israel
+
+CTO: Sarah Johnson  
+Twitter: @sarahj_tech
+Location: San Francisco, USA
+
+Lead Developer: Michael Chen
+GitHub: @mchen_dev
+Location: Toronto, Canada
+
+UI/UX Designer: Emma Thompson
+Portfolio: https://emmathompson.design
+Location: London, UK
+
+Security Architect: David Rodriguez
+LinkedIn: /in/davidrodriguez-sec
+Location: Madrid, Spain
+
+/* THANKS */
+
+Special thanks to our beta testers and security professionals who helped shape this platform.
+Thanks to the open source community for the amazing tools and libraries.
+Thanks to our families for supporting us during long development nights.
+
+/* SITE */
+
+Last update: 2025-09-16
+Language: English / Hebrew
+Doctype: HTML5
+IDE: VS Code, WebStorm
+Standards: HTML5, CSS3, ES2023, TypeScript
+Components: React, Vite, Express.js, Supabase
+Security: OAuth2, JWT, HTTPS, CSP
+Hosting: Heroku, AWS CloudFront
