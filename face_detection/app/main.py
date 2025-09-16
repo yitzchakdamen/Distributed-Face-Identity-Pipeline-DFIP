@@ -44,23 +44,16 @@ class FaceDetectionApp:
 
 def main(app):
     cap = cv2.VideoCapture(0)
-
-    if not cap.isOpened():
-        print("לא מצליח לפתוח מצלמה")
-        return
+    if not cap.isOpened(): raise RuntimeError("Could not open video device.")
 
     try:
         while True:
             ret, frame = cap.read()
             if not ret:
-                print("לא הצלחתי לקרוא פריים")
+                logger.error("Error: Could not read frame.")
                 break
-
-            # שליחת הפריים ישירות לעיבוד
             app.process_image(frame)
-
-    except KeyboardInterrupt:
-        print("יציאה...")
+    except KeyboardInterrupt: logger.info("Exit requested by user")
     finally:
         cap.release()
         cv2.destroyAllWindows()
