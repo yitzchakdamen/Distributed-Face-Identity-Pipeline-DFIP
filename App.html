@@ -3,147 +3,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>דשבורד אנשים מתקדם</title>
+  <title>דשבורד אנשים - גלריה מתקדמת</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --primary-color: #4361ee;
-      --secondary-color: #3f37c9;
-      --success-color: #4cc9f0;
-      --light-color: #f8f9fa;
-      --dark-color: #212529;
-      --gray-color: #6c757d;
-      --border-radius: 12px;
-      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #7209b7;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --success: #4cc9f0;
+      --border-radius: 16px;
+      --box-shadow: 0 10px 25px rgba(0,0,0,0.1);
       --transition: all 0.3s ease;
     }
 
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f0f2f5;
+      font-family: 'Inter', Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
       padding: 20px;
       direction: rtl;
-      color: var(--dark-color);
-      line-height: 1.6;
+      color: var(--dark);
+      min-height: 100vh;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1600px;
       margin: 0 auto;
     }
 
     header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      flex-wrap: wrap;
-      gap: 15px;
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 20px;
     }
 
     h1 {
-      color: var(--primary-color);
-      font-size: 2.2rem;
-      margin: 0;
-    }
-
-    .controls {
-      display: flex;
-      gap: 15px;
-      align-items: center;
-    }
-
-    .search-box {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 10px;
       position: relative;
+      display: inline-block;
     }
 
-    .search-box input {
-      padding: 10px 40px 10px 15px;
-      border: 1px solid #ddd;
-      border-radius: 30px;
-      width: 250px;
-      font-size: 1rem;
-      transition: var(--transition);
-    }
-
-    .search-box input:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-    }
-
-    .search-box i {
+    h1:after {
+      content: '';
       position: absolute;
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--gray-color);
+      bottom: -10px;
+      right: 0;
+      width: 60%;
+      height: 4px;
+      background: linear-gradient(to right, var(--primary), var(--success));
+      border-radius: 2px;
     }
 
-    .view-options {
-      display: flex;
-      background: white;
-      border-radius: 30px;
-      overflow: hidden;
-      box-shadow: var(--box-shadow);
+    .subtitle {
+      color: var(--gray);
+      font-size: 1.1rem;
+      margin-top: 15px;
     }
 
-    .view-option {
-      padding: 10px 15px;
-      background: white;
-      border: none;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .view-option.active {
-      background: var(--primary-color);
-      color: white;
-    }
-
-    .stats-grid {
+    .stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      margin-bottom: 50px;
     }
 
     .stat-card {
       background: white;
-      padding: 20px;
+      padding: 25px;
       border-radius: var(--border-radius);
       box-shadow: var(--box-shadow);
-      text-align: center;
       transition: var(--transition);
+      position: relative;
+      overflow: hidden;
     }
 
     .stat-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
     }
 
-    .stat-value {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: var(--primary-color);
-      margin: 10px 0;
+    .stat-card:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 5px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--primary), var(--secondary));
     }
 
-    .stat-label {
-      color: var(--gray-color);
+    .stat-card h2 {
+      font-size: 1rem;
+      margin-bottom: 15px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stat-card h2 i {
+      font-size: 1.2rem;
+    }
+
+    .stat-card .stat-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+
+    .stat-card .stat-desc {
       font-size: 0.9rem;
+      color: var(--gray);
     }
 
-    .persons-container {
+    .gallery-container {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 30px;
     }
 
     .person-card {
@@ -152,380 +141,643 @@
       overflow: hidden;
       box-shadow: var(--box-shadow);
       transition: var(--transition);
+      cursor: pointer;
+      position: relative;
     }
 
     .person-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 35px rgba(0,0,0,0.15);
     }
 
     .person-header {
-      padding: 15px;
-      background: var(--primary-color);
+      background: linear-gradient(to right, var(--primary), var(--secondary));
       color: white;
+      padding: 15px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-align: center;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .person-id {
-      font-weight: bold;
-      font-size: 1.2rem;
+    .person-header .person-id {
+      font-weight: 700;
     }
 
-    .image-count {
-      background: white;
-      color: var(--primary-color);
-      padding: 5px 10px;
+    .person-header .image-count {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 6px 12px;
       border-radius: 20px;
       font-size: 0.9rem;
-      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .person-images {
-      padding: 15px;
-    }
-
-    .images-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-
-    .person-img {
+    .person-image {
       width: 100%;
-      height: 120px;
+      height: 200px; /* גובה מופחת */
       object-fit: cover;
-      border-radius: 8px;
+      display: block;
       transition: var(--transition);
-      cursor: pointer;
     }
 
-    .person-img:hover {
+    .person-card:hover .person-image {
       transform: scale(1.05);
     }
 
-    .modal {
-      display: none;
+    .person-footer {
+      padding: 12px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--gray);
+      background: var(--light);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Lightbox */
+    .lightbox {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0,0,0,0.95);
+      display: none;
+      justify-content: center;
+      align-items: center;
       z-index: 1000;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .lightbox.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .lightbox-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 95%;
+      max-width: 1600px;
+      height: 95vh;
+    }
+
+    .lightbox-img-container {
+      width: 100%;
+      height: 85vh;
+      display: flex;
       justify-content: center;
       align-items: center;
     }
 
-    .modal-content {
-      max-width: 90%;
-      max-height: 90%;
-    }
-
-    .modal-img {
+    .lightbox img {
       max-width: 100%;
-      max-height: 80vh;
+      max-height: 100%;
+      object-fit: contain;
       border-radius: 8px;
-      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 5px 25px rgba(0,0,0,0.3);
     }
 
-    .close-modal {
+    .lightbox .close {
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
       position: absolute;
       top: 20px;
-      right: 20px;
-      color: white;
-      font-size: 2rem;
-      cursor: pointer;
+      left: 20px;
+      z-index: 1001;
+      background: rgba(0,0,0,0.5);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       transition: var(--transition);
     }
 
-    .close-modal:hover {
-      color: var(--success-color);
+    .lightbox .close:hover {
+      background: rgba(0,0,0,0.7);
+      transform: rotate(90deg);
     }
 
-    .loading {
-      text-align: center;
-      padding: 40px;
+    .lightbox .nav {
+      color: white;
+      font-size: 40px;
+      cursor: pointer;
+      user-select: none;
+      padding: 0 20px;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.5);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: var(--transition);
+    }
+
+    .lightbox .nav:hover {
+      background: rgba(0,0,0,0.7);
+    }
+
+    .lightbox .nav.nav-left {
+      left: 30px;
+    }
+
+    .lightbox .nav.nav-right {
+      right: 30px;
+    }
+
+    .lightbox-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    .lightbox-counter {
+      color: white;
       font-size: 1.2rem;
-      color: var(--gray-color);
+      margin-top: 15px;
+      background: rgba(0,0,0,0.5);
+      padding: 8px 20px;
+      border-radius: 20px;
     }
 
-    .error-message {
-      background: #ffebee;
-      color: #c62828;
-      padding: 15px;
-      border-radius: var(--border-radius);
-      text-align: center;
-      margin: 20px 0;
+    .lightbox-thumbnails {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      overflow-x: auto;
+      max-width: 100%;
+      padding: 10px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
     }
 
-    .refresh-btn {
-      background: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 30px;
+    .lightbox-thumbnail {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 1rem;
+      opacity: 0.6;
       transition: var(--transition);
+    }
+
+    .lightbox-thumbnail:hover, .lightbox-thumbnail.active {
+      opacity: 1;
+      border: 3px solid white;
+      transform: scale(1.1);
+    }
+
+    .lightbox-person-info {
+      color: white;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      text-align: center;
+      background: rgba(0,0,0,0.5);
+      padding: 12px 30px;
+      border-radius: 30px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 15px;
     }
 
-    .refresh-btn:hover {
-      background: var(--secondary-color);
+    .lightbox-person-info .person-image-count {
+      font-size: 1.2rem;
+      background: var(--primary);
+      padding: 6px 15px;
+      border-radius: 20px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+      .gallery-container {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      }
+    }
+
+    @media (max-width: 992px) {
+      .gallery-container {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+      
+      .person-image {
+        height: 180px;
+      }
     }
 
     @media (max-width: 768px) {
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
+      h1 {
+        font-size: 2rem;
       }
       
-      .persons-container {
-        grid-template-columns: 1fr;
+      .stats {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+      
+      .gallery-container {
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 20px;
+      }
+      
+      .person-image {
+        height: 160px;
+      }
+      
+      .person-header {
+        font-size: 1rem;
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .lightbox .nav {
+        font-size: 30px;
+        width: 50px;
+        height: 50px;
+      }
+      
+      .lightbox .nav.nav-left {
+        left: 15px;
+      }
+      
+      .lightbox .nav.nav-right {
+        right: 15px;
+      }
+      
+      .lightbox-person-info {
+        font-size: 1.4rem;
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      body {
+        padding: 15px;
       }
       
       header {
-        flex-direction: column;
-        align-items: stretch;
+        margin-bottom: 30px;
       }
       
-      .controls {
-        justify-content: center;
+      h1 {
+        font-size: 1.8rem;
       }
       
-      .search-box input {
-        width: 100%;
+      .stats {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      
+      .gallery-container {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+      }
+      
+      .person-image {
+        height: 140px;
+      }
+      
+      .lightbox-thumbnail {
+        width: 60px;
+        height: 60px;
       }
     }
+
+    /* Loading animation */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 300px;
+      grid-column: 1 / -1;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Animation for cards */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .stat-card, .person-card {
+      animation: fadeIn 0.5s ease-out forwards;
+      opacity: 0;
+    }
+
+    .person-card:nth-child(2) { animation-delay: 0.1s; }
+    .person-card:nth-child(3) { animation-delay: 0.2s; }
+    .person-card:nth-child(4) { animation-delay: 0.3s; }
+    .person-card:nth-child(5) { animation-delay: 0.4s; }
+    .person-card:nth-child(6) { animation-delay: 0.5s; }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1><i class="fas fa-users"></i> דשבורד אנשים מתקדם</h1>
-      <div class="controls">
-        <div class="search-box">
-          <input type="text" id="searchInput" placeholder="חפש אדם לפי מזהה...">
-          <i class="fas fa-search"></i>
-        </div>
-        <div class="view-options">
-          <button class="view-option active" id="gridView"><i class="fas fa-th"></i></button>
-          <button class="view-option" id="listView"><i class="fas fa-list"></i></button>
-        </div>
-        <button class="refresh-btn" id="refreshBtn"><i class="fas fa-sync-alt"></i> רענן נתונים</button>
-      </div>
+      <h1>דשבורד אנשים - גלריה מתקדמת</h1>
+      <p class="subtitle">ניהול ותצוגת תמונות לפי אנשים</p>
     </header>
 
-    <div id="stats" class="stats-grid"></div>
+    <div id="stats" class="stats">
+      <!-- Statistics will be loaded here -->
+    </div>
 
-    <div id="container" class="persons-container"></div>
+    <div id="container" class="gallery-container">
+      <!-- People cards will be loaded here -->
+    </div>
+  </div>
 
-    <div class="modal" id="imageModal">
-      <span class="close-modal" id="closeModal">&times;</span>
-      <div class="modal-content">
-        <img class="modal-img" id="modalImage" src="" alt="תצוגה מוגדלת">
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox">
+    <div class="close" onclick="closeLightbox()">
+      <i class="fas fa-times"></i>
+    </div>
+    <div class="lightbox-content">
+      <div class="lightbox-person-info" id="lightbox-person-info">
+        <span id="lightbox-person-id"></span>
+        <span class="person-image-count" id="lightbox-person-count"></span>
       </div>
+      <div class="lightbox-img-container">
+        <img id="lightbox-img" src="" alt="">
+      </div>
+      <div class="lightbox-controls">
+        <div class="lightbox-counter" id="lightbox-counter"></div>
+        <div class="lightbox-thumbnails" id="lightbox-thumbnails"></div>
+      </div>
+    </div>
+    <div class="nav nav-left" onclick="prevImage()">
+      <i class="fas fa-chevron-left"></i>
+    </div>
+    <div class="nav nav-right" onclick="nextImage()">
+      <i class="fas fa-chevron-right"></i>
     </div>
   </div>
 
   <script>
-    // נתונים לדוגמה למקרה שהשרת לא זמין
-    const sampleData = {
-      persons: [
-        {
-          person_id: 1,
-          images: [
-            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80",
-            "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80",
-            "https://images.unsplash.com/photo-1513956589380-bad6acb9b9d4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80"
-          ]
-        },
-        {
-          person_id: 2,
-          images: [
-            "https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80",
-            "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80"
-          ]
-        },
-        {
-          person_id: 3,
-          images: [
-            "https://images.unsplash.com/photo-1567532939604-b6b5b0db1604?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80",
-            "https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80",
-            "https://images.unsplash.com/photo-1519764622345-23439dd774f7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80",
-            "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=300&q=80"
-          ]
-        }
-      ],
-      stats: {
-        total_persons: 3,
-        total_images: 9,
-        avg_images_per_person: 3,
-        max_images_for_single_person: 4,
-        min_images_for_single_person: 2
-      }
-    };
-
-    let currentView = 'grid';
-    let allPersons = [];
+    let lightboxImages = [];
+    let currentIndex = 0;
+    let currentPersonId = '';
 
     async function fetchData() {
+      // Show loading state
+      document.getElementById('container').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+        </div>
+      `;
+      
       try {
-        showLoading();
-        // ניסוי להתחבר לשרת המקומי
+        // Simulating API call with mock data
+        // Replace this with your actual API call
+        const mockData = {
+          stats: {
+            total_persons: 12,
+            total_images: 84,
+            avg_images_per_person: 7,
+            max_images_for_single_person: 15,
+            min_images_for_single_person: 3
+          },
+          persons: [
+            {
+              person_id: 1,
+              images: [
+                'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVyc29ufGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60',
+                'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cGVyc29ufGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60',
+                'https://images.unsplash.com/photo-1513956589380-bad6acb9b9d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHBlcnNvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60'
+              ]
+            },
+            {
+              person_id: 2,
+              images: [
+                'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHBlcnNvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60',
+                'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fHBlcnNvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60',
+                'https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHBlcnNvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60',
+                'https://images.unsplash.com/photo-1567532939604-b6b5b0db1604?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjJ8fHBlcnNvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60'
+              ]
+            },
+            {
+              person_id: 3,
+              images: [
+                'https://images.unsplash.com/photo-1519764622345-23439dd774f7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjZ8fHBlcnNvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60',
+                'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzB8fHBlcnNvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60'
+              ]
+            }
+          ]
+        };
+        
+        // Simulate network delay
+        // await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // return mockData;
+        
+        // In production, use this:
         const res = await fetch('http://localhost:5000/api/persons');
-        
-        if (!res.ok) {
-          throw new Error(`שגיאת שרת: ${res.status}`);
-        }
-        
         const data = await res.json();
-        hideLoading();
         return data;
       } catch (err) {
-        console.error("שגיאה בטעינת הנתונים מהשרת, משתמש בנתוני דוגמה:", err);
-        // החזרת נתוני דוגמה במקרה של שגיאה
-        hideLoading();
-        return sampleData;
+        console.error("שגיאה בטעינת הנתונים:", err);
+        return { persons: [], stats: {} };
       }
-    }
-
-    function showLoading() {
-      const container = document.getElementById('container');
-      container.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> טוען נתונים...</div>';
-    }
-
-    function hideLoading() {
-      // הטעינה תוסר כאשר נתוני הדשבורד יותאמו
     }
 
     function renderStats(stats) {
       const statsDiv = document.getElementById('stats');
       statsDiv.innerHTML = `
         <div class="stat-card">
+          <h2><i class="fas fa-users"></i> סה"כ אנשים</h2>
           <div class="stat-value">${stats.total_persons}</div>
-          <div class="stat-label">סה"כ אנשים</div>
+          <div class="stat-desc">מספר האנשים במערכת</div>
         </div>
         <div class="stat-card">
+          <h2><i class="fas fa-images"></i> סה"כ תמונות</h2>
           <div class="stat-value">${stats.total_images}</div>
-          <div class="stat-label">סה"כ תמונות</div>
+          <div class="stat-desc">סך כל התמונות</div>
         </div>
         <div class="stat-card">
+          <h2><i class="fas fa-calculator"></i> ממוצע תמונות לאדם</h2>
           <div class="stat-value">${stats.avg_images_per_person.toFixed(2)}</div>
-          <div class="stat-label">ממוצע תמונות לאדם</div>
+          <div class="stat-desc">מספר תמונות ממוצע לאדם</div>
         </div>
         <div class="stat-card">
+          <h2><i class="fas fa-arrow-up"></i> מקסימום תמונות לאדם</h2>
           <div class="stat-value">${stats.max_images_for_single_person}</div>
-          <div class="stat-label">מקסימום תמונות לאדם</div>
+          <div class="stat-desc">המספר המרבי של תמונות לאדם אחד</div>
         </div>
         <div class="stat-card">
+          <h2><i class="fas fa-arrow-down"></i> מינימום תמונות לאדם</h2>
           <div class="stat-value">${stats.min_images_for_single_person}</div>
-          <div class="stat-label">מינימום תמונות לאדם</div>
+          <div class="stat-desc">המספר המינימלי של תמונות לאדם אחד</div>
         </div>
       `;
     }
 
-    function renderPersons(persons, viewType = 'grid') {
+    function renderPersons(persons) {
       const container = document.getElementById('container');
       
       if (persons.length === 0) {
-        container.innerHTML = '<div class="error-message">לא נמצאו אנשים להצגה</div>';
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+            <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #6c757d; margin-bottom: 15px;"></i>
+            <h3 style="color: #6c757d;">לא נמצאו אנשים</h3>
+            <p>אין נתונים להצגה כרגע</p>
+          </div>
+        `;
         return;
       }
       
       container.innerHTML = '';
-      
-      persons.forEach(person => {
-        const card = document.createElement('div');
-        card.className = 'person-card';
-        
-        card.innerHTML = `
+
+      persons.forEach((person, index) => {
+        const div = document.createElement('div');
+        div.className = 'person-card';
+        div.style.animationDelay = `${index * 0.1}s`;
+        div.innerHTML = `
           <div class="person-header">
-            <span class="person-id">אדם ${person.person_id}</span>
-            <span class="image-count">${person.images.length} תמונות</span>
+            <span class="person-id"> ${person.person_id.substring(0, 10)}...</span>
+            <span class="image-count">
+              <i class="fas fa-images"></i>
+              ${person.images.length} תמונות
+            </span>
           </div>
-          <div class="person-images">
-            <div class="images-grid">
-              ${person.images.map(imgSrc => `
-                <img src="${imgSrc}" alt="תמונת אדם ${person.person_id}" class="person-img">
-              `).join('')}
-            </div>
+          <img class="person-image" src="${person.images[0]}" alt="Person ${person.person_id.substring(0, 10)}">
+          <div class="person-footer">
+            <i class="fas fa-expand"></i>
+            לחץ לצפייה בתמונות גדולות
           </div>
         `;
-        
-        // הוספת מאזיני אירועים לתמונות
-        const images = card.querySelectorAll('.person-img');
-        images.forEach(img => {
-          img.addEventListener('click', () => openModal(img.src));
-        });
-        
-        container.appendChild(card);
+
+        div.onclick = () => openLightbox(person.images, person.person_id);
+
+        container.appendChild(div);
       });
     }
 
-    function openModal(src) {
-      const modal = document.getElementById('imageModal');
-      const modalImg = document.getElementById('modalImage');
-      modalImg.src = src;
-      modal.style.display = 'flex';
+    function openLightbox(images, personId) {
+      lightboxImages = images;
+      currentIndex = 0;
+      currentPersonId = personId;
+      updateLightbox();
+      document.getElementById('lightbox').classList.add('active');
+      document.body.style.overflow = 'hidden';
     }
 
-    function closeModal() {
-      const modal = document.getElementById('imageModal');
-      modal.style.display = 'none';
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+      document.body.style.overflow = 'auto';
     }
 
-    function filterPersons(searchTerm) {
-      const filtered = allPersons.filter(person => 
-        person.person_id.toString().includes(searchTerm)
-      );
-      renderPersons(filtered, currentView);
+    function nextImage() {
+      currentIndex = (currentIndex + 1) % lightboxImages.length;
+      updateLightbox();
     }
 
-    function switchView(viewType) {
-      currentView = viewType;
-      renderPersons(allPersons, viewType);
+    function prevImage() {
+      currentIndex = (currentIndex - 1 + lightboxImages.length) % lightboxImages.length;
+      updateLightbox();
+    }
+
+    function updateLightbox() {
+      const lightboxImg = document.getElementById('lightbox-img');
+      const lightboxCounter = document.getElementById('lightbox-counter');
+      const lightboxThumbnails = document.getElementById('lightbox-thumbnails');
+      const lightboxPersonId = document.getElementById('lightbox-person-id');
+      const lightboxPersonCount = document.getElementById('lightbox-person-count');
       
-      // עדכון הכפתורים
-      document.getElementById('gridView').classList.toggle('active', viewType === 'grid');
-      document.getElementById('listView').classList.toggle('active', viewType === 'list');
+      lightboxImg.src = lightboxImages[currentIndex];
+      lightboxCounter.textContent = `${currentIndex + 1} / ${lightboxImages.length}`;
+      lightboxPersonId.textContent = `אדם ${currentPersonId}`;
+      lightboxPersonCount.textContent = `${lightboxImages.length} תמונות`;
+      
+      // Update thumbnails
+      lightboxThumbnails.innerHTML = '';
+      lightboxImages.forEach((img, index) => {
+        const thumbnail = document.createElement('img');
+        thumbnail.src = img;
+        thumbnail.className = 'lightbox-thumbnail' + (index === currentIndex ? ' active' : '');
+        thumbnail.onclick = () => {
+          currentIndex = index;
+          updateLightbox();
+        };
+        lightboxThumbnails.appendChild(thumbnail);
+      });
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+      if (document.getElementById('lightbox').classList.contains('active')) {
+        if (e.key === 'Escape') {
+          closeLightbox();
+        } else if (e.key === 'ArrowRight') {
+          prevImage(); // Because of RTL direction
+        } else if (e.key === 'ArrowLeft') {
+          nextImage(); // Because of RTL direction
+        }
+      }
+    });
+
+    // Swipe support for touch devices
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    const lightbox = document.getElementById('lightbox');
+    lightbox.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, false);
+    
+    lightbox.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, false);
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      
+      if (touchEndX < touchStartX - swipeThreshold) {
+        nextImage(); // Swipe left to go next
+      }
+      
+      if (touchEndX > touchStartX + swipeThreshold) {
+        prevImage(); // Swipe right to go previous
+      }
     }
 
     async function init() {
       const data = await fetchData();
-      allPersons = data.persons;
       renderStats(data.stats);
-      renderPersons(data.persons, currentView);
-      
-      // הגדרת מאזיני אירועים
-      document.getElementById('searchInput').addEventListener('input', (e) => {
-        filterPersons(e.target.value);
-      });
-      
-      document.getElementById('gridView').addEventListener('click', () => switchView('grid'));
-      document.getElementById('listView').addEventListener('click', () => switchView('list'));
-      
-      document.getElementById('refreshBtn').addEventListener('click', async () => {
-        const data = await fetchData();
-        allPersons = data.persons;
-        renderStats(data.stats);
-        renderPersons(data.persons, currentView);
-        document.getElementById('searchInput').value = '';
-      });
-      
-      document.getElementById('closeModal').addEventListener('click', closeModal);
-      
-      // סגירת מודל בלחיצה מחוץ לתמונה
-      document.getElementById('imageModal').addEventListener('click', (e) => {
-        if (e.target.id === 'imageModal') closeModal();
-      });
+      renderPersons(data.persons);
     }
 
-    // אתחול הדשבורד כאשר הדף נטען
-    document.addEventListener('DOMContentLoaded', init);
+    init();
   </script>
 </body>
 </html>
