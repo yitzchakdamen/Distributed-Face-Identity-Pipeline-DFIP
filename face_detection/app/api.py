@@ -45,7 +45,7 @@ def clean_base64_string(b64_string: str) -> str:
     return b64_string
 
 
-@app.post("/camera/upload-image")
+@app.post("/upload-image")
 async def receive_base64_image(data: ImageData, request: Request):
     """
     Receive a base64-encoded image via POST, decode and process it.
@@ -90,7 +90,7 @@ async def receive_base64_image(data: ImageData, request: Request):
         logger.exception(f"Unexpected error: {e}")
         return {"error": "Internal server error"}
     
-@app.websocket("/upload-image")
+@app.websocket("/camera/upload-image")
 async def websocket_image_endpoint(websocket: WebSocket):
     await websocket.accept()
     client_host = websocket.client.host if websocket.client else "unknown"

@@ -1,43 +1,53 @@
 import cv2
-import base64
-import requests
 import time
+import websocket
 from camera_uploader.app.logger import Logger
-
-
 
 
 class CameraUploader:
     """
-    CameraUploader captures images from the webcam, encodes them in base64,
-    and sends them to a specified FastAPI server endpoint.
+    CameraUploader captures images from the webcam and sends them as binary data
+    directly to a specified FastAPI WebSocket server endpoint.
 
     Attributes:
-        server_url (str): The URL of the FastAPI server to upload images to.
+        ws_url (str): The WebSocket URL of the FastAPI server to upload images to.
         logger (Logger): Logger instance for logging events and errors.
+        ws (websocket.WebSocket): The active WebSocket connection.
     """
 
-    def __init__(self, server_url: str):
+    def __init__(self, ws_url: str):
         """
-        Initialize the CameraUploader.
+        Initialize the CameraUploader and open WebSocket connection.
 
         Args:
-            server_url (str): The URL of the FastAPI server endpoint.
+            ws_url (str): The WebSocket URL of the FastAPI server endpoint.
         """
-        self.server_url = server_url
+        self.ws_url = ws_url
         self.logger = Logger.get_logger(__name__)
+        self.ws = None
+        self.connect()
+
+    def connect(self):
+        """Establish a WebSocket connection to the server."""
+        try:
+            self.ws = websocket.WebSocket()
+            self.ws.connect(self.ws_url)
+            self.logger.info(f"Connected to WebSocket server at {self.ws_url}")
+        except Exception as e:
+            self.logger.error(f"Failed to connect to WebSocket server: {e}")
+            raise
 
     @staticmethod
-    def encode_image_to_base64(frame, format_to: str = '.jpg') -> str:
+    def encode_image_to_bytes(frame, format_to: str = '.jpg') -> bytes:
         """
-        Encode an image frame to a base64 string with a data URI prefix.
+        Encode an image frame to binary format (JPEG or PNG).
 
         Args:
             frame: Image frame (numpy array) captured from OpenCV.
             format_to (str): Image format for encoding ('.jpg', '.png'). Defaults to '.jpg'.
 
         Returns:
-            str: Base64-encoded image string with data URI prefix.
+            bytes: Encoded image bytes.
 
         Raises:
             ValueError: If image encoding fails.
@@ -45,15 +55,11 @@ class CameraUploader:
         ret, buffer = cv2.imencode(format_to, frame)
         if not ret:
             raise ValueError("Failed to encode image")
-
-        b64_string = base64.b64encode(buffer).decode('utf-8')
-
-        mime_type = 'jpeg' if format_to == '.jpg' else 'png' if format_to == '.png' else 'octet-stream'
-        return f"data:image/{mime_type};base64,{b64_string}"
+        return buffer.tobytes()
 
     def send_image(self, frame):
         """
-        Encode and send an image frame to the FastAPI server.
+        Encode and send an image frame as binary data to the FastAPI WebSocket server.
 
         Args:
             frame: Image frame (numpy array) captured from OpenCV.
@@ -61,12 +67,11 @@ class CameraUploader:
         Logs response status and errors.
         """
         try:
-            b64_image = self.encode_image_to_base64(frame)
-            payload = {"image": b64_image}
-            response = requests.post(self.server_url, json=payload)
-            self.logger.info(f"Sent image, got response: {response.status_code} - {response.text}")
+            image_bytes = self.encode_image_to_bytes(frame)
+            self.ws.send(image_bytes, opcode=websocket.ABNF.OPCODE_BINARY)
+            self.logger.info(f"Sent binary image of size {len(image_bytes)} bytes to WebSocket server")
         except Exception as e:
-            self.logger.error(f"Failed to send image: {e}")
+            self.logger.error(f"Failed to send image over WebSocket: {e}")
 
     def main(self, interval: int = 1):
         """
@@ -93,6 +98,14 @@ class CameraUploader:
                 time.sleep(interval)
         except KeyboardInterrupt:
             self.logger.info("Stopped by user.")
+        except Exception as e:
+            self.logger.error(f"Unexpected error: {e}")
         finally:
+            if self.ws:
+                try:
+                    self.ws.close()
+                    self.logger.info("WebSocket connection closed")
+                except Exception as e:
+                    self.logger.error(f"Error closing WebSocket: {e}")
             cap.release()
             cv2.destroyAllWindows()

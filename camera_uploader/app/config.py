@@ -7,4 +7,4 @@ ES_INDEX = os.getenv("ES_INDEX", "logger")
 ES_URI = f"http://{ES_HOST}:{ES_PORT}"
 
 # FastAPI server configuration
-SERVER_URL = os.getenv("SERVER_URL", "http://localhost:8000/upload-image") 
+SERVER_URL = os.getenv("SERVER_URL", "http://localhost:8000/camera/upload-image") 
