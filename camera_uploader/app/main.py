@@ -9,7 +9,7 @@ def main():
     This function creates an instance of CameraUploader with the server URL
     specified in the configuration and starts the image capture and upload process.
     """
-    uploader = CameraUploader(server_url=config.SERVER_URL)
+    uploader = CameraUploader(config.SERVER_URL)
     uploader.main()
 
 if __name__ == "__main__":

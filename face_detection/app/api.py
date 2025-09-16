@@ -1,13 +1,6 @@
-
-"""
-API module for image upload and processing in the face_detection service.
-
-Provides a FastAPI endpoint for receiving base64-encoded images, decoding, and processing them using FaceDetectionApp.
-Logs all operations and errors using the project logger.
-"""
-
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect, status
 from fastapi.responses import JSONResponse
+import uvicorn
 from pydantic import BaseModel
 import base64
 import re
@@ -119,3 +112,6 @@ async def websocket_image_endpoint(websocket: WebSocket):
     except Exception as e:
         logger.exception(f"Unexpected WebSocket error from {client_host}: {e}")
         await websocket.close(code=status.WS_1011_INTERNAL_ERROR)
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
