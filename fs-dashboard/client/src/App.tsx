@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ApplicationLayout from "./components/application-layout/ApplicationLayout";
 import NotFoundPage from "./components/application-layout/NotFoundPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import HomePage from "./pages/HomePage";
@@ -16,8 +17,16 @@ function App() {
         <ApplicationLayout>
           <Routes>
             <Route index element={<HomePage />} />
-            <Route path="/events" element={<EventsPage />} />
-            <Route path="/cameras" element={<CamerasPage />} />
+            <Route path="/events" element={
+              <ProtectedRoute>
+                <EventsPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/cameras" element={
+              <ProtectedRoute>
+                <CamerasPage />
+              </ProtectedRoute>
+            } />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="*" element={<NotFoundPage />} />
