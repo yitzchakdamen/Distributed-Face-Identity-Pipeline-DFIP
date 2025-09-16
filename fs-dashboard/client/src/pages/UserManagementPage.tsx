@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getAllCameras } from "../services/cameraService";
 import CameraAssignment from "../components/CameraAssignment";
+import UserCreationForm from "../components/UserCreationForm";
 import type { IUser } from "../@types/User";
 import type { ICamera } from "../@types/Camera";
 import "./UserManagementPage.css";
@@ -41,6 +42,7 @@ const UserManagementPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+  const [activeTab, setActiveTab] = useState<"users" | "create" | "assign">("users");
 
   useEffect(() => {
     const fetchCameras = async () => {
@@ -72,64 +74,96 @@ const UserManagementPage: React.FC = () => {
   return (
     <div className="user-management-page">
       <h1>User Management</h1>
-      <p className="feature-notice">
-        Camera assignment feature coming soon. Currently showing all users and cameras.
-      </p>
-
-      <div className="management-grid">
-        <div className="users-section">
-          <h2>Users ({users.length})</h2>
-          <div className="users-list">
-            {users.map((user) => (
-              <div
-                key={user.id}
-                className={`user-card ${selectedUser?.id === user.id ? "selected" : ""}`}
-                onClick={() => setSelectedUser(user)}
-              >
-                <div className="user-info">
-                  <h3>{user.name}</h3>
-                  <p>
-                    <strong>Username:</strong> {user.username}
-                  </p>
-                  <p>
-                    <strong>Email:</strong> {user.email}
-                  </p>
-                  <span className={`role-badge ${user.role}`}>{user.role.toUpperCase()}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="cameras-section">
-          <h2>Available Cameras ({cameras.length})</h2>
-          <div className="cameras-list">
-            {cameras.map((camera) => (
-              <div key={camera.id} className="camera-card">
-                <div className="camera-info">
-                  <h3>{camera.name}</h3>
-                  <p>
-                    <strong>Camera ID:</strong> {camera.camera_id}
-                  </p>
-                  <p>
-                    <strong>Created:</strong> {new Date(camera.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      
+      <div className="tab-navigation">
+        <button 
+          className={`tab-btn ${activeTab === "users" ? "active" : ""}`}
+          onClick={() => setActiveTab("users")}
+        >
+          View Users
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === "create" ? "active" : ""}`}
+          onClick={() => setActiveTab("create")}
+        >
+          Create User
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === "assign" ? "active" : ""}`}
+          onClick={() => setActiveTab("assign")}
+        >
+          Assign Cameras
+        </button>
       </div>
 
-      {selectedUser && (
-        <div className="assignment-section">
-          <h3>Camera Assignment for {selectedUser.name}</h3>
-          <CameraAssignment />
+      {activeTab === "users" && (
+        <div className="users-tab">
+          <p className="feature-notice">
+            Camera assignment feature coming soon. Currently showing all users and cameras.
+          </p>
+
+          <div className="management-grid">
+            <div className="users-section">
+              <h2>Users ({users.length})</h2>
+              <div className="users-list">
+                {users.map((user) => (
+                  <div
+                    key={user.id}
+                    className={`user-card ${selectedUser?.id === user.id ? "selected" : ""}`}
+                    onClick={() => setSelectedUser(user)}
+                  >
+                    <div className="user-info">
+                      <h3>{user.name}</h3>
+                      <p>
+                        <strong>Username:</strong> {user.username}
+                      </p>
+                      <p>
+                        <strong>Email:</strong> {user.email}
+                      </p>
+                      <span className={`role-badge ${user.role}`}>{user.role.toUpperCase()}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="cameras-section">
+              <h2>Available Cameras ({cameras.length})</h2>
+              <div className="cameras-list">
+                {cameras.map((camera) => (
+                  <div key={camera.id} className="camera-card">
+                    <div className="camera-info">
+                      <h3>{camera.name}</h3>
+                      <p>
+                        <strong>Camera ID:</strong> {camera.camera_id}
+                      </p>
+                      <p>
+                        <strong>Created:</strong> {new Date(camera.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {selectedUser && (
+            <div className="assignment-section">
+              <h3>Camera Assignment for {selectedUser.name}</h3>
+              <CameraAssignment />
+            </div>
+          )}
         </div>
       )}
-      
-      {!selectedUser && (
-        <div className="camera-assignment-section">
+
+      {activeTab === "create" && (
+        <div className="create-user-tab">
+          <UserCreationForm />
+        </div>
+      )}
+
+      {activeTab === "assign" && (
+        <div className="assign-cameras-tab">
           <CameraAssignment />
         </div>
       )}
