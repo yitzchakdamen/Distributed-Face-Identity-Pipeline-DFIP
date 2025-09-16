@@ -42,6 +42,7 @@ const UserManagementPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+  const [activeTab, setActiveTab] = useState<"users" | "create" | "assign">("users");
 
   useEffect(() => {
     const fetchCameras = async () => {
