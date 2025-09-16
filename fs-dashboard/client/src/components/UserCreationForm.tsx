@@ -85,7 +85,14 @@ const UserCreationForm: React.FC = () => {
         setError(response.error || "Failed to create user");
       }
     } catch (err: any) {
-      setError(err.message || "Failed to create user");
+      console.error("Error creating user:", err);
+      if (err.response?.status === 401) {
+        setError("Authentication required. Please login again.");
+      } else if (err.response?.status === 403) {
+        setError("You don't have permission to create this type of user.");
+      } else {
+        setError(err.message || "Failed to create user");
+      }
     } finally {
       setLoading(false);
     }
