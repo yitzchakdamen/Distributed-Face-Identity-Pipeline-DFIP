@@ -35,12 +35,12 @@ const EventImageModal: React.FC<EventImageModalProps> = ({
       setLoading(true);
       setError(null);
       
-      // Build image URL using the event ID, not the image_id
+      // Build image URL using the event ID
       const token = localStorage.getItem('token');
       const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
       const imageURL = `${baseURL}/events/${event._id}/image`;
       
-      // For images with auth, we need to handle the authorization properly
+      // Fetch image with proper authorization
       const response = await fetch(imageURL, {
         headers: {
           'Authorization': `Bearer ${token}`
