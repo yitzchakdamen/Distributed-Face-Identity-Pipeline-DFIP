@@ -65,3 +65,68 @@ export async function getUserById(id) {
 
   return new User(data);
 }
+
+/**
+ * Get all users or filter by role
+ * @param {string} role - Optional role filter
+ * @returns {Array} - Array of users
+ */
+export async function getAllUsers(role = null) {
+  let query = supabase.from("users").select("*");
+  
+  if (role) {
+    query = query.eq("role", role);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(`Database error: ${error.message}`);
+  }
+
+  return data.map(userData => new User(userData));
+}
+
+/**
+ * Update user by ID
+ * @param {string} id - User ID
+ * @param {Object} updateData - Data to update
+ * @returns {Object} - Updated user
+ */
+export async function updateUser(id, updateData) {
+  const validatedId = validate(id, userIdSchema);
+
+  const { data, error } = await supabase
+    .from("users")
+    .update(updateData)
+    .eq("id", validatedId)
+    .select()
+    .single();
+
+  if (error) {
+    if (error.code === "PGRST116") return null;
+    throw new Error(`Database error: ${error.message}`);
+  }
+
+  return new User(data);
+}
+
+/**
+ * Delete user by ID
+ * @param {string} id - User ID
+ * @returns {boolean} - Success status
+ */
+export async function deleteUser(id) {
+  const validatedId = validate(id, userIdSchema);
+
+  const { error } = await supabase
+    .from("users")
+    .delete()
+    .eq("id", validatedId);
+
+  if (error) {
+    throw new Error(`Database error: ${error.message}`);
+  }
+
+  return true;
+}

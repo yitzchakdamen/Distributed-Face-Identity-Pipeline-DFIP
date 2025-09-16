@@ -109,22 +109,31 @@
   position: relative;
 }
 
-.user-info h3, .camera-info h3 {
-  margin: 0 0 0.5rem 0;
+.user-header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.user-header h3 {
+  margin: 0;
   color: #2c3e50;
   font-size: 1.1rem;
 }
 
-.user-info p, .camera-info p {
+.user-details {
+  margin-top: 0.5rem;
+}
+
+.user-details p {
   margin: 0.25rem 0;
   color: #666;
   font-size: 0.9rem;
 }
 
 .role-badge {
-  position: absolute;
-  top: 0;
-  right: 0;
   padding: 0.25rem 0.5rem;
   border-radius: 12px;
   font-size: 0.7rem;

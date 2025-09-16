@@ -1,32 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { getAllCameras, assignCameraToUser, removeCameraAssignment, getCameraAssignments } from "../services/cameraService";
-import { getUsersByRole } from "../services/userService";
+import { getAllCameras, assignCameraToUser } from "../services/cameraService";
+import { getAllUsers } from "../services/userService";
 import type { ICamera } from "../@types/Camera";
 import type { IUser } from "../@types/User";
 import "./CameraAssignment.css";
 
-interface Assignment {
-  id: string;
-  camera_id: string;
-  user_id: string;
-  assigned_by: string;
-  assigned_at: string;
-  users: IUser;
-}
-
 const CameraAssignment: React.FC = () => {
   const [cameras, setCameras] = useState<ICamera[]>([]);
-  const [viewers, setViewers] = useState<IUser[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>("");
-  const [selectedViewer, setSelectedViewer] = useState<string>("");
-  const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [selectedUser, setSelectedUser] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
 
   useEffect(() => {
     loadCameras();
-    loadViewers();
+    loadUsers();
   }, []);
 
   const loadCameras = async () => {
@@ -34,175 +24,170 @@ const CameraAssignment: React.FC = () => {
       const response = await getAllCameras();
       if (response.success && response.data) {
         setCameras(response.data);
+      } else {
+        setError(response.error || "Failed to load cameras");
       }
-    } catch (err) {
-      setError("Failed to load cameras");
+    } catch (err: any) {
+      console.error("Error loading cameras:", err);
+      if (err.response?.status === 401) {
+        setError("Authentication required. Please login again.");
+      } else if (err.response?.status === 403) {
+        setError("You don't have permission to view cameras.");
+      } else {
+        setError(err.message || "Failed to load cameras");
+      }
     }
   };
 
-  const loadViewers = async () => {
+  const loadUsers = async () => {
     try {
-      const response = await getUsersByRole("viewer");
+      const response = await getAllUsers();
       if (response.success && response.data) {
-        setViewers(response.data);
+        setUsers(response.data);
+      } else {
+        setError(response.error || "Failed to load users");
       }
-    } catch (err) {
-      setError("Failed to load viewers");
-    }
-  };
-
-  const loadAssignments = async (cameraId: string) => {
-    if (!cameraId) return;
-    
-    try {
-      const response = await getCameraAssignments(cameraId);
-      if (response.success && response.data) {
-        setAssignments(response.data);
+    } catch (err: any) {
+      console.error("Error loading users:", err);
+      if (err.response?.status === 401) {
+        setError("Authentication required. Please login again.");
+      } else if (err.response?.status === 403) {
+        setError("You don't have permission to view users. Only admin and operator roles can assign cameras.");
+      } else {
+        setError(err.message || "Failed to load users");
       }
-    } catch (err) {
-      setError("Failed to load assignments");
     }
   };
 
-  const handleCameraChange = (cameraId: string) => {
-    setSelectedCamera(cameraId);
-    if (cameraId) {
-      loadAssignments(cameraId);
-    } else {
-      setAssignments([]);
-    }
-  };
-
-  const handleAssign = async () => {
-    if (!selectedCamera || !selectedViewer) {
-      setError("Please select both camera and viewer");
+  const handleAssignCamera = async () => {
+    if (!selectedCamera || !selectedUser) {
+      setError("Please select both camera and user");
       return;
     }
 
-    setLoading(true);
-    setError("");
-    setSuccess("");
-
     try {
-      const response = await assignCameraToUser(selectedCamera, selectedViewer);
+      setLoading(true);
+      setError("");
+      setSuccess("");
+
+      const response = await assignCameraToUser(selectedCamera, selectedUser);
+      
       if (response.success) {
-        setSuccess("Camera assigned successfully");
-        loadAssignments(selectedCamera);
-        setSelectedViewer("");
+        setSuccess("Camera assigned successfully!");
+        setSelectedCamera("");
+        setSelectedUser("");
       } else {
         setError(response.error || "Failed to assign camera");
       }
     } catch (err: any) {
-      setError(err.message || "Failed to assign camera");
+      console.error("Error assigning camera:", err);
+      if (err.response?.status === 401) {
+        setError("Authentication required. Please login again.");
+      } else if (err.response?.status === 403) {
+        setError("You don't have permission to assign cameras. Only admin and operator roles can assign cameras.");
+      } else {
+        setError(err.message || "Failed to assign camera");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRemoveAssignment = async (userId: string) => {
-    if (!selectedCamera) return;
-
-    setLoading(true);
+  const clearMessages = () => {
     setError("");
     setSuccess("");
-
-    try {
-      const response = await removeCameraAssignment(selectedCamera, userId);
-      if (response.success) {
-        setSuccess("Assignment removed successfully");
-        loadAssignments(selectedCamera);
-      } else {
-        setError(response.error || "Failed to remove assignment");
-      }
-    } catch (err: any) {
-      setError(err.message || "Failed to remove assignment");
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
     <div className="camera-assignment">
       <h2>Camera Assignment</h2>
       
-      {error && <div className="error-message">{error}</div>}
-      {success && <div className="success-message">{success}</div>}
+      <div className="auth-info">
+        <p><strong>Permission Requirements:</strong></p>
+        <ul>
+          <li>Only <strong>Admin</strong> and <strong>Operator</strong> roles can assign cameras</li>
+          <li>You must be logged in to access this feature</li>
+          <li>If you see permission errors, please check your role with an administrator</li>
+        </ul>
+      </div>
+      
+      {error && (
+        <div className="alert alert-error">
+          {error}
+          <button onClick={clearMessages} className="close-btn">×</button>
+        </div>
+      )}
+      
+      {success && (
+        <div className="alert alert-success">
+          {success}
+          <button onClick={clearMessages} className="close-btn">×</button>
+        </div>
+      )}
 
       <div className="assignment-form">
-        <div className="form-group">
-          <label htmlFor="camera-select">Select Camera:</label>
-          <select
-            id="camera-select"
-            value={selectedCamera}
-            onChange={(e) => handleCameraChange(e.target.value)}
-            className="form-select"
-          >
-            <option value="">-- Select Camera --</option>
-            {cameras.map((camera) => (
-              <option key={camera.id} value={camera.id}>
-                {camera.name} ({camera.camera_id})
-              </option>
-            ))}
-          </select>
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="camera-select">Select Camera:</label>
+            <select
+              id="camera-select"
+              value={selectedCamera}
+              onChange={(e) => setSelectedCamera(e.target.value)}
+              className="form-select"
+            >
+              <option value="">Choose a camera...</option>
+              {cameras.map((camera) => (
+                <option key={camera.id} value={camera.id}>
+                  {camera.name} ({camera.camera_id})
+                </option>
+              ))}
+            </select>
+            {cameras.length === 0 && (
+              <small className="help-text">No cameras available. Check your permissions or ask an admin to create cameras.</small>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="user-select">Select User:</label>
+            <select
+              id="user-select"
+              value={selectedUser}
+              onChange={(e) => setSelectedUser(e.target.value)}
+              className="form-select"
+            >
+              <option value="">Choose a user...</option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name} ({user.username}) - {user.role}
+                </option>
+              ))}
+            </select>
+            {users.length === 0 && (
+              <small className="help-text">No users available. Check your permissions.</small>
+            )}
+          </div>
         </div>
 
-        {selectedCamera && (
-          <>
-            <div className="form-group">
-              <label htmlFor="viewer-select">Assign to Viewer:</label>
-              <div className="assign-control">
-                <select
-                  id="viewer-select"
-                  value={selectedViewer}
-                  onChange={(e) => setSelectedViewer(e.target.value)}
-                  className="form-select"
-                >
-                  <option value="">-- Select Viewer --</option>
-                  {viewers.map((viewer) => (
-                    <option key={viewer.id} value={viewer.id}>
-                      {viewer.name} ({viewer.username})
-                    </option>
-                  ))}
-                </select>
-                <button
-                  onClick={handleAssign}
-                  disabled={!selectedViewer || loading}
-                  className="assign-btn"
-                >
-                  {loading ? "Assigning..." : "Assign"}
-                </button>
-              </div>
-            </div>
+        <button
+          onClick={handleAssignCamera}
+          disabled={loading || !selectedCamera || !selectedUser}
+          className="assign-btn"
+        >
+          {loading ? "Assigning..." : "Assign Camera"}
+        </button>
+      </div>
 
-            <div className="assignments-section">
-              <h3>Current Assignments</h3>
-              {assignments.length === 0 ? (
-                <p className="no-assignments">No assignments for this camera</p>
-              ) : (
-                <div className="assignments-list">
-                  {assignments.map((assignment) => (
-                    <div key={assignment.id} className="assignment-item">
-                      <div className="assignment-info">
-                        <span className="user-name">{assignment.users.name}</span>
-                        <span className="username">({assignment.users.username})</span>
-                        <span className="assigned-date">
-                          Assigned: {new Date(assignment.assigned_at).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => handleRemoveAssignment(assignment.user_id)}
-                        disabled={loading}
-                        className="remove-btn"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </>
-        )}
+      <div className="assignment-info">
+        <h3>How Camera Assignment Works</h3>
+        <p>
+          Camera assignment allows you to control which users can view specific cameras. 
+          This is part of the role-based access control system.
+        </p>
+        <ul>
+          <li><strong>Admin</strong>: Can assign any camera to any user</li>
+          <li><strong>Operator</strong>: Can assign cameras to viewer users</li>
+          <li><strong>Viewer</strong>: Can only view cameras assigned to them</li>
+        </ul>
       </div>
     </div>
   );
