@@ -24,13 +24,18 @@ class GeneralConfig:
             }
         }
 
+
 class ElasticSearchConfig:
     ELASTIC_PORT = os.getenv("ELASTIC_PORT" ,"9200")
     ELASTIC_HOST = os.getenv("ELASTIC_HOST", "http://localhost:")
     ELASTIC_URL = ELASTIC_HOST + ELASTIC_PORT
     REGULAR_INDEX_NAME = os.getenv("REGULAR_INDEX_NAME" ,"persons")
     OPTIMIZE_INDEX_NAME = os.getenv("OPTIMIZE_INDEX_NAME" ,"optimize_vector_identification")
-    REGULAR_MAPPING = {
+    REGULAR_MAPPING = {"settings": {
+            "number_of_shards": 1,
+            "number_of_replicas": 0,
+            "refresh_interval": "0s"
+        },
         "mappings": {
             "properties": {
                 f"{GeneralConfig.EMBEDDING}": {
@@ -48,8 +53,18 @@ class KafkaConfig:
     KAFKA_HOST = os.getenv("KAFKA_HOST", "localhost")
     KAFKA_PORT = os.getenv("KAFKA_PORT" ,"9092")
 
+
+    TOPIC = "topic"
+    VALUE = "value"
+
+
     NEW_VECTOR_TOPIC = os.getenv("NEW_VECTOR_TOPIC" ,"new_vector")
     NEW_VECTOR_PERSON_TOPIC = os.getenv("NEW_VECTOR_PERSON_TOPIC" ,"new_vector_person")
+
+    NEW_VECTOR_APPROVAL_PERSON = os.getenv("NEW_VECTOR_APPROVAL_PERSON" ,"new_vector_approval_person")
+
+    LISTEN_TOPIC = [NEW_VECTOR_TOPIC, NEW_VECTOR_APPROVAL_PERSON]
+
 
 class Errors:
     NO_BROKER_CONNECTION = "No broker connection."

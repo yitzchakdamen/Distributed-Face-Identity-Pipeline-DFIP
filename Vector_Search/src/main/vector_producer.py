@@ -2,7 +2,7 @@ from Vector_Search.src.utils.logger import Logger
 from Vector_Search.src.utils.kafka_util import producer
 
 
-class SendData:
+class VectorProducer:
     """
     Send to metadata and vector to kafka_util.
     """
@@ -10,7 +10,7 @@ class SendData:
         self.logger = Logger().get_logger()
         self.producer = producer.Producer()
 
-    def send_data(self, vector_with_metadata : dict):
+    def send_vector(self, vector_with_metadata : dict):
         """
         Upload metadata to Elastic, and audios to Mongo.
         :param vector_with_metadata:
