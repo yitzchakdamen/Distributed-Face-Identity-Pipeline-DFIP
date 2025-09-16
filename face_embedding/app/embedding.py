@@ -18,8 +18,8 @@ class FaceEmbedding:
         Initialize the face analysis model with CPU provider and prepare it for inference.
         """
         provider = 'CPUExecutionProvider'
-        self.app = FaceAnalysis(providers=[provider])
-        self.app.prepare(ctx_id=-1, det_size=(320, 320))
+        self.app = FaceAnalysis(name="buffalo_l", providers=[provider])
+        self.app.prepare(ctx_id=-1, det_size=(512, 512))
         self.logger = Logger.get_logger(__name__)
         self.logger.info("FaceEmbedding model initialized.")
 

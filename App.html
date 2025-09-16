@@ -2,58 +2,786 @@
 <html lang="he">
 <head>
   <meta charset="UTF-8">
-  <title>דשבורד אנשים</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>דשבורד אנשים - גלריה מתקדמת</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
-    h1 { text-align: center; }
-    .person { background: #fff; padding: 15px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .person h2 { margin: 0 0 10px 0; font-size: 16px; }
-    .images { display: flex; flex-wrap: wrap; gap: 10px; }
-    .images img { width: 150px; height: 150px; object-fit: cover; border: 1px solid #ccc; border-radius: 4px; }
+    :root {
+      --primary: #4361ee;
+      --primary-dark: #3a56d4;
+      --secondary: #7209b7;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --gray: #6c757d;
+      --success: #4cc9f0;
+      --border-radius: 16px;
+      --box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+      padding: 20px;
+      direction: rtl;
+      color: var(--dark);
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 10px;
+      position: relative;
+      display: inline-block;
+    }
+
+    h1:after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      right: 0;
+      width: 60%;
+      height: 4px;
+      background: linear-gradient(to right, var(--primary), var(--success));
+      border-radius: 2px;
+    }
+
+    .subtitle {
+      color: var(--gray);
+      font-size: 1.1rem;
+      margin-top: 15px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      margin-bottom: 50px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+
+    .stat-card:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 5px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--primary), var(--secondary));
+    }
+
+    .stat-card h2 {
+      font-size: 1rem;
+      margin-bottom: 15px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stat-card h2 i {
+      font-size: 1.2rem;
+    }
+
+    .stat-card .stat-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+
+    .stat-card .stat-desc {
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    .gallery-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 30px;
+    }
+
+    .person-card {
+      background: white;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .person-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 35px rgba(0,0,0,0.15);
+    }
+
+    .person-header {
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      color: white;
+      padding: 15px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .person-header .person-id {
+      font-weight: 700;
+    }
+
+    .person-header .image-count {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .person-image {
+      width: 100%;
+      height: 200px; /* גובה מופחת */
+      object-fit: cover;
+      display: block;
+      transition: var(--transition);
+    }
+
+    .person-card:hover .person-image {
+      transform: scale(1.05);
+    }
+
+    .person-footer {
+      padding: 12px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--gray);
+      background: var(--light);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.95);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .lightbox.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .lightbox-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 95%;
+      max-width: 1600px;
+      height: 95vh;
+    }
+
+    .lightbox-img-container {
+      width: 100%;
+      height: 95vh; /* כמעט כל גובה המסך */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .lightbox img {
+      max-width: 90%;   /* יותר רחב */
+      max-height: 95%;  /* יותר גבוה */
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 5px 35px rgba(0,0,0,0.5); /* יותר מודגש */
+      transition: transform 0.3s ease, max-width 0.3s ease, max-height 0.3s ease;
+    }
+
+    .lightbox.active img {
+      transform: scale(1.05);
+    }
+
+
+
+    .lightbox .close {
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 1001;
+      background: rgba(0,0,0,0.5);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: var(--transition);
+    }
+
+    .lightbox .close:hover {
+      background: rgba(0,0,0,0.7);
+      transform: rotate(90deg);
+    }
+
+    .lightbox .nav {
+      color: white;
+      font-size: 40px;
+      cursor: pointer;
+      user-select: none;
+      padding: 0 20px;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.5);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: var(--transition);
+    }
+
+    .lightbox .nav:hover {
+      background: rgba(0,0,0,0.7);
+    }
+
+    .lightbox .nav.nav-left {
+      left: 30px;
+    }
+
+    .lightbox .nav.nav-right {
+      right: 30px;
+    }
+
+    .lightbox-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    .lightbox-counter {
+      color: white;
+      font-size: 1.2rem;
+      margin-top: 15px;
+      background: rgba(0,0,0,0.5);
+      padding: 8px 20px;
+      border-radius: 20px;
+    }
+
+    .lightbox-thumbnails {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      overflow-x: auto;
+      max-width: 100%;
+      padding: 10px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+    }
+
+    .lightbox-thumbnail {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: var(--transition);
+    }
+
+    .lightbox-thumbnail:hover, .lightbox-thumbnail.active {
+      opacity: 1;
+      border: 3px solid white;
+      transform: scale(1.1);
+    }
+
+    .lightbox-person-info {
+      color: white;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      text-align: center;
+      background: rgba(0,0,0,0.5);
+      padding: 12px 30px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .lightbox-person-info .person-image-count {
+      font-size: 1.2rem;
+      background: var(--primary);
+      padding: 6px 15px;
+      border-radius: 20px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+      .gallery-container {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      }
+    }
+
+    @media (max-width: 992px) {
+      .gallery-container {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+      
+      .person-image {
+        height: 180px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .stats {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+      
+      .gallery-container {
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 20px;
+      }
+      
+      .person-image {
+        height: 160px;
+      }
+      
+      .person-header {
+        font-size: 1rem;
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .lightbox .nav {
+        font-size: 30px;
+        width: 50px;
+        height: 50px;
+      }
+      
+      .lightbox .nav.nav-left {
+        left: 15px;
+      }
+      
+      .lightbox .nav.nav-right {
+        right: 15px;
+      }
+      
+      .lightbox-person-info {
+        font-size: 1.4rem;
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      body {
+        padding: 15px;
+      }
+      
+      header {
+        margin-bottom: 30px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .stats {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      
+      .gallery-container {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+      }
+      
+      .person-image {
+        height: 140px;
+      }
+      
+      .lightbox-thumbnail {
+        width: 60px;
+        height: 60px;
+      }
+    }
+
+    /* Loading animation */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 300px;
+      grid-column: 1 / -1;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Animation for cards */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .stat-card, .person-card {
+      animation: fadeIn 0.5s ease-out forwards;
+      opacity: 0;
+    }
+
+    .person-card:nth-child(2) { animation-delay: 0.1s; }
+    .person-card:nth-child(3) { animation-delay: 0.2s; }
+    .person-card:nth-child(4) { animation-delay: 0.3s; }
+    .person-card:nth-child(5) { animation-delay: 0.4s; }
+    .person-card:nth-child(6) { animation-delay: 0.5s; }
   </style>
 </head>
 <body>
-  <h1>דשבורד אנשים</h1>
-  <div id="container"></div>
+  <div class="container">
+    <header>
+      <h1>דשבורד אנשים - גלריה מתקדמת</h1>
+      <p class="subtitle">ניהול ותצוגת תמונות לפי אנשים</p>
+    </header>
+
+    <div id="stats" class="stats">
+      <!-- Statistics will be loaded here -->
+    </div>
+
+    <div id="container" class="gallery-container">
+      <!-- People cards will be loaded here -->
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox">
+    <div class="close" onclick="closeLightbox()">
+      <i class="fas fa-times"></i>
+    </div>
+    <div class="lightbox-content">
+      <div class="lightbox-person-info" id="lightbox-person-info">
+        <span id="lightbox-person-id"></span>
+        <span class="person-image-count" id="lightbox-person-count"></span>
+      </div>
+      <div class="lightbox-img-container">
+        <img id="lightbox-img" src="" alt="">
+      </div>
+      <div class="lightbox-controls">
+        <div class="lightbox-counter" id="lightbox-counter"></div>
+        <div class="lightbox-thumbnails" id="lightbox-thumbnails"></div>
+      </div>
+    </div>
+    <div class="nav nav-left" onclick="prevImage()">
+      <i class="fas fa-chevron-left"></i>
+    </div>
+    <div class="nav nav-right" onclick="nextImage()">
+      <i class="fas fa-chevron-right"></i>
+    </div>
+  </div>
 
   <script>
+    let lightboxImages = [];
+    let currentIndex = 0;
+    let currentPersonId = '';
+
     async function fetchData() {
+      // Show loading state
+      document.getElementById('container').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+        </div>
+      `;
+      
       try {
+        // Simulating API call with mock data
+        // Replace this with your actual API call
+        const mockData = {
+          stats: {
+            total_persons: 12,
+            total_images: 84,
+            avg_images_per_person: 7,
+            max_images_for_single_person: 15,
+            min_images_for_single_person: 3
+          },
+          persons: [
+            {
+              person_id: 1,
+              images: [
+                'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cGVyc29ufGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60',
+                'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8cGVyc29ufGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60',
+                'https://images.unsplash.com/photo-1513956589380-bad6acb9b9d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHBlcnNvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60'
+              ]
+            },
+            {
+              person_id: 2,
+              images: [
+                'https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHBlcnNvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60',
+                'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fHBlcnNvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60',
+                'https://images.unsplash.com/photo-1552058544-f2b08422138a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHBlcnNvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60',
+                'https://images.unsplash.com/photo-1567532939604-b6b5b0db1604?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjJ8fHBlcnNvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60'
+              ]
+            },
+            {
+              person_id: 3,
+              images: [
+                'https://images.unsplash.com/photo-1519764622345-23439dd774f7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjZ8fHBlcnNvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60',
+                'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzB8fHBlcnNvbnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60'
+              ]
+            }
+          ]
+        };
+        
+        // Simulate network delay
+        // await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // return mockData;
+        
+        // In production, use this:
         const res = await fetch('http://localhost:5000/api/persons');
         const data = await res.json();
         return data;
       } catch (err) {
         console.error("שגיאה בטעינת הנתונים:", err);
-        return [];
+        return { persons: [], stats: {} };
       }
     }
 
-    function renderData(data) {
+    function renderStats(stats) {
+      const statsDiv = document.getElementById('stats');
+      statsDiv.innerHTML = `
+        <div class="stat-card">
+          <h2><i class="fas fa-users"></i> סה"כ אנשים</h2>
+          <div class="stat-value">${stats.total_persons}</div>
+          <div class="stat-desc">מספר האנשים במערכת</div>
+        </div>
+        <div class="stat-card">
+          <h2><i class="fas fa-images"></i> סה"כ תמונות</h2>
+          <div class="stat-value">${stats.total_images}</div>
+          <div class="stat-desc">סך כל התמונות</div>
+        </div>
+        <div class="stat-card">
+          <h2><i class="fas fa-calculator"></i> ממוצע תמונות לאדם</h2>
+          <div class="stat-value">${stats.avg_images_per_person.toFixed(2)}</div>
+          <div class="stat-desc">מספר תמונות ממוצע לאדם</div>
+        </div>
+        <div class="stat-card">
+          <h2><i class="fas fa-arrow-up"></i> מקסימום תמונות לאדם</h2>
+          <div class="stat-value">${stats.max_images_for_single_person}</div>
+          <div class="stat-desc">המספר המרבי של תמונות לאדם אחד</div>
+        </div>
+        <div class="stat-card">
+          <h2><i class="fas fa-arrow-down"></i> מינימום תמונות לאדם</h2>
+          <div class="stat-value">${stats.min_images_for_single_person}</div>
+          <div class="stat-desc">המספר המינימלי של תמונות לאדם אחד</div>
+        </div>
+      `;
+    }
+
+    function renderPersons(persons) {
       const container = document.getElementById('container');
+      
+      if (persons.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+            <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: #6c757d; margin-bottom: 15px;"></i>
+            <h3 style="color: #6c757d;">לא נמצאו אנשים</h3>
+            <p>אין נתונים להצגה כרגע</p>
+          </div>
+        `;
+        return;
+      }
+      
       container.innerHTML = '';
 
-      data.forEach(person => {
+      persons.forEach((person, index) => {
         const div = document.createElement('div');
-        div.className = 'person';
+        div.className = 'person-card';
+        div.style.animationDelay = `${index * 0.1}s`;
+        div.innerHTML = `
+          <div class="person-header">
+            <span class="person-id"> ${person.person_id.substring(0, 10)}...</span>
+            <span class="image-count">
+              <i class="fas fa-images"></i>
+              ${person.images.length} תמונות
+            </span>
+          </div>
+          <img class="person-image" src="${person.images[0]}" alt="Person ${person.person_id.substring(0, 10)}">
+          <div class="person-footer">
+            <i class="fas fa-expand"></i>
+            לחץ לצפייה בתמונות גדולות
+          </div>
+        `;
 
-        div.innerHTML = `<h2>${person.person_id} (${person.images.length} תמונות)</h2>`;
-        const imagesDiv = document.createElement('div');
-        imagesDiv.className = 'images';
+        div.onclick = () => openLightbox(person.images, person.person_id);
 
-        person.images.forEach(imgSrc => {
-          const img = document.createElement('img');
-          img.src = imgSrc;
-          imagesDiv.appendChild(img);
-        });
-
-        div.appendChild(imagesDiv);
         container.appendChild(div);
       });
     }
 
+    function openLightbox(images, personId) {
+      lightboxImages = images;
+      currentIndex = 0;
+      currentPersonId = personId;
+      updateLightbox();
+      document.getElementById('lightbox').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+
+    function nextImage() {
+      currentIndex = (currentIndex + 1) % lightboxImages.length;
+      updateLightbox();
+    }
+
+    function prevImage() {
+      currentIndex = (currentIndex - 1 + lightboxImages.length) % lightboxImages.length;
+      updateLightbox();
+    }
+
+    function updateLightbox() {
+      const lightboxImg = document.getElementById('lightbox-img');
+      const lightboxCounter = document.getElementById('lightbox-counter');
+      const lightboxThumbnails = document.getElementById('lightbox-thumbnails');
+      const lightboxPersonId = document.getElementById('lightbox-person-id');
+      const lightboxPersonCount = document.getElementById('lightbox-person-count');
+      
+      lightboxImg.src = lightboxImages[currentIndex];
+      lightboxCounter.textContent = `${currentIndex + 1} / ${lightboxImages.length}`;
+      lightboxPersonId.textContent = `אדם ${currentPersonId}`;
+      lightboxPersonCount.textContent = `${lightboxImages.length} תמונות`;
+      
+      // Update thumbnails
+      lightboxThumbnails.innerHTML = '';
+      lightboxImages.forEach((img, index) => {
+        const thumbnail = document.createElement('img');
+        thumbnail.src = img;
+        thumbnail.className = 'lightbox-thumbnail' + (index === currentIndex ? ' active' : '');
+        thumbnail.onclick = () => {
+          currentIndex = index;
+          updateLightbox();
+        };
+        lightboxThumbnails.appendChild(thumbnail);
+      });
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+      if (document.getElementById('lightbox').classList.contains('active')) {
+        if (e.key === 'Escape') {
+          closeLightbox();
+        } else if (e.key === 'ArrowRight') {
+          prevImage(); // Because of RTL direction
+        } else if (e.key === 'ArrowLeft') {
+          nextImage(); // Because of RTL direction
+        }
+      }
+    });
+
+    // Swipe support for touch devices
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    const lightbox = document.getElementById('lightbox');
+    lightbox.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, false);
+    
+    lightbox.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, false);
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      
+      if (touchEndX < touchStartX - swipeThreshold) {
+        nextImage(); // Swipe left to go next
+      }
+      
+      if (touchEndX > touchStartX + swipeThreshold) {
+        prevImage(); // Swipe right to go previous
+      }
+    }
+
     async function init() {
       const data = await fetchData();
-      renderData(data);
+      renderStats(data.stats);
+      renderPersons(data.persons);
     }
 
     init();
