@@ -10,6 +10,41 @@
   font-size: 2.5rem;
 }
 
+.tab-navigation {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.tab-btn {
+  padding: 12px 24px;
+  background: #f8f9fa;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6c757d;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.tab-btn.active {
+  background: #007bff;
+  color: white;
+}
+
+.users-tab,
+.create-user-tab,
+.assign-cameras-tab {
+  margin-top: 20px;
+}
+
 .feature-notice {
   background: #e8f4fd;
   border: 1px solid #bee5eb;
