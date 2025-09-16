@@ -8,7 +8,12 @@
     "build": "tsc -b && vite build",
     "start": "npm run preview",
     "lint": "eslint .",
-    "preview": "vite preview --host 0.0.0.0 --port ${PORT:-4173}"
+    "preview": "vite preview --host 0.0.0.0 --port ${PORT:-4173}",
+    "seo:audit": "lighthouse https://facealert.security --output json --output html --output-path ./seo-audit",
+    "seo:validate": "html-validator --file=./dist/index.html",
+    "seo:sitemap": "node scripts/generate-sitemap.js",
+    "analyze": "vite build --analyze",
+    "optimize": "npm run build && npm run seo:validate"
   },
   "engines": {
     "node": "18.x",
