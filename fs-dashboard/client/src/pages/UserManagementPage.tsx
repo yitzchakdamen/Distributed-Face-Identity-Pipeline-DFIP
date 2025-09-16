@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { getAllUsers } from "../services/userService";
-import { getAllCameras } from "../services/cameraService";
 import { useAuth } from "../context/AuthContext";
 import CameraAssignment from "../components/CameraAssignment";
 import UserCreationForm from "../components/UserCreationForm";
 import type { IUser } from "../@types/User";
-import type { ICamera } from "../@types/Camera";
 import "./UserManagementPage.css";
 
 const UserManagementPage: React.FC = () => {
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<IUser[]>([]);
-  const [cameras, setCameras] = useState<ICamera[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"users" | "create" | "assign">("users");
@@ -38,20 +35,13 @@ const UserManagementPage: React.FC = () => {
       setLoading(true);
       setError(null);
       
-      // Load users and cameras in parallel
-      const [usersResponse, camerasResponse] = await Promise.all([
-        getAllUsers(),
-        getAllCameras()
-      ]);
+      // Load users
+      const usersResponse = await getAllUsers();
       
       if (usersResponse.success && usersResponse.data) {
         setUsers(usersResponse.data);
       } else {
         setError(usersResponse.error || "Failed to load users");
-      }
-      
-      if (camerasResponse.success && camerasResponse.data) {
-        setCameras(camerasResponse.data);
       }
       
     } catch (err: any) {
