@@ -27,9 +27,9 @@ class QualityGate:
         self.min_bbox_h = int(os.getenv("QG_MIN_BBOX_H", "64"))
         self.min_bbox_w = int(os.getenv("QG_MIN_BBOX_W", "64"))
         self.min_sharpness = float(os.getenv("QG_MIN_SHARPNESS", "20"))
-        self.brightness_lo = float(os.getenv("QG_BRIGHTNESS_LO", "40"))
-        self.brightness_hi = float(os.getenv("QG_BRIGHTNESS_HI", "210"))
-        self.contrast_min = float(os.getenv("QG_CONTRAST_MIN", "15"))
+        self.brightness_lo = float(os.getenv("QG_BRIGHTNESS_LO", "20"))
+        self.brightness_hi = float(os.getenv("QG_BRIGHTNESS_HI", "230"))
+        self.contrast_min = float(os.getenv("QG_CONTRAST_MIN", "10"))
         self.version = os.getenv("QG_THRESHOLDS_VERSION", "v1")
 
     def assess(self, crop_bgr: np.ndarray, bbox_size: Tuple[int, int]) -> QualityResult:
