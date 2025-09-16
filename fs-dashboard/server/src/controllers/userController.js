@@ -34,6 +34,7 @@ export async function getProfile(req, res, next) {
 /**
  * Get user by ID
  * GET /users/:id
+ * Access control handled by canAccessUser middleware
  */
 export async function getUserByIdController(req, res, next) {
   try {
