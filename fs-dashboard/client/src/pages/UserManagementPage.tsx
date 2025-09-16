@@ -16,6 +16,19 @@ const UserManagementPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"users" | "create" | "assign">("users");
 
+  // Helper function to format date
+  const formatDate = (dateString: string): string => {
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return "Unknown date";
+      }
+      return date.toLocaleDateString();
+    } catch {
+      return "Unknown date";
+    }
+  };
+
   useEffect(() => {
     loadData();
   }, []);
@@ -148,7 +161,7 @@ const UserManagementPage: React.FC = () => {
                     <div className="user-details">
                       <p><strong>Username:</strong> {user.username}</p>
                       <p><strong>Email:</strong> {user.email}</p>
-                      <p><strong>Created:</strong> {new Date(user.created_at).toLocaleDateString()}</p>
+                      <p><strong>Created:</strong> {formatDate(user.created_at)}</p>
                     </div>
                   </div>
                 ))}
