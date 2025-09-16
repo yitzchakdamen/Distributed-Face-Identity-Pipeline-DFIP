@@ -19,7 +19,7 @@ class FaceEmbedding:
         """
         provider = 'CPUExecutionProvider'
         self.app = FaceAnalysis(name="buffalo_l", providers=[provider])
-        self.app.prepare(ctx_id=-1, det_size=(512, 512))
+        self.app.prepare(ctx_id=-1, det_size=(320, 320))
         self.logger = Logger.get_logger(__name__)
         self.logger.info("FaceEmbedding model initialized.")
 
