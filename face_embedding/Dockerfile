@@ -17,6 +17,7 @@ RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 RUN python -c "from insightface.app import FaceAnalysis; app = FaceAnalysis(); app.prepare(ctx_id=-1, det_size=(320, 320))"
+RUN python -c "from insightface.app import FaceAnalysis; app = FaceAnalysis(name='buffalo_l'); app.prepare(ctx_id=-1, det_size=(320, 320))"
 
 COPY face_embedding/app ./face_embedding/app
 
