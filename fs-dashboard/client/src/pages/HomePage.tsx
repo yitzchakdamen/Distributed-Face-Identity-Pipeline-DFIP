@@ -9,7 +9,7 @@ const HomePage: React.FC = () => {
     return (
       <div className="home-page">
         <div className="welcome-message">
-          <h1>Welcome to DFIP Dashboard</h1>
+          <h1>Welcome to FaceAlert</h1>
           <p>Please log in to access the face recognition monitoring system.</p>
         </div>
       </div>
