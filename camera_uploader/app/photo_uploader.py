@@ -2,7 +2,6 @@ import cv2
 import base64
 import requests
 import time
-from camera_uploader.app import config
 from camera_uploader.app.logger import Logger
 
 
