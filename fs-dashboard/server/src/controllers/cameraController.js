@@ -19,7 +19,7 @@ export class CameraController {
   static async createCamera(req, res) {
     try {
       // Validate request body
-      const { error, value } = validate(req.body, createCameraSchema);
+      const { error, value } = createCameraSchema.validate(req.body);
       if (error) {
         return res.status(400).json({
           success: false,
@@ -56,7 +56,7 @@ export class CameraController {
   static async getCameras(req, res) {
     try {
       // Validate query parameters
-      const { error, value } = validate(req.query, getCamerasQuerySchema);
+      const { error, value } = getCamerasQuerySchema.validate(req.query);
       if (error) {
         return res.status(400).json({
           success: false,
@@ -93,9 +93,12 @@ export class CameraController {
   static async getCameraById(req, res) {
     try {
       // Validate camera ID parameter
-      const { error, value } = validate({
-        camera_id: req.params.camera_id,
-      }, cameraIdSchema);
+      const { error, value } = schema.validate(
+        {
+          camera_id: req.params.camera_id,
+        },
+        cameraIdSchema
+      );
       if (error) {
         return res.status(400).json({
           success: false,
@@ -133,9 +136,12 @@ export class CameraController {
   static async updateCamera(req, res) {
     try {
       // Validate camera ID parameter
-      const { error: idError, value: idValue } = validate({
-        camera_id: req.params.camera_id,
-      }, cameraIdSchema);
+      const { error: idError, value: idValue } = schema.validate(
+        {
+          camera_id: req.params.camera_id,
+        },
+        cameraIdSchema
+      );
       if (idError) {
         return res.status(400).json({
           success: false,
@@ -145,10 +151,7 @@ export class CameraController {
       }
 
       // Validate request body
-      const { error: bodyError, value: bodyValue } = validate(
-        req.body,
-        updateCameraSchema
-      );
+      const { error: bodyError, value: bodyValue } = schema.validate(req.body, updateCameraSchema);
       if (bodyError) {
         return res.status(400).json({
           success: false,
@@ -186,9 +189,12 @@ export class CameraController {
   static async deleteCamera(req, res) {
     try {
       // Validate camera ID parameter
-      const { error, value } = validate({
-        camera_id: req.params.camera_id,
-      }, cameraIdSchema);
+      const { error, value } = schema.validate(
+        {
+          camera_id: req.params.camera_id,
+        },
+        cameraIdSchema
+      );
       if (error) {
         return res.status(400).json({
           success: false,
@@ -225,9 +231,12 @@ export class CameraController {
   static async assignCamera(req, res) {
     try {
       // Validate camera ID parameter
-      const { error: idError, value: idValue } = validate({
-        camera_id: req.params.camera_id,
-      }, cameraIdSchema);
+      const { error: idError, value: idValue } = schema.validate(
+        {
+          camera_id: req.params.camera_id,
+        },
+        cameraIdSchema
+      );
       if (idError) {
         return res.status(400).json({
           success: false,
@@ -237,10 +246,7 @@ export class CameraController {
       }
 
       // Validate request body
-      const { error: bodyError, value: bodyValue } = validate(
-        req.body,
-        assignCameraSchema
-      );
+      const { error: bodyError, value: bodyValue } = schema.validate(req.body, assignCameraSchema);
       if (bodyError) {
         return res.status(400).json({
           success: false,
@@ -279,9 +285,12 @@ export class CameraController {
   static async removeAssignment(req, res) {
     try {
       // Validate camera ID parameter
-      const { error: idError, value: idValue } = validate({
-        camera_id: req.params.camera_id,
-      }, cameraIdSchema);
+      const { error: idError, value: idValue } = schema.validate(
+        {
+          camera_id: req.params.camera_id,
+        },
+        cameraIdSchema
+      );
       if (idError) {
         return res.status(400).json({
           success: false,
@@ -292,9 +301,9 @@ export class CameraController {
 
       // Validate user ID parameter
       const userIdSchema = Joi.object({
-        user_id: Joi.string().uuid().required()
+        user_id: Joi.string().uuid().required(),
       });
-      const { error: userError, value: userValue } = validate(
+      const { error: userError, value: userValue } = schema.validate(
         { user_id: req.params.user_id },
         userIdSchema
       );
@@ -335,9 +344,12 @@ export class CameraController {
   static async getCameraAssignments(req, res) {
     try {
       // Validate camera ID parameter
-      const { error, value } = validate({
-        camera_id: req.params.camera_id,
-      }, cameraIdSchema);
+      const { error, value } = schema.validate(
+        {
+          camera_id: req.params.camera_id,
+        },
+        cameraIdSchema
+      );
       if (error) {
         return res.status(400).json({
           success: false,
