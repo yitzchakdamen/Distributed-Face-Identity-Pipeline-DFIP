@@ -1,0 +1,81 @@
+# Content Security Policy Configuration for Face Alert
+# This file explains the CSP settings and helps debug CSP issues
+
+## Current CSP Policy Breakdown:
+
+### default-src 'self'
+- Allows resources from same origin only by default
+
+### script-src 'self' 'unsafe-inline' 'unsafe-eval' 
+- 'self': Scripts from same origin
+- 'unsafe-inline': Inline scripts (needed for React)  
+- 'unsafe-eval': eval() functions (needed for Vite/bundlers)
+- https://fonts.googleapis.com: Google Fonts scripts
+- https://www.google-analytics.com: Analytics scripts
+- https://www.googletagmanager.com: Tag Manager scripts
+
+### style-src 'self' 'unsafe-inline'
+- 'self': Stylesheets from same origin
+- 'unsafe-inline': Inline styles (needed for React styling)
+- https://fonts.googleapis.com: Google Fonts CSS
+- https://fonts.gstatic.com: Google Fonts stylesheets
+
+### font-src 'self' https://fonts.gstatic.com data:
+- 'self': Fonts from same origin
+- https://fonts.gstatic.com: Google Fonts
+- data:: Base64 encoded fonts
+
+### img-src 'self' data: https: blob:
+- 'self': Images from same origin
+- data:: Base64 encoded images
+- https:: All HTTPS images
+- blob:: Blob URLs for dynamic images
+
+### connect-src 'self' https: wss:
+- 'self': API calls to same origin
+- https:: All HTTPS connections
+- wss:: WebSocket Secure connections
+- https://api.facealert.security: Production API
+- https://api.facealert.live: Live API
+
+### frame-src 'self' https:
+- 'self': Frames from same origin
+- https:: HTTPS iframes
+
+### object-src 'none'
+- Blocks all plugins (Flash, etc.)
+
+### base-uri 'self' 
+- Restricts base tag to same origin
+
+### form-action 'self' https:
+- Allows form submissions to same origin and HTTPS
+
+### upgrade-insecure-requests
+- Automatically upgrades HTTP to HTTPS
+
+## Common CSP Errors and Solutions:
+
+1. "blocked:csp script-src" 
+   - Add script domain to script-src
+   - Check for inline scripts without 'unsafe-inline'
+
+2. "blocked:csp style-src"
+   - Add stylesheet domain to style-src  
+   - Add 'unsafe-inline' for component styles
+
+3. "blocked:csp connect-src"
+   - Add API domain to connect-src
+   - Include WebSocket domains (wss:)
+
+4. "blocked:csp img-src"
+   - Add image domain to img-src
+   - Include data: for base64 images
+   - Include blob: for dynamic images
+
+## Debugging Tips:
+
+1. Check browser console for CSP violations
+2. Use CSP in report-only mode first: Content-Security-Policy-Report-Only
+3. Start with permissive policy and tighten gradually
+4. Test all application features after CSP changes

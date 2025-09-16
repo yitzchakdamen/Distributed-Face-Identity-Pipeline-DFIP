@@ -6,6 +6,14 @@ export default defineConfig(({ mode }) => ({
   plugins: [react()],
   assetsInclude: ['**/*.svg'],
   
+  // Use different HTML files for dev and production
+  ...(mode === 'development' && {
+    // Use more permissive CSP for development
+    define: {
+      __DEV_MODE__: true
+    }
+  }),
+  
   server: {
     proxy: {
       '/api': {
