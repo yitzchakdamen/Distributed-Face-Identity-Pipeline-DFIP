@@ -85,6 +85,16 @@ async def receive_base64_image(data: ImageData, request: Request):
     
 @app.websocket("/camera/upload-image")
 async def websocket_image_endpoint(websocket: WebSocket):
+    """
+    Receive raw image bytes via WebSocket, decode and process them.
+
+    Args:
+        websocket (WebSocket): WebSocket connection from the client.
+
+    Raises:
+        WebSocketDisconnect: If the client disconnects.
+        Exception: If an unexpected error occurs, closes the WebSocket with internal error code.
+    """
     await websocket.accept()
     client_host = websocket.client.host if websocket.client else "unknown"
     logger.info(f"WebSocket connection accepted from {client_host}")
