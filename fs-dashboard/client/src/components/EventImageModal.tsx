@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { getEventImage } from "../services/eventService";
 import type { IEvent } from "../@types/Event";
 import "./EventImageModal.css";
 
@@ -28,36 +29,25 @@ const EventImageModal: React.FC<EventImageModalProps> = ({
         URL.revokeObjectURL(imageUrl);
       }
     };
-  }, [isOpen, event._id]);
+  }, [isOpen, event._id, imageUrl]);
 
   const loadEventImage = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      // Build image URL using the event ID
-      const token = localStorage.getItem('token');
-      const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-      const imageURL = `${baseURL}/events/${event._id}/image`;
+      // Use the new getEventImage service function
+      const imageResult = await getEventImage(event._id);
       
-      // Fetch image with proper authorization
-      const response = await fetch(imageURL, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to load image: ${response.status} ${response.statusText}`);
+      if (imageResult.success && imageResult.data) {
+        setImageUrl(imageResult.data);
+      } else {
+        setError(imageResult.error || 'No image available for this event');
       }
-      
-      // Create blob URL for the image
-      const blob = await response.blob();
-      const blobURL = URL.createObjectURL(blob);
-      setImageUrl(blobURL);
-      setLoading(false);
-    } catch (err: any) {
-      setError(err.message || "Failed to load image");
+    } catch (error) {
+      console.error('Error loading event image:', error);
+      setError('Failed to load image');
+    } finally {
       setLoading(false);
     }
   };
@@ -136,7 +126,7 @@ const EventImageModal: React.FC<EventImageModalProps> = ({
               </div>
             )}
 
-            {!error && (
+            {!error && imageUrl && (
               <img
                 src={imageUrl}
                 alt={`Event ${event._id}`}
