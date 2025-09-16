@@ -49,15 +49,16 @@ const CamerasPage: React.FC = () => {
             <div key={camera.id} className="camera-card">
               <div className="camera-header">
                 <h3>{camera.name}</h3>
-                <span className={`status-badge ${camera.status}`}>
-                  {camera.status?.toUpperCase() || 'UNKNOWN'}
+                <span className="status-badge active">
+                  ACTIVE
                 </span>
               </div>
               
               <div className="camera-details">
-                <p><strong>Location:</strong> {camera.location}</p>
-                <p><strong>IP Address:</strong> {camera.ip_address}</p>
-                <p><strong>Last Seen:</strong> {new Date(camera.last_seen).toLocaleString()}</p>
+                <p><strong>Camera ID:</strong> {camera.camera_id}</p>
+                <p><strong>Connection:</strong> {camera.connection_string}</p>
+                <p><strong>Created:</strong> {new Date(camera.created_at).toLocaleString()}</p>
+                <p><strong>Updated:</strong> {new Date(camera.updated_at).toLocaleString()}</p>
               </div>
               
               <div className="camera-actions">
