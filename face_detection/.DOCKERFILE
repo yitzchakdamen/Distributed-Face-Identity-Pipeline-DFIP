@@ -7,4 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app/face_detection/
 
-CMD ["python", "-m", "face_detection.app.main"]
+EXPOSE 8000
+
+CMD ["uvicorn", "face_detection.app.api:app", "--host", "0.0.0.0", "--port", "8000"]

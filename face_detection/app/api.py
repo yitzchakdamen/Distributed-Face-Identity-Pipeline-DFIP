@@ -18,7 +18,7 @@ def clean_base64_string(b64_string: str) -> str:
         return match.group(1)
     return b64_string
 
-@app.post("/image/raw")
+@app.post("/upload-image")
 async def receive_base64_image(data: ImageData, request: Request):
     try:
         image_b64 = clean_base64_string(data.image)
