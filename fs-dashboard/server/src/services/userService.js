@@ -48,9 +48,25 @@ export async function createUser(userData) {
  * @returns {Promise<User|null>} - User instance or null if not found
  * @throws {ApiError} - If search fails
  */
-async function getUserByEmail(email) {
-  try {
-    if (!email) throw new ApiError(400, "Email is required");
+/**
+ * Get user by email
+ * @param {string} email - User email
+ * @returns {Object|null} - User object or null if not found
+ */
+export async function getUserByEmail(email) {
+  const validatedEmail = validate(email, emailSchema);
+
+  const { data, error } = await supabase.from("users").select("*").eq("email", validatedEmail).single();
+
+  if (error) {
+    if (error.code === "PGRST116") return null; // User not found
+
+    throw new Error(`Database error: ${error.message}`);
+  }
+
+  return new User(data);
+}
+
 
     const { data, error } = await supabase.from("users").select("*").eq("email", email).single();
 
