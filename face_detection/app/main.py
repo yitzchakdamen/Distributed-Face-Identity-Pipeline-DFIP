@@ -1,4 +1,5 @@
 import cv2
+# from Vector_Search.src.training import r
 from face_detection.utils import config
 from face_detection.utils.factory import create_mongo_payload, create_kafka_payload
 from face_detection.src.face_detection import FaceExtractor

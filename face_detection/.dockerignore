@@ -1,14 +1,61 @@
+# Test files and directories
 tests/
 *.test.py
+test_*.py
+*_test.py
 
+# Python cache and compiled files
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.pdb
+*.egg-info/
+.pytest_cache/
 
+# Development and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
-.git
+# Version control
+.git/
 .gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs/
+
+# Environment and config files (keep in image but could be excluded if using external config)
+# .env
+# *.env
+
+# Logs (will be created in container)
+*.log
+logs/
+
+# Data directories (should be mounted as volumes)
+data/
+detected_faces/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Temporary files
+*.tmp
+*.temp
 

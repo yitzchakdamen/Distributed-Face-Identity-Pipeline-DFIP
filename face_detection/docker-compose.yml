@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+  face-detection:
+    build:
+      context: .
+      dockerfile: .DOCKERFILE
+    container_name: face-detection-service
+    restart: unless-stopped
+    
+    environment:
+      # MongoDB Configuration
+      - MONGO_URI=mongodb://mongo:27017
+      - MONGODB_DB_NAME=face_identity
+      - COLLECTION_NAME=Photo_storage
+      
+      # Kafka Configuration
+      - KAFKA_BOOTSTRAP=kafka:9092
+      - KAFKA_TOPIC=image_uploaded
+      
+      # Logging Configuration
+      - LOGGER_NAME=face_detection_service
+      - ES_HOST=elasticsearch
+      - ES_PORT=9200
+      - ES_LOG_INDEX=face_detection_logs
+    
+    volumes:
+      # Mount for detected faces output
+      - ./detected_faces:/app/face_detection/detected_faces
+      # Mount for logs
+      - ./logs:/app/face_detection/logs
+      # Mount for input data (optional)
+      - ./data:/app/face_detection/data:ro
+    
+    networks:
+      - face-detection-network
+    
+    depends_on:
+      - mongo
+      - kafka
+      - elasticsearch
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+
+  # MongoDB service
+  mongo:
+    image: mongo:6.0
+    container_name: face-detection-mongo
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_DATABASE=face_identity
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - face-detection-network
+
+  # Kafka service
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: face-detection-kafka
+    restart: unless-stopped
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    networks:
+      - face-detection-network
+
+  # Zookeeper for Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: face-detection-zookeeper
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - face-detection-network
+
+  # Elasticsearch for logging
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
+    container_name: face-detection-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - face-detection-network
+
+volumes:
+  mongo_data:
+    driver: local
+  es_data:
+    driver: local
+
+networks:
+  face-detection-network:
+    driver: bridge
+    name: face-detection-network
