@@ -19,7 +19,6 @@ RUN mkdir -p /app/models && \
     curl -L -o /app/models/haarcascade_eye_tree_eyeglasses.xml \
         https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_eye_tree_eyeglasses.xml
 
-# Copy entire project subtree to keep relative asset paths
 COPY face_detection ./face_detection
 
 EXPOSE 8000

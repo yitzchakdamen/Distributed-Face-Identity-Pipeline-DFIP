@@ -18,7 +18,6 @@ RUN pip install --upgrade pip && \
 
 RUN python -c "from insightface.app import FaceAnalysis; app = FaceAnalysis(name='buffalo_l'); app.prepare(ctx_id=-1, det_size=(320, 320))"
 
-# Copy entire package for proper imports and config access
 COPY face_embedding ./face_embedding
 
 CMD ["python", "-m", "face_embedding.app.main"]
