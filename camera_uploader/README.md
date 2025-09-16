@@ -28,7 +28,7 @@ All configuration is handled in `app/config.py`. Main configuration variables:
 | ES_HOST        | localhost                     | Elasticsearch host                           |
 | ES_PORT        | 9200                          | Elasticsearch port                           |
 | ES_INDEX       | logger                        | Elasticsearch index for logs                 |
-| ES_URI         | http://localhost:9200         | Elasticsearch URI                            |
+| ES_URI         | "http://localhost:9200"       | Elasticsearch URI                            |
 | SERVER_URL     |"ws://localhost:8000/camera/upload-image"| WebSocket endpoint (FastAPI server)|
 
 To change the target server or logging backend, update `config.py` accordingly.
