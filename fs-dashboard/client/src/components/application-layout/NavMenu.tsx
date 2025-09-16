@@ -47,6 +47,9 @@ const NavMenu: React.FC = () => {
       <Link to="/" className="nav-link">Dashboard</Link>
       <Link to="/events" className="nav-link">Events</Link>
       <Link to="/cameras" className="nav-link">Cameras</Link>
+      {user?.role === 'admin' && (
+        <Link to="/users" className="nav-link">Users</Link>
+      )}
       
       <div className="user-menu">
         <div className="user-dropdown" ref={dropdownRef}>
