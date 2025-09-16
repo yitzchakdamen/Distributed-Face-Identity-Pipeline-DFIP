@@ -4,7 +4,7 @@ import logging
 from updating_vector_identities_service.src.management import Management
 from updating_vector_identities_service.utils.kafka_tools import KafkaTools
 from updating_vector_identities_service.utils.dal_elasticsearch import ElasticSearchDal
-from config.config import LOGGER_NAME
+from updating_vector_identities_service.config.config import LOGGER_NAME
 
 logging.getLogger('kafka').setLevel(logging.WARNING)
 logging.getLogger('elastic_transport.transport').setLevel(logging.WARNING)

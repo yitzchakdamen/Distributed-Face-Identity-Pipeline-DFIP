@@ -26,6 +26,8 @@ spec:
           value: "1"
         - name: KAFKA_CFG_PROCESS_ROLES
           value: broker,controller
+        - name: KAFKA_CFG_CONTROLLER_LISTENER_NAMES
+          value: CONTROLLER
         - name: KAFKA_CFG_CONTROLLER_QUORUM_VOTERS
           value: 1@kafka:9093
         - name: KAFKA_CFG_LISTENERS
@@ -36,8 +38,6 @@ spec:
           value: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
         - name: KAFKA_CFG_INTER_BROKER_LISTENER_NAME
           value: PLAINTEXT
-        - name: KAFKA_KRAFT_CLUSTER_ID
-          value: w6ZxY2VhbmZpc2gtY2x1c3Rlci1pZC1kZXYxMjM0NTY=
         - name: KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR
           value: "1"
         - name: KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR

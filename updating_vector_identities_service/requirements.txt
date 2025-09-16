@@ -1,5 +1,5 @@
 kafka-python
-elasticsearch
 ecs-logging
+elasticsearch==8.12.0
 
 
