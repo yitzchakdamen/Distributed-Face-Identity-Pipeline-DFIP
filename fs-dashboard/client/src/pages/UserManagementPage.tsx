@@ -6,8 +6,6 @@ import type { ICamera } from "../@types/Camera";
 import "./UserManagementPage.css";
 
 const UserManagementPage: React.FC = () => {
-  const { user: currentUser } = useAuth();
-  
   // Mock users data for demonstration
   const [users] = useState<IUser[]>([
     {
