@@ -161,7 +161,7 @@ const UserManagementPage: React.FC = () => {
                     <div className="user-details">
                       <p><strong>Username:</strong> {user.username}</p>
                       <p><strong>Email:</strong> {user.email}</p>
-                      <p><strong>Created:</strong> {formatDate(user.created_at)}</p>
+                      <p><strong>Created:</strong> {formatDate(user.createdAt)}</p>
                     </div>
                   </div>
                 ))}
