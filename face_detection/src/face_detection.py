@@ -1,9 +1,11 @@
 from dataclasses import dataclass, asdict
 from typing import List, Optional, Tuple, Union
+import os
 import cv2
 import numpy as np
 from face_detection.utils.id_creator import create_stable_face_id, now_utc_iso_ms
 from face_detection.utils.logger import Logger
+from face_detection.utils.quality_gate import QualityGate 
 logger = Logger.get_logger(__name__)
 
 @dataclass(frozen=True)
@@ -19,19 +21,17 @@ class FaceObject:
     source_hint: Optional[str] = None
 
     def to_dict(self) -> dict:
-        """Return a JSON-serializable dictionary of the face object."""
         data = asdict(self)
         data["image_bytes"] = self.image_bytes
         return data
-
 
 class FaceExtractor:
     """Lean face detector and cropper using OpenCV Haar cascade."""
 
     def __init__(
         self,
-        scale_factor: float = 1.1,
-        min_neighbors: int = 5,
+        scale_factor: float = 1.2,
+        min_neighbors: int = 8,
         min_size: Tuple[int, int] = (30, 30),
         encode_format: str = ".png",
     ) -> None:
@@ -41,10 +41,16 @@ class FaceExtractor:
         self.encode_format = encode_format.lower()
         if self.encode_format not in (".png", ".jpg", ".jpeg"):
             raise ValueError("encode_format must be .png, .jpg, or .jpeg")
+
         cascade_path = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
         self.cascade = cv2.CascadeClassifier(cascade_path)
         if self.cascade.empty():
             raise RuntimeError(f"Failed to load Haar cascade from: {cascade_path}")
+
+        # NEW: enable/disable quality gate with ENV (default on)
+        self._qg_enabled = os.getenv("QG_ENABLED", "1") in ("1", "true", "True", "yes")
+        self._qg = QualityGate() if self._qg_enabled else None
+
         self.logger = logger
 
     def extract_faces(
@@ -53,10 +59,11 @@ class FaceExtractor:
         source_hint: Optional[str] = None,
         max_faces: Optional[int] = None,
     ) -> List[FaceObject]:
-        """Detect and crop faces; return a list of FaceObject or an empty list on no-detections/errors."""
+        """Detect and crop faces; returns FaceObject list."""
         try:
             bgr = self._to_bgr(image)
             gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
+
             faces = self.cascade.detectMultiScale(
                 gray,
                 scaleFactor=self.scale_factor,
@@ -66,11 +73,24 @@ class FaceExtractor:
             )
             if max_faces and max_faces > 0:
                 faces = faces[:max_faces]
+
             outputs: List[FaceObject] = []
             for (x, y, w, h) in faces:
-                crop = bgr[y:y + h, x:x + w]
+                crop = bgr[max(0, y): y + h, max(0, x): x + w]
+
+                # NEW: quality check (drop if fails), no signature changes
+                if self._qg is not None:
+                    result = self._qg.assess(crop, (int(w), int(h)))
+                    if not result.passed:
+                        self.logger.debug(
+                            "Rejected face (quality): reasons=%s metrics=%s",
+                            result.reasons, result.metrics
+                        )
+                        continue
+
                 face_bytes, content_type = self._encode_face_crop(crop)
                 face_id = create_stable_face_id(face_bytes)
+
                 outputs.append(
                     FaceObject(
                         face_id=face_id,
@@ -83,11 +103,13 @@ class FaceExtractor:
                         source_hint=source_hint,
                     )
                 )
+
             if outputs:
                 self.logger.info("Extracted %d face(s)", len(outputs))
             else:
                 self.logger.info("No faces extracted")
             return outputs
+
         except Exception as ex:
             self.logger.error("Face extraction failed: %s", str(ex))
             return []
@@ -117,3 +139,6 @@ class FaceExtractor:
             raise RuntimeError(f"Failed to encode face crop as {self.encode_format}")
         content_type = "image/png" if self.encode_format == ".png" else "image/jpeg"
         return buf.tobytes(), content_type
+
+
+
