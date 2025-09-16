@@ -45,34 +45,61 @@ const CamerasPage: React.FC = () => {
     <div className="cameras-page">
       <h1>Camera Management</h1>
       
-      <div className="cameras-grid">
-        {cameras.length === 0 ? (
-          <p>No cameras found.</p>
-        ) : (
-          cameras.map((camera) => (
-            <div key={camera.id} className="camera-card">
-              <div className="camera-header">
-                <h3>{camera.name}</h3>
-                <span className="status-badge active">
-                  ACTIVE
-                </span>
-              </div>
-              
-              <div className="camera-details">
-                <p><strong>Camera ID:</strong> {camera.camera_id}</p>
-                <p><strong>Connection:</strong> {camera.connection_string}</p>
-                <p><strong>Created:</strong> {new Date(camera.created_at).toLocaleString()}</p>
-                <p><strong>Updated:</strong> {new Date(camera.updated_at).toLocaleString()}</p>
-              </div>
-              
-              <div className="camera-actions">
-                <button className="action-btn view">View Details</button>
-                <button className="action-btn edit">Edit</button>
-              </div>
-            </div>
-          ))
+      <div className="tab-navigation">
+        <button 
+          className={`tab-btn ${activeTab === "cameras" ? "active" : ""}`}
+          onClick={() => setActiveTab("cameras")}
+        >
+          View Cameras
+        </button>
+        {user && ["operator", "admin"].includes(user.role) && (
+          <button 
+            className={`tab-btn ${activeTab === "create" ? "active" : ""}`}
+            onClick={() => setActiveTab("create")}
+          >
+            Create Camera
+          </button>
         )}
       </div>
+
+      {activeTab === "cameras" && (
+        <div className="cameras-tab">
+          <div className="cameras-grid">
+            {cameras.length === 0 ? (
+              <p>No cameras found.</p>
+            ) : (
+              cameras.map((camera) => (
+                <div key={camera.id} className="camera-card">
+                  <div className="camera-header">
+                    <h3>{camera.name}</h3>
+                    <span className="status-badge active">
+                      ACTIVE
+                    </span>
+                  </div>
+                  
+                  <div className="camera-details">
+                    <p><strong>Camera ID:</strong> {camera.camera_id}</p>
+                    <p><strong>Connection:</strong> {camera.connection_string}</p>
+                    <p><strong>Created:</strong> {new Date(camera.created_at).toLocaleString()}</p>
+                    <p><strong>Updated:</strong> {new Date(camera.updated_at).toLocaleString()}</p>
+                  </div>
+                  
+                  <div className="camera-actions">
+                    <button className="action-btn view">View Details</button>
+                    <button className="action-btn edit">Edit</button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === "create" && (
+        <div className="create-camera-tab">
+          <CameraCreationForm />
+        </div>
+      )}
     </div>
   );
 };
