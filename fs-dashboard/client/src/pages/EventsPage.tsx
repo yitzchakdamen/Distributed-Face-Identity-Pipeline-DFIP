@@ -46,22 +46,22 @@ const EventsPage: React.FC = () => {
           <p>No events found.</p>
         ) : (
           events.map((event) => (
-            <div key={event.id} className={`event-card ${event.risk_level}`}>
+            <div key={event._id} className={`event-card ${event.level}`}>
               <div className="event-header">
                 <span className="event-time">
                   {new Date(event.timestamp).toLocaleString()}
                 </span>
-                <span className={`risk-badge ${event.risk_level}`}>
-                  {event.risk_level?.toUpperCase() || 'UNKNOWN'}
+                <span className={`risk-badge ${event.level}`}>
+                  {event.level?.toUpperCase() || 'UNKNOWN'}
                 </span>
               </div>
               
               <div className="event-details">
                 <p><strong>Person ID:</strong> {event.person_id}</p>
                 <p><strong>Camera:</strong> {event.camera_id}</p>
-                <p><strong>Location:</strong> {event.location}</p>
-                <p><strong>Confidence:</strong> {(event.confidence * 100).toFixed(1)}%</p>
-                {event.message && <p><strong>Message:</strong> {event.message}</p>}
+                <p><strong>Confidence:</strong> {(event.metadata.confidence * 100).toFixed(1)}%</p>
+                <p><strong>Detection Type:</strong> {event.metadata.detection_type}</p>
+                <p><strong>Processing Time:</strong> {event.metadata.processing_time_ms}ms</p>
               </div>
             </div>
           ))

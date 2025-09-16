@@ -1,32 +1,42 @@
 export interface IEvent {
-  id: string;
+  _id: string;
   person_id: string;
   camera_id: string;
   image_id: string;
   timestamp: string;
-  confidence: number;
-  location: string;
-  risk_level: 'low' | 'medium' | 'high';
-  message: string;
+  level: 'low' | 'medium' | 'high';
+  metadata: {
+    confidence: number;
+    bounding_box: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    };
+    detection_type: string;
+    processing_time_ms: number;
+  };
 }
 
 export interface EventFilters {
-  camera_id?: string;
-  risk_level?: 'low' | 'medium' | 'high';
-  start_date?: string;
-  end_date?: string;
+  cameraId?: string;
+  level?: 'low' | 'medium' | 'high';
+  startDate?: string;
+  endDate?: string;
   limit?: number;
-  offset?: number;
+  page?: number;
 }
 
 export interface EventsResponse {
   success: boolean;
   data?: IEvent[];
   pagination?: {
-    total: number;
     page: number;
     limit: number;
-    pages: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
   };
   error?: string;
 }
