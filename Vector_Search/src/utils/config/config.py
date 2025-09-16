@@ -7,7 +7,7 @@ class GeneralConfig:
     EMBEDDING = "vector"
     SOURCE = "_source"
     PERSON_ID = "person_id"
-    THRESHOLD_SCORE = 0.8
+    THRESHOLD_SCORE = 0.7
     @staticmethod
     def QUERY(_vector) -> dict:
 
