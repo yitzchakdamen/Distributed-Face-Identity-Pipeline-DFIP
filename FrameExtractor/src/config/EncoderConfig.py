@@ -1,0 +1,2 @@
+class EncoderConfig:
+    FORMAT = ".png"
