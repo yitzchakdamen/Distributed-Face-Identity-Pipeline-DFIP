@@ -98,6 +98,19 @@ export async function getAllUsersController(req, res, next) {
 export async function createUserController(req, res, next) {
   try {
     const userData = req.body;
+    const currentUser = req.user;
+    
+    // Role validation based on current user permissions
+    if (currentUser.role === "operator" && userData.role !== "viewer") {
+      throw new ApiError(403, "Operators can only create viewer accounts");
+    }
+    
+    // Only admin can create admin or operator accounts
+    if (userData.role === "admin" || userData.role === "operator") {
+      if (currentUser.role !== "admin") {
+        throw new ApiError(403, "Only admins can create admin or operator accounts");
+      }
+    }
     
     const newUser = await createUser(userData);
 
