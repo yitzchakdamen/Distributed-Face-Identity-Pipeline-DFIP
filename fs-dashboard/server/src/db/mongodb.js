@@ -1,12 +1,13 @@
 /**
  * MongoDB Connection Module
  */
-import { MongoClient } from "mongodb";
+import { MongoClient, GridFSBucket } from "mongodb";
 import { mongoConfig } from "../config/database.js";
 
-// Store client and collection as private variables
+// Store client, collections and GridFS as private variables
 let client;
 let eventsCollection;
+let photoStorageBucket;
 let connectionStatus = "disconnected";
 
 // Connection options with pooling
@@ -27,9 +28,10 @@ async function connectMongoDB(maxRetries = 3, retryDelay = 2000) {
 
       // Access database and collection
       const db = client.db(mongoConfig.dbName);
-      eventsCollection = db.collection("Event");
+      eventsCollection = db.collection("events");
 
-      console.log("✔ MongoDB connection established successfully");
+      // Initialize GridFS bucket for photo storage
+      photoStorageBucket = new GridFSBucket(db, { bucketName: "photo_storage" });      console.log("✔ MongoDB connection established successfully");
       console.log(
         `✔ Connection pool configured: min=${connectionOptions.minPoolSize}, max=${connectionOptions.maxPoolSize}`
       );
@@ -64,6 +66,17 @@ function getEventsCollection() {
 }
 
 /**
+ * Returns access to photo storage GridFS bucket
+ * @returns {GridFSBucket} - GridFS bucket object
+ */
+function getPhotoStorageBucket() {
+  if (!photoStorageBucket) {
+    throw new Error("Database not connected. Call connectMongoDB first.");
+  }
+  return photoStorageBucket;
+}
+
+/**
  * Get current MongoDB connection status
  */
 function getMongoDBStatus() {
@@ -81,4 +94,4 @@ async function closeMongoDB() {
   }
 }
 
-export { connectMongoDB, getEventsCollection, getMongoDBStatus, closeMongoDB };
+export { connectMongoDB, getEventsCollection, getPhotoStorageBucket, getMongoDBStatus, closeMongoDB };
