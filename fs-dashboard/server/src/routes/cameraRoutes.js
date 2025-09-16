@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { CameraController } from "../controllers/cameraController.js";
-import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { authenticateToken } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
 // All camera routes require authentication
-router.use(authMiddleware);
+router.use(authenticateToken);
 
 // Camera CRUD operations
 router.post("/", CameraController.createCamera);
