@@ -1,0 +1,85 @@
+.events-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.events-page h1 {
+  margin-bottom: 2rem;
+  color: #2c3e50;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.1rem;
+}
+
+.error {
+  color: #e74c3c;
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.event-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-left: 4px solid #ddd;
+}
+
+.event-card.high {
+  border-left-color: #e74c3c;
+}
+
+.event-card.medium {
+  border-left-color: #f39c12;
+}
+
+.event-card.low {
+  border-left-color: #2ecc71;
+}
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.event-time {
+  font-weight: 500;
+  color: #666;
+}
+
+.risk-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.risk-badge.high {
+  background: #e74c3c;
+  color: white;
+}
+
+.risk-badge.medium {
+  background: #f39c12;
+  color: white;
+}
+
+.risk-badge.low {
+  background: #2ecc71;
+  color: white;
+}
+
+.event-details p {
+  margin: 0.5rem 0;
+  color: #333;
+}
