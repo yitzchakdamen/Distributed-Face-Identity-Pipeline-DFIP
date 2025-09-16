@@ -50,7 +50,7 @@ const CamerasPage: React.FC = () => {
               <div className="camera-header">
                 <h3>{camera.name}</h3>
                 <span className={`status-badge ${camera.status}`}>
-                  {camera.status.toUpperCase()}
+                  {camera.status?.toUpperCase() || 'UNKNOWN'}
                 </span>
               </div>
               

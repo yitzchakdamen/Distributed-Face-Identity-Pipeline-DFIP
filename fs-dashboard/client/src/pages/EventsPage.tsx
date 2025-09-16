@@ -52,7 +52,7 @@ const EventsPage: React.FC = () => {
                   {new Date(event.timestamp).toLocaleString()}
                 </span>
                 <span className={`risk-badge ${event.risk_level}`}>
-                  {event.risk_level.toUpperCase()}
+                  {event.risk_level?.toUpperCase() || 'UNKNOWN'}
                 </span>
               </div>
               
