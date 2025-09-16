@@ -86,17 +86,23 @@ export async function getUserByUsername(username) {
   return new User(data);
 }
 
+/**
+ * Get user by ID
+ * @param {string} id - User ID
+ * @returns {Object|null} - User object or null if not found
+ */
+export async function getUserById(id) {
+  const validatedId = validate(id, userIdSchema);
 
-    if (error) {
-      if (error.code === "PGRST116") return null;
-      throw error;
-    }
+  const { data, error } = await supabase.from("users").select("*").eq("id", validatedId).single();
 
-    return data ? new User(data) : null;
-  } catch (error) {
-    if (error instanceof ApiError) throw error;
-    throw new ApiError(500, "Failed to find user by email: " + error.message);
+  if (error) {
+    if (error.code === "PGRST116") return null; // User not found
+
+    throw new Error(`Database error: ${error.message}`);
   }
+
+  return new User(data);
 }
 
 /**
