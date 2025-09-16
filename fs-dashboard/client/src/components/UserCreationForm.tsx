@@ -12,7 +12,7 @@ interface UserFormData {
 }
 
 const UserCreationForm: React.FC = () => {
-  const { user: currentUser } = useContext(AuthContext);
+  const { user: currentUser } = useAuth();
   const [formData, setFormData] = useState<UserFormData>({
     username: "",
     password: "",
