@@ -1,4 +1,5 @@
 import cv2
+# from Vector_Search.src.training import r
 from face_detection.utils import config
 from face_detection.utils.factory import create_mongo_payload, create_kafka_payload
 from face_detection.src.face_detection import FaceExtractor
@@ -41,24 +42,3 @@ class FaceDetectionApp:
         except Exception as e:
             logger.error(f"Error processing image: {e}")
 
-
-def main(app):
-    cap = cv2.VideoCapture(0)
-    if not cap.isOpened(): raise RuntimeError("Could not open video device.")
-
-    try:
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                logger.error("Error: Could not read frame.")
-                break
-            app.process_image(frame)
-    except KeyboardInterrupt: logger.info("Exit requested by user")
-    finally:
-        cap.release()
-        cv2.destroyAllWindows()
-
-
-if __name__ == "__main__":
-    app = FaceDetectionApp()
-    main(app)
