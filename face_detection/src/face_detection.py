@@ -5,7 +5,8 @@ import cv2
 import numpy as np
 from face_detection.utils.id_creator import create_stable_face_id, now_utc_iso_ms
 from face_detection.utils.logger import Logger
-from face_detection.utils.quality_gate import QualityGate 
+from face_detection.utils.quality_gate import QualityGate
+from face_detection.utils.eye_verifier import EyeVerifier 
 logger = Logger.get_logger(__name__)
 
 @dataclass(frozen=True)
@@ -30,9 +31,9 @@ class FaceExtractor:
 
     def __init__(
         self,
-        scale_factor: float = 1.2,
-        min_neighbors: int = 8,
-        min_size: Tuple[int, int] = (30, 30),
+        scale_factor: float = 1.1,
+        min_neighbors: int = 4,
+        min_size: Tuple[int, int] = (64, 64),
         encode_format: str = ".png",
     ) -> None:
         self.scale_factor = scale_factor
@@ -50,7 +51,7 @@ class FaceExtractor:
         # NEW: enable/disable quality gate with ENV (default on)
         self._qg_enabled = os.getenv("QG_ENABLED", "1") in ("1", "true", "True", "yes")
         self._qg = QualityGate() if self._qg_enabled else None
-
+        self.eye_verifier = EyeVerifier()
         self.logger = logger
 
     def extract_faces(
@@ -77,6 +78,10 @@ class FaceExtractor:
             outputs: List[FaceObject] = []
             for (x, y, w, h) in faces:
                 crop = bgr[max(0, y): y + h, max(0, x): x + w]
+                gray_crop = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+                if not self.eye_verifier.has_two_eyes(gray_crop):
+                    self.logger.debug("Rejected face (eyes not detected) at bbox=%s", (x, y, w, h))
+                    continue
 
                 # NEW: quality check (drop if fails), no signature changes
                 if self._qg is not None:
@@ -142,3 +147,12 @@ class FaceExtractor:
 
 
 
+# test the changes
+if __name__ == "__main__":
+    detector = FaceExtractor()
+    test_image_path = "C:/Users/brdwn/Downloads/IMG_20230801_180311.jpg"  # replace with your test image
+    faces = detector.extract_faces(test_image_path, source_hint="test_image")
+    for face in faces:
+        print(f"Face ID: {face.face_id}, Size: {face.width}x{face.height}, Source: {face.source_hint}")
+        with open(f"{face.face_id}.png", "wb") as f:
+            f.write(face.image_bytes)
