@@ -132,7 +132,7 @@ const EventImageModal: React.FC<EventImageModalProps> = ({
               <div className="image-error">
                 <p>Unable to load image</p>
                 <p className="error-message">{error}</p>
-                <p className="image-id">Image ID: {event.image_id}</p>
+                <p className="image-id">Event ID: {event._id}</p>
               </div>
             )}
 
