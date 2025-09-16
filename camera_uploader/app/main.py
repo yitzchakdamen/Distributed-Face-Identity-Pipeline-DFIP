@@ -10,8 +10,7 @@ def main():
     specified in the configuration and starts the image capture and upload process.
     """
     uploader = CameraUploader(server_url=config.SERVER_URL)
-    uploader.send_image_from_camera()
+    uploader.main()
 
 if __name__ == "__main__":
     main()
-    
