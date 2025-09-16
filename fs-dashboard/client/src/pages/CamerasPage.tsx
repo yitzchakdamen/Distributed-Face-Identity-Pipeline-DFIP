@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getAllCameras } from "../services/cameraService";
+import CameraCreationForm from "../components/CameraCreationForm";
+import { useAuth } from "../context/AuthContext";
 import type { ICamera } from "../@types/Camera";
 import "./CamerasPage.css";
 
