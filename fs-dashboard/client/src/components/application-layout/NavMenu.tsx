@@ -7,6 +7,21 @@ const NavMenu: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -34,7 +49,7 @@ const NavMenu: React.FC = () => {
       <Link to="/cameras" className="nav-link">Cameras</Link>
       
       <div className="user-menu">
-        <div className="user-dropdown">
+        <div className="user-dropdown" ref={dropdownRef}>
           <button 
             className="user-button" 
             onClick={toggleDropdown}
