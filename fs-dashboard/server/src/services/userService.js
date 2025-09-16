@@ -1,11 +1,11 @@
-/**
- * User Service
- * Business logic for user management operations
- */
+// User Service - BLL and db operations
+
 import User from "../models/user.js";
 import { hashPassword } from "./authService.js";
 import { supabase } from "../db/supabase.js";
 import { ApiError } from "../middlewares/errorHandler.js";
+import { validate } from "./validationService.js";
+import { createUserSchema, emailSchema, usernameSchema, userIdSchema } from "../schemas/userSchemas.js";
 
 /**
  * Create a new user with hashed password
@@ -19,35 +19,26 @@ import { ApiError } from "../middlewares/errorHandler.js";
  * @returns {Promise<User>} - Created user instance
  * @throws {ApiError} - If user creation fails
  */
-async function createUser(userData) {
-  try {
-    // Validate fields
-    const requiredFields = ["username", "password", "name", "email"];
-    for (const field of requiredFields) if (!userData[field]) throw new ApiError(400, `${field} is required`);
+/**
+ * Create a new user with password hashing
+ * @param {Object} userData - User data
+ * @returns {Object} - Created user
+ */
+export async function createUser(userData) {
+  const validatedData = validate(userData, createUserSchema);
 
-    const hashedPassword = await hashPassword(userData.password);
+  const hashedPassword = await hashPassword(validatedData.password);
 
-    const newUser = {
-      username: userData.username,
-      password: hashedPassword,
-      name: userData.name,
-      email: userData.email,
-      role: userData.role || "viewer",
-    };
+  const dbUserData = {
+    ...validatedData,
+    password: hashedPassword,
+  };
 
-    const { data, error } = await supabase.from("users").insert([newUser]).select().single();
+  const { data, error } = await supabase.from("users").insert(dbUserData).select().single();
 
-    if (error) {
-      if (error.code === "23505") throw new ApiError(409, "Username or email already exists");
+  if (error) throw new Error(`Database error: ${error.message}`);
 
-      throw error;
-    }
-
-    return new User(data);
-  } catch (error) {
-    if (error instanceof ApiError) throw error;
-    throw new ApiError(500, "Failed to create user: " + error.message);
-  }
+  return new User(data);
 }
 
 /**
