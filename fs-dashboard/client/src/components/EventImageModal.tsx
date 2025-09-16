@@ -36,17 +36,21 @@ const EventImageModal: React.FC<EventImageModalProps> = ({
       setLoading(true);
       setError(null);
       
-      // Build image URL using the event ID
-      const token = localStorage.getItem('token');
-      const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
-      const imageURL = `${baseURL}/events/${event._id}/image`;
+      // Use the new getEventImage service function
+      const imageData = await getEventImage(event._id);
       
-      // Fetch image with proper authorization
-      const response = await fetch(imageURL, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      if (imageData) {
+        setImageUrl(imageData);
+      } else {
+        setError('No image available for this event');
+      }
+    } catch (error) {
+      console.error('Error loading event image:', error);
+      setError('Failed to load image');
+    } finally {
+      setLoading(false);
+    }
+  };
       
       if (!response.ok) {
         throw new Error(`Failed to load image: ${response.status} ${response.statusText}`);
