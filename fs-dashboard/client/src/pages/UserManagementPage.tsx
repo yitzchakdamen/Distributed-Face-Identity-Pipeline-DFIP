@@ -1,38 +1,66 @@
 import React, { useState, useEffect } from "react";
-import { getAllUsers } from "../services/userService";
 import { getAllCameras } from "../services/cameraService";
+import { useAuth } from "../context/AuthContext";
 import type { IUser } from "../@types/User";
 import type { ICamera } from "../@types/Camera";
 import "./UserManagementPage.css";
 
 const UserManagementPage: React.FC = () => {
-  const [users, setUsers] = useState<IUser[]>([]);
+  const { user: currentUser } = useAuth();
+  
+  // Mock users data for demonstration
+  const [users] = useState<IUser[]>([
+    {
+      id: "1",
+      username: "admin",
+      name: "Admin User",
+      email: "admin@test.com",
+      role: "admin",
+      created_at: "2025-09-16T10:00:00Z",
+      updated_at: "2025-09-16T10:00:00Z"
+    },
+    {
+      id: "2", 
+      username: "operator1",
+      name: "Camera Operator",
+      email: "operator@test.com",
+      role: "operator",
+      created_at: "2025-09-16T10:00:00Z",
+      updated_at: "2025-09-16T10:00:00Z"
+    },
+    {
+      id: "3",
+      username: "viewer1", 
+      name: "Security Viewer",
+      email: "viewer@test.com",
+      role: "viewer",
+      created_at: "2025-09-16T10:00:00Z",
+      updated_at: "2025-09-16T10:00:00Z"
+    }
+  ]);
+  
   const [cameras, setCameras] = useState<ICamera[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchCameras = async () => {
       try {
         setLoading(true);
-        const [usersResponse, camerasResponse] = await Promise.all([getAllUsers(), getAllCameras()]);
-
-        if (usersResponse.success && usersResponse.data) {
-          setUsers(usersResponse.data);
-        }
+        const camerasResponse = await getAllCameras();
 
         if (camerasResponse.success && camerasResponse.data) {
           setCameras(camerasResponse.data);
         }
       } catch (err: any) {
-        setError(err.message || "Failed to fetch data");
+        setError(err.message || "Failed to fetch cameras");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchCameras();
   }, []);
 
   if (loading) {
