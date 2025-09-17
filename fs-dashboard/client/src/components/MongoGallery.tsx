@@ -34,25 +34,19 @@ const MongoGallery: React.FC = () => {
   const fetchPersons = async () => {
     try {
       setLoading(true);
-      setError(null);
-
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/mongo/persons`);
+      setError('');
       
+      const response = await fetch('/api/mongo/persons');
       if (!response.ok) {
-        throw new Error(`Failed to fetch: ${response.status}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-
-      const data: PersonsResponse = await response.json();
       
-      if (data.success) {
-        setPersons(data.persons);
-        setStats(data.stats);
-      } else {
-        throw new Error('API returned error');
-      }
+      const data = await response.json();
+      setPersons(data.persons || []);
+      setStats(data.stats || {});
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error occurred');
       console.error('Error fetching persons:', err);
+      setError('Failed to fetch');
     } finally {
       setLoading(false);
     }
