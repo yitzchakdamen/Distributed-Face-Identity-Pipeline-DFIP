@@ -18,6 +18,11 @@ class MongoGridFSService {
         return this.db;
       }
 
+      // Check if MongoDB URI is configured
+      if (!mongoConfig.uri) {
+        throw new Error("MongoDB URI not configured. Please set MONGODB_URI environment variable.");
+      }
+
       this.client = new MongoClient(mongoConfig.uri, mongoConfig.options);
       await this.client.connect();
       
