@@ -2,6 +2,8 @@
 
 import express from "express";
 import { mongoGridFSService } from "../services/mongoGridFSService.js";
+import { isMongoDBAvailable, getMongoDBStatus } from "../db/mongodb.js";
+import os from "os";
 
 const router = express.Router();
 
@@ -51,6 +53,64 @@ const mockAlertsData = {
   }
 };
 
+// Helper function to check if we're in production
+const isProduction = () => {
+  // Check environment variables
+  if (process.env.NODE_ENV === 'production') return true;
+  
+  // Check if we're on Heroku
+  if (process.env.DYNO) return true;
+  
+  // Check hostname patterns (fallback)
+  const hostname = os.hostname();
+  if (hostname.includes('herokuapp') || hostname.includes('heroku')) return true;
+  
+  return false;
+};
+
+// Helper function to check if MongoDB should be used
+const shouldUseMongoDB = () => {
+  // If no MongoDB URI configured, use mock data
+  if (!process.env.MONGODB_URI) {
+    console.log('No MONGODB_URI found, using mock data');
+    return false;
+  }
+  
+  // Check if MongoDB is actually available
+  if (!isMongoDBAvailable()) {
+    console.log('MongoDB not available, using mock data. Status:', getMongoDBStatus());
+    return false;
+  }
+  
+  return true;
+};
+
+/**
+ * @route   GET /api/mongo/status
+ * @desc    Check MongoDB connection status and environment
+ * @access  Public
+ */
+router.get("/status", async (req, res) => {
+  const status = {
+    environment: process.env.NODE_ENV || 'development',
+    isProduction: isProduction(),
+    hasMongoDB: !!process.env.MONGODB_URI,
+    mongoStatus: getMongoDBStatus(),
+    mongoAvailable: isMongoDBAvailable(),
+    shouldUseMongoDB: shouldUseMongoDB(),
+    hostname: os.hostname(),
+    dyno: process.env.DYNO || null,
+    timestamp: new Date().toISOString()
+  };
+  
+  console.log('MongoDB Status Check:', status);
+  
+  res.json({
+    success: true,
+    status
+  });
+});
+
 /**
  * @route   GET /api/mongo/persons
  * @desc    Get all persons with their images from MongoDB
@@ -58,15 +118,9 @@ const mockAlertsData = {
  */
 router.get("/persons", async (req, res) => {
   try {
-    // Check if in production environment without MongoDB
-    if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
-      console.log('Production environment detected without MongoDB URI, returning mock data');
-      return res.json(mockPersonsData);
-    }
-    
-    // Check if MongoDB URI is not configured at all
-    if (!process.env.MONGODB_URI) {
-      console.log('MongoDB URI not configured, returning mock data');
+    // Check if we should use MongoDB
+    if (!shouldUseMongoDB()) {
+      console.log('Returning mock data for persons - MongoDB not available or not configured');
       return res.json(mockPersonsData);
     }
     
@@ -111,17 +165,9 @@ router.get("/persons", async (req, res) => {
   } catch (error) {
     console.log('MongoDB error:', error.message);
     
-    if (error.message === 'Operation timeout') {
-      res.status(504).json({
-        success: false,
-        error: "Gateway timeout",
-        message: "MongoDB operation timed out. Please try again later."
-      });
-    } else {
-      // MongoDB unavailable - return mock data instead of error
-      console.log('Returning mock data for persons endpoint');
-      res.json(mockPersonsData);
-    }
+    // Always return mock data instead of errors
+    console.log('Returning mock data for persons endpoint');
+    res.json(mockPersonsData);
   }
 });
 
@@ -132,9 +178,9 @@ router.get("/persons", async (req, res) => {
  */
 router.get("/alerts", async (req, res) => {
   try {
-    // Check if in production environment without MongoDB
-    if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
-      console.log('Production environment detected without MongoDB URI, returning mock alerts data');
+    // Check if we should use MongoDB
+    if (!shouldUseMongoDB()) {
+      console.log('Returning mock data for alerts - MongoDB not available or not configured');
       return res.json(mockAlertsData);
     }
     
@@ -202,17 +248,9 @@ router.get("/alerts", async (req, res) => {
   } catch (error) {
     console.log('MongoDB error for alerts:', error.message);
     
-    if (error.message === 'Operation timeout') {
-      res.status(504).json({
-        success: false,
-        error: "Gateway timeout",
-        message: "MongoDB operation timed out. Please try again later.",
-      });
-    } else {
-      // MongoDB unavailable - return mock data instead of error
-      console.log('Returning mock data for alerts endpoint');
-      res.json(mockAlertsData);
-    }
+    // Always return mock data instead of errors
+    console.log('Returning mock data for alerts endpoint');
+    res.json(mockAlertsData);
   }
 });
 
