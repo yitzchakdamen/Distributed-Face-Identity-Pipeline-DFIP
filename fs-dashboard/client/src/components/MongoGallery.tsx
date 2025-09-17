@@ -16,12 +16,6 @@ interface Stats {
   min_images_for_single_person: number;
 }
 
-interface PersonsResponse {
-  success: boolean;
-  persons: Person[];
-  stats: Stats;
-}
-
 const MongoGallery: React.FC = () => {
   const [persons, setPersons] = useState<Person[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
