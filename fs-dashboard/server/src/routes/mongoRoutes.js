@@ -58,6 +58,12 @@ const mockAlertsData = {
  */
 router.get("/persons", async (req, res) => {
   try {
+    // Check if in production environment without MongoDB
+    if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
+      console.log('Production environment detected without MongoDB URI, returning mock data');
+      return res.json(mockPersonsData);
+    }
+    
     // Check if MongoDB is available
     await mongoGridFSService.connect();
     
@@ -120,6 +126,12 @@ router.get("/persons", async (req, res) => {
  */
 router.get("/alerts", async (req, res) => {
   try {
+    // Check if in production environment without MongoDB
+    if (process.env.NODE_ENV === 'production' && !process.env.MONGODB_URI) {
+      console.log('Production environment detected without MongoDB URI, returning mock alerts data');
+      return res.json(mockAlertsData);
+    }
+    
     // Check if MongoDB is available
     await mongoGridFSService.connect();
     
