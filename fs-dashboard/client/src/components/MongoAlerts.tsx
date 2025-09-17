@@ -15,7 +15,8 @@ interface Alert {
 
 interface AlertsResponse {
   success: boolean;
-  alerts: Alert[];
+  data?: Alert[];
+  alerts?: Alert[]; // For backward compatibility
 }
 
 const MongoAlerts: React.FC = () => {
@@ -46,7 +47,7 @@ const MongoAlerts: React.FC = () => {
       const data: AlertsResponse = await response.json();
       
       if (data.success) {
-        setAlerts(data.alerts);
+        setAlerts(data.data || []);
       } else {
         throw new Error('API returned error');
       }
