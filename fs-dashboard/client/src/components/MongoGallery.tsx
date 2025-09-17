@@ -32,7 +32,11 @@ const MongoGallery: React.FC = () => {
       
       const response = await fetch('/api/mongo/persons');
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        if (response.status === 503) {
+          throw new Error('MongoDB service is not available in production environment');
+        }
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
@@ -40,7 +44,7 @@ const MongoGallery: React.FC = () => {
       setStats(data.stats || {});
     } catch (err) {
       console.error('Error fetching persons:', err);
-      setError('Failed to fetch');
+      setError(err instanceof Error ? err.message : 'Failed to fetch data');
     } finally {
       setLoading(false);
     }
