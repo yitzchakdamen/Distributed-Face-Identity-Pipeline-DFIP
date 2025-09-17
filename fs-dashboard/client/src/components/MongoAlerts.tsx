@@ -47,7 +47,7 @@ const MongoAlerts: React.FC = () => {
       const data: AlertsResponse = await response.json();
       
       if (data.success) {
-        setAlerts(data.data || []);
+        setAlerts(data.data || data.alerts || []);
       } else {
         throw new Error('API returned error');
       }
