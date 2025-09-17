@@ -10,6 +10,7 @@ import EventsPage from "./pages/EventsPage";
 import CamerasPage from "./pages/CamerasPage";
 import SettingsPage from "./pages/SettingsPage";
 import UserManagementPage from "./pages/UserManagementPage";
+import MongoPage from "./pages/MongoPage";
 import "./App.css";
 
 function App() {
@@ -37,6 +38,11 @@ function App() {
             <Route path="/users" element={
               <ProtectedRoute>
                 <UserManagementPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/mongo" element={
+              <ProtectedRoute>
+                <MongoPage />
               </ProtectedRoute>
             } />
             <Route path="/login" element={<Login />} />
