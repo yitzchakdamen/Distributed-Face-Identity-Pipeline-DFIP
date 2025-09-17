@@ -366,4 +366,36 @@ router.get("/stats", async (req, res) => {
   }
 });
 
+// Debug endpoint to check database contents
+router.get('/debug-db', async (req, res) => {
+  try {
+    if (!shouldUseMongoDB()) {
+      return res.json({ error: 'MongoDB not available' });
+    }
+    
+    await mongoGridFSService.connect();
+    
+    const eventsCount = await mongoGridFSService.db.collection('events').countDocuments();
+    const photosCount = await mongoGridFSService.db.collection('photos.files').countDocuments();
+    
+    // Get sample events if any exist
+    const sampleEvents = await mongoGridFSService.db.collection('events').find({}).limit(3).toArray();
+    
+    // Get sample photos metadata if any exist
+    const samplePhotos = await mongoGridFSService.db.collection('photos.files').find({}).limit(3).toArray();
+    
+    res.json({
+      success: true,
+      debug: {
+        eventsCount,
+        photosCount,
+        sampleEvents,
+        samplePhotos: samplePhotos.map(p => ({ _id: p._id, filename: p.filename, contentType: p.contentType }))
+      }
+    });
+  } catch (error) {
+    res.json({ error: error.message, stack: error.stack });
+  }
+});
+
 export default router;
