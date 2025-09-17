@@ -1,0 +1,43 @@
+{
+  "id": "direct-camera-api-environment",
+  "name": "Direct Camera API Environment",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.facealert.live",
+      "enabled": true,
+      "type": "default"
+    },
+    {
+      "key": "localUrl",
+      "value": "http://localhost:3000",
+      "enabled": true,
+      "type": "default"
+    },
+    {
+      "key": "token",
+      "value": "your-jwt-token-here",
+      "enabled": true,
+      "type": "secret"
+    },
+    {
+      "key": "cameraId",
+      "value": "123",
+      "enabled": true,
+      "type": "default"
+    },
+    {
+      "key": "imageId",
+      "value": "5190c3ea-c722-5e3e-b014-e583a33b7235",
+      "enabled": true,
+      "type": "default"
+    },
+    {
+      "key": "currentDate",
+      "value": "2025-09-17T10:31:21.020Z",
+      "enabled": true,
+      "type": "default"
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

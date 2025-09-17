@@ -216,6 +216,195 @@ class MongoGridFSService {
     }
   }
 
+  // Get events with optional filters
+  async getEvents(filters = {}) {
+    try {
+      await this.connect();
+      
+      const collection = this.db.collection(mongoConfig.collections.events);
+      
+      const query = {};
+      
+      if (filters.camera_id) {
+        query.camera_id = filters.camera_id;
+      }
+      
+      if (filters.level) {
+        query.level = filters.level;
+      }
+      
+      if (filters.startDate || filters.endDate) {
+        query.time = {};
+        
+        if (filters.startDate) {
+          query.time.$gte = filters.startDate;
+        }
+        
+        if (filters.endDate) {
+          query.time.$lte = filters.endDate;
+        }
+      }
+      
+      const cursor = collection.find(query)
+        .sort({ time: -1 })
+        .limit(filters.limit || 50)
+        .skip(filters.skip || 0);
+      
+      const events = await cursor.toArray();
+      return events;
+    } catch (error) {
+      console.error('Error fetching events from MongoDB:', error);
+      throw error;
+    }
+  }
+
+  // Get latest event for a specific camera
+  async getLatestEvent(cameraId) {
+    try {
+      await this.connect();
+      
+      const collection = this.db.collection(mongoConfig.collections.events);
+      
+      const event = await collection.findOne(
+        { camera_id: cameraId },
+        { sort: { time: -1 } }
+      );
+      
+      return event;
+    } catch (error) {
+      console.error('Error fetching latest event for camera:', error);
+      throw error;
+    }
+  }
+
+  // Count events matching filters
+  async countEvents(filters = {}) {
+    try {
+      await this.connect();
+      
+      const collection = this.db.collection(mongoConfig.collections.events);
+      
+      const query = {};
+      
+      if (filters.camera_id) {
+        query.camera_id = filters.camera_id;
+      }
+      
+      if (filters.level) {
+        query.level = filters.level;
+      }
+      
+      if (filters.startDate || filters.endDate) {
+        query.time = {};
+        
+        if (filters.startDate) {
+          query.time.$gte = filters.startDate;
+        }
+        
+        if (filters.endDate) {
+          query.time.$lte = filters.endDate;
+        }
+      }
+      
+      const count = await collection.countDocuments(query);
+      return count;
+    } catch (error) {
+      console.error('Error counting events:', error);
+      throw error;
+    }
+  }
+
+  // Get statistics for a specific camera
+  async getCameraStats(cameraId, { startDate, endDate } = {}) {
+    try {
+      await this.connect();
+      
+      const collection = this.db.collection(mongoConfig.collections.events);
+      
+      const query = { camera_id: cameraId };
+      
+      if (startDate || endDate) {
+        query.time = {};
+        
+        if (startDate) {
+          query.time.$gte = startDate;
+        }
+        
+        if (endDate) {
+          query.time.$lte = endDate;
+        }
+      }
+      
+      // Total events count
+      const totalEvents = await collection.countDocuments(query);
+      
+      // Count by level
+      const levelCounts = await collection.aggregate([
+        { $match: query },
+        { $group: { _id: "$level", count: { $sum: 1 } } }
+      ]).toArray();
+      
+      const levelStats = {};
+      levelCounts.forEach(item => {
+        levelStats[item._id || 'unknown'] = item.count;
+      });
+      
+      // Events by day for charts
+      const dailyStats = await collection.aggregate([
+        { $match: query },
+        {
+          $group: {
+            _id: { 
+              $dateToString: { format: "%Y-%m-%d", date: "$time" } 
+            },
+            count: { $sum: 1 }
+          }
+        },
+        { $sort: { _id: 1 } }
+      ]).toArray();
+      
+      return {
+        totalEvents,
+        byLevel: levelStats,
+        byDay: dailyStats.map(item => ({
+          date: item._id,
+          count: item.count
+        }))
+      };
+    } catch (error) {
+      console.error('Error fetching camera statistics:', error);
+      throw error;
+    }
+  }
+
+  // Get event by image ID
+  async getEventByImageId(imageId) {
+    try {
+      await this.connect();
+      
+      const collection = this.db.collection(mongoConfig.collections.events);
+      
+      const event = await collection.findOne({ image_id: imageId });
+      return event;
+    } catch (error) {
+      console.error('Error fetching event by image ID from MongoDB:', error);
+      throw error;
+    }
+  }
+
+  // Get image as stream from GridFS
+  async getImageStream(imageId) {
+    try {
+      await this.connect();
+      
+      const downloadStream = this.bucket.openDownloadStream(imageId);
+      return downloadStream;
+    } catch (error) {
+      console.error('Error getting image stream from GridFS:', error);
+      throw error;
+    }
+  }
+
   // Close connection
   async disconnect() {
     try {

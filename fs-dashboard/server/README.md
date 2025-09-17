@@ -98,6 +98,25 @@ server/
 - Error Handling - Advanced error handling
 - Environment Variables - Dynamic configuration
 
+## Available APIs
+
+- **Authentication API**: User registration, login, and token management
+- **Camera Management API**: Create, read, update, delete cameras and manage user assignments
+- **Events API**: Retrieve and filter events from the system
+- **Direct Camera API**: Direct access to camera events and images from MongoDB
+- **MongoDB API**: Raw access to MongoDB collections and GridFS
+
+### Direct Camera API
+
+The server provides direct camera endpoints without the "/api/mongo/" prefix:
+
+- `GET /camera/:cameraId/events` - Get events for a specific camera
+- `GET /camera/:cameraId/latest` - Get the latest event for a camera
+- `GET /camera/:cameraId/stats` - Get event statistics for a camera
+- `GET /camera/:cameraId/image/:imageId` - Get a specific image from a camera
+
+Detailed documentation available in [docs/api/direct-camera-api.md](../docs/api/direct-camera-api.md)
+
 ## API Endpoints
 
 ### GET /
