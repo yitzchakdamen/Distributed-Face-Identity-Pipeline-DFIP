@@ -124,8 +124,11 @@ router.get("/persons", async (req, res) => {
       return res.json(mockPersonsData);
     }
     
+    console.log('MongoDB is available, attempting to fetch real data...');
+    
     // Check if MongoDB is available
     await mongoGridFSService.connect();
+    console.log('GridFS service connected successfully');
     
     // Set timeout to prevent Heroku H12 errors
     const timeoutPromise = new Promise((_, reject) => {
@@ -133,8 +136,13 @@ router.get("/persons", async (req, res) => {
     });
 
     const dataPromise = async () => {
+      console.log('Fetching persons with images from MongoDB...');
       const persons = await mongoGridFSService.getPersonsWithImages();
+      console.log(`Found ${persons.length} persons in MongoDB`);
+      
+      console.log('Fetching stats from MongoDB...');
       const stats = await mongoGridFSService.getStats();
+      console.log('Stats fetched:', stats);
 
       // Calculate additional statistics
       const totalImages = persons.reduce((sum, person) => sum + person.images.length, 0);
@@ -142,7 +150,7 @@ router.get("/persons", async (req, res) => {
       const maxImages = Math.max(...persons.map((p) => p.images.length), 0);
       const minImages = Math.min(...persons.filter((p) => p.images.length > 0).map((p) => p.images.length), 0);
 
-      return {
+      const result = {
         persons,
         stats: {
           ...stats,
@@ -153,9 +161,35 @@ router.get("/persons", async (req, res) => {
           min_images_for_single_person: minImages || 0,
         }
       };
+      
+      console.log('Real data retrieved successfully:', {
+        personsCount: result.persons.length,
+        totalImages: result.stats.total_images,
+        totalEvents: result.stats.total_events
+      });
+      
+      return result;
     };
 
     const result = await Promise.race([dataPromise(), timeoutPromise]);
+
+    // If we got an empty result, we might want to return mock data or an empty result
+    if (!result.persons || result.persons.length === 0) {
+      console.log('No real data found in MongoDB, but connection is working. Database appears empty.');
+      // User specifically wants real data, so return empty real data instead of mock
+      return res.json({
+        success: true,
+        persons: [],
+        stats: {
+          total_events: 0,
+          total_persons: 0,
+          total_images: 0,
+          avg_images_per_person: 0,
+          max_images_for_single_person: 0,
+          min_images_for_single_person: 0,
+        }
+      });
+    }
 
     res.json({
       success: true,
@@ -163,10 +197,11 @@ router.get("/persons", async (req, res) => {
       stats: result.stats,
     });
   } catch (error) {
-    console.log('MongoDB error:', error.message);
+    console.log('MongoDB error occurred:', error.message);
+    console.log('Error stack:', error.stack);
     
     // Always return mock data instead of errors
-    console.log('Returning mock data for persons endpoint');
+    console.log('Returning mock data for persons endpoint due to error');
     res.json(mockPersonsData);
   }
 });
