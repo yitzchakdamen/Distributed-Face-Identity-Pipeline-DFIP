@@ -33,7 +33,11 @@ const MongoAlerts: React.FC = () => {
       const response = await fetch('/api/mongo/alerts');
       
       if (!response.ok) {
-        throw new Error(`Failed to fetch alerts: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        if (response.status === 503) {
+          throw new Error('MongoDB service is not available in production environment');
+        }
+        throw new Error(errorData.message || `Failed to fetch alerts: ${response.status}`);
       }
 
       const data: AlertsResponse = await response.json();
