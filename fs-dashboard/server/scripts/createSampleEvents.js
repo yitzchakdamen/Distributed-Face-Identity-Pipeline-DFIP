@@ -95,9 +95,21 @@ async function createSampleEvents() {
       sampleEvents.push(event);
     }
     
-    // Clear existing sample data
-    console.log("Clearing existing events...");
-    await eventsCollection.deleteMany({});
+    // WARNING: THIS SCRIPT WILL DELETE ALL EXISTING EVENTS IN THE DATABASE!
+    // Only run this if you want to replace all existing data with sample data.
+    // For production use, comment out the deleteMany line below.
+    
+    console.log("⚠️  WARNING: This script will DELETE ALL existing events!");
+    console.log("⚠️  If you want to preserve existing data, stop this script now!");
+    console.log("⚠️  Sleeping for 5 seconds...");
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    
+    // COMMENTED OUT TO PREVENT DATA LOSS - UNCOMMENT ONLY IF YOU WANT TO DELETE ALL DATA
+    // console.log("Clearing existing events...");
+    // await eventsCollection.deleteMany({});
+    
+    console.log("Skipping deletion of existing events for data safety...");
+    console.log("Adding sample events to existing collection...");
     
     // Insert sample events
     console.log("Inserting sample events...");
