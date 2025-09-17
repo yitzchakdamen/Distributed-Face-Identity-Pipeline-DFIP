@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, send_file
+from flask import render_template
 from pymongo import MongoClient
 import gridfs
 import base64
@@ -20,7 +21,7 @@ BASE_DIR = os.path.dirname(__file__)
 
 @app.route("/")
 def home():
-    return send_file(os.path.join(BASE_DIR, "index.html"))
+    return render_template("dashboard.html")
 
 @app.route("/events")
 def events():
