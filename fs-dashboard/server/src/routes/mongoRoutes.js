@@ -30,36 +30,55 @@ router.use(checkMongoDBAvailability);
  */
 router.get("/persons", async (req, res) => {
   try {
-    const persons = await mongoGridFSService.getPersonsWithImages();
-    const stats = await mongoGridFSService.getStats();
+    // Set timeout to prevent Heroku H12 errors
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Operation timeout')), 25000); // 25 seconds
+    });
 
-    // Calculate additional statistics
-    const totalImages = persons.reduce((sum, person) => sum + person.images.length, 0);
-    const avgImagesPerPerson = persons.length > 0 ? totalImages / persons.length : 0;
-    const maxImages = Math.max(...persons.map((p) => p.images.length), 0);
-    const minImages = Math.min(...persons.filter((p) => p.images.length > 0).map((p) => p.images.length), 0);
+    const dataPromise = async () => {
+      const persons = await mongoGridFSService.getPersonsWithImages();
+      const stats = await mongoGridFSService.getStats();
 
-    const enhancedStats = {
-      ...stats,
-      total_persons: persons.length,
-      total_images: totalImages,
-      avg_images_per_person: avgImagesPerPerson,
-      max_images_for_single_person: maxImages,
-      min_images_for_single_person: minImages || 0,
+      // Calculate additional statistics
+      const totalImages = persons.reduce((sum, person) => sum + person.images.length, 0);
+      const avgImagesPerPerson = persons.length > 0 ? totalImages / persons.length : 0;
+      const maxImages = Math.max(...persons.map((p) => p.images.length), 0);
+      const minImages = Math.min(...persons.filter((p) => p.images.length > 0).map((p) => p.images.length), 0);
+
+      return {
+        persons,
+        stats: {
+          ...stats,
+          total_persons: persons.length,
+          total_images: totalImages,
+          avg_images_per_person: avgImagesPerPerson,
+          max_images_for_single_person: maxImages,
+          min_images_for_single_person: minImages || 0,
+        }
+      };
     };
+
+    const result = await Promise.race([dataPromise(), timeoutPromise]);
 
     res.json({
       success: true,
-      persons: persons,
-      stats: enhancedStats,
+      persons: result.persons,
+      stats: result.stats,
     });
   } catch (error) {
-    console.error("Error fetching persons:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to fetch persons data",
-      message: error.message,
-    });
+    if (error.message === 'Operation timeout') {
+      res.status(504).json({
+        success: false,
+        error: "Gateway timeout",
+        message: "MongoDB operation timed out. Please try again later.",
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: "Failed to fetch persons data",
+        message: error.message,
+      });
+    }
   }
 });
 
