@@ -1,14 +1,11 @@
-FROM python:3.10-slim
+FROM python:3.11-slim
 
-# Set working directory
 WORKDIR /app
 
-# Copy requirements and install dependencies
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY event_processor_service/requirements.txt .
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY app/ ./app/
 
-# Run the service
-CMD ["python", "app/manager.py"]
+COPY event_processor_service ./event_processor_service
+
+CMD ["python", "-m", "event_processor_service.app.manager"]

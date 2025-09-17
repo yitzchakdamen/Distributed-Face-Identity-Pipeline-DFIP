@@ -2,13 +2,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY updating_vector_identities_service/requirements.txt .
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-COPY storage_service /app/storage_service
+COPY updating_vector_identities_service /app/updating_vector_identities_service
 
-COPY config /app/config
-COPY utils /app/utils
-COPY data /app/data
+CMD ["python", "-m", "updating_vector_identities_service.amain"]
 
-CMD ["python", "-m", "storage_service.main"]

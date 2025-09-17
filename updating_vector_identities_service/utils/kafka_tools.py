@@ -2,8 +2,8 @@ from kafka import KafkaConsumer, KafkaProducer
 import json
 import logging
 from typing import Any
-from utils.decorators import safe_execute, log_func
-from config.config import LOGGER_NAME
+from updating_vector_identities_service.utils.decorators import safe_execute, log_func
+from updating_vector_identities_service.config.config import LOGGER_NAME
 
 
 logger = logging.getLogger(LOGGER_NAME)

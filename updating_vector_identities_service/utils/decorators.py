@@ -1,6 +1,6 @@
 import logging
 from functools import wraps
-from config.config import LOGGER_NAME
+from updating_vector_identities_service.config.config import LOGGER_NAME
 
 
 logger = logging.getLogger(LOGGER_NAME)

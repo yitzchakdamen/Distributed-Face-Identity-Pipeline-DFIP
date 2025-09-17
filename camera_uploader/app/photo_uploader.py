@@ -91,7 +91,7 @@ class CameraUploader:
 
 
 
-    def main(self, interval: int = 1):
+    def main(self, interval: int = 1, rtsp_url: str = None):
         """
         Main loop for capturing and uploading images from the webcam at regular intervals.
 
@@ -101,10 +101,15 @@ class CameraUploader:
         Raises:
             RuntimeError: If the video device cannot be opened.
         """
-        cap = cv2.VideoCapture(0)
-        
+
+        if rtsp_url:
+            cap = cv2.VideoCapture(rtsp_url)
+        else:
+            cap = cv2.VideoCapture(0)
+
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+
         if not cap.isOpened():
             raise RuntimeError("Could not open video device")
 

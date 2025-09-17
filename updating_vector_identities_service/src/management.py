@@ -2,8 +2,8 @@ from elastic_transport import ObjectApiResponse
 from updating_vector_identities_service.utils.kafka_tools import KafkaTools, KafkaConsumer
 from updating_vector_identities_service.utils.dal_elasticsearch import ElasticSearchDal
 import json, hashlib, logging
-from utils.decorators import log_func, safe_execute
-from config.config import LOGGER_NAME
+from updating_vector_identities_service.utils.decorators import log_func, safe_execute
+from updating_vector_identities_service.config.config import LOGGER_NAME
 
 
 logger = logging.getLogger(LOGGER_NAME)
