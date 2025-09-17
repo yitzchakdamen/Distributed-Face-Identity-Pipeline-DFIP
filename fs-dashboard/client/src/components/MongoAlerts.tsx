@@ -30,7 +30,7 @@ const MongoAlerts: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/mongo/alerts`);
+      const response = await fetch('/api/mongo/alerts');
       
       if (!response.ok) {
         throw new Error(`Failed to fetch alerts: ${response.status}`);
