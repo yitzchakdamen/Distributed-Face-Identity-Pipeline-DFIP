@@ -69,8 +69,8 @@ const MongoAlerts: React.FC = () => {
 
   // Filter alerts based on current filter
   const filteredAlerts = currentFilter === 'all' 
-    ? alerts 
-    : alerts.filter(alert => alert.level === currentFilter);
+    ? (alerts || [])
+    : (alerts || []).filter(alert => alert.level === currentFilter);
 
   // Format date and time
   const formatDateTime = (dateString: string) => {
