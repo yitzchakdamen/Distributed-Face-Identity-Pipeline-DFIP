@@ -7,5 +7,5 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 COPY updating_vector_identities_service /app/updating_vector_identities_service
 
-CMD ["python", "-m", "updating_vector_identities_service.amain"]
+CMD ["python", "-m", "updating_vector_identities_service.main"]
 

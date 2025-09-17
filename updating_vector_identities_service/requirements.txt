@@ -1,5 +1,6 @@
 kafka-python
 ecs-logging
 elasticsearch==8.12.0
+numpy
 
 

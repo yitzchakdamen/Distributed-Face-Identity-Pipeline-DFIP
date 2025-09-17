@@ -27,6 +27,7 @@ class Manager:
     def listen_message(self):
         listen = True
         while listen:
+            self.logger.info("Listening to Kafka topics...")
             vector_record = self.fetcher.fetch()
             self.classified_records(vector_record)
 

@@ -11,4 +11,4 @@ SERVER_URL = os.getenv("SERVER_URL", "ws://localhost:8000/camera/upload-image")
 
 
 # Camera configuration
-CAMERA_URL = os.getenv("CAMERA_URL", "rtsp://192.168.20.249:8554/stream")
+CAMERA_URL = os.getenv("CAMERA_URL", "rtsp://192.168.16.2:8554/all.stream") 

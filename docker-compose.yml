@@ -1,9 +1,9 @@
-version: "2.4"
+
 services:
 
   kafka:
     image: bitnami/kafka:3.6
-    container_name: kafka-broker-face-identity
+    container_name: kafka
     hostname: kafka
     environment:
       KAFKA_ENABLE_KRAFT: "yes"
@@ -32,7 +32,7 @@ services:
     restart: unless-stopped
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.1.3
     container_name: elasticsearch
     environment:
       discovery.type: "single-node"
@@ -48,7 +48,7 @@ services:
       start_period: 20s
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.12.2
+    image: docker.elastic.co/kibana/kibana:9.1.3
     container_name: kibana
     ports:
       - "5601:5601"
@@ -58,17 +58,17 @@ services:
       elasticsearch:
         condition: service_healthy
 
-  mongodb:
-    image: mongodb/mongodb-community-server:latest
-    container_name: mongodb
-    ports:
-      - "27017:27017"
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 20s
+  # mongodb:
+  #   image: mongodb/mongodb-community-server:latest
+  #   container_name: mongodb
+  #   ports:
+  #     - "27017:27017"
+  #   healthcheck:
+  #     test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 12
+  #     start_period: 20s
 
   face_detection:
     build:
@@ -77,7 +77,7 @@ services:
     container_name: face-detection-service
     environment:
       LOGGER_NAME: face_detection_logger
-      MONGO_URI: "mongodb://mongodb:27017"
+      MONGO_URI: "mongodb+srv://arieltanami122_db_user:OHod6QgGER7wp09F@facedb.k2ycus.mongodb.net/?retryWrites=true&w=majority&appName=facedb"
       MONGODB_DB_NAME: face_identity
       COLLECTION_NAME: Photo_storage
       KAFKA_BOOTSTRAP: kafka:9092
@@ -95,8 +95,6 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
-      mongodb:
-        condition: service_healthy
       elasticsearch:
         condition: service_healthy
 
@@ -106,9 +104,10 @@ services:
       dockerfile: camera_uploader/Dockerfile
     container_name: camera-uploader-service
     environment:
-      SERVER_URL: "ws://face_detection:8000/camera/upload-image"
+      SERVER_URL: ws://face_detection:8000/camera/upload-image
       ES_HOST: elasticsearch
       ES_PORT: 9200
+      CAMERA_URL: rtsp://192.168.16.2:8554/all.stream
     depends_on:
       face_detection:
         condition: service_healthy
@@ -124,15 +123,14 @@ services:
       KAFKA_BROKER: kafka:9092
       KAFKA_TOPIC: event
       KAFKA_CONSUMER_GROUP: event_consumer_group
-      MONGO_URI: "mongodb://mongodb:27017/"
+      MONGO_URI: "mongodb+srv://arieltanami122_db_user:OHod6QgGER7wp09F@facedb.k2ycus.mongodb.net/?retryWrites=true&w=majority&appName=facedb"
       MONGO_DB: face_identity
       MONGO_COLLECTION: Event
       LOGGER_NAME: event_processor_service_logger
     depends_on:
       kafka:
         condition: service_healthy
-      mongodb:
-        condition: service_healthy
+
 
   face_embedding:
     build:
@@ -148,14 +146,11 @@ services:
       ES_HOST: elasticsearch
       ES_PORT: 9200
       ES_INDEX: logger
-      MONGO_PROTOCOL: mongodb
-      MONGO_CLUSTER_ADDRESS: mongodb:27017
+      MONGO_URI: "mongodb+srv://arieltanami122_db_user:OHod6QgGER7wp09F@facedb.k2ycus.mongodb.net/?retryWrites=true&w=majority&appName=facedb"
       MONGO_DATABASE: face_identity
       MONGO_COLLECTION: Photo_storage
     depends_on:
       kafka:
-        condition: service_healthy
-      mongodb:
         condition: service_healthy
       elasticsearch:
         condition: service_healthy

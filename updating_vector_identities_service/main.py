@@ -169,6 +169,7 @@ class FaceIdentityPipeline:
         producer = self.kafka.get_producer()
 
         for msg in consumer:
+            logger.info(f"Received message: {msg.value}")
             self.processing(data=msg.value, producer=producer)
 
 
@@ -206,7 +207,7 @@ class FaceIdentityPipeline:
         # 3. חישוב וקטור ייחודי משוקלל לפי זמן
         new_vector = VectorProcessor.weighted_mean(vectors, dates)
         self.elastic.index_doc(
-            index="persons", doc={"person_id": person_id, "vector": new_vector},
+            index="persons", doc={"person_id": person_id, "vector": new_vector.tolist()},
             doc_id=person_id
         )
             
@@ -220,9 +221,13 @@ class FaceIdentityPipeline:
     
 
 if __name__ == "__main__":
+    import os   
+    ELASTICSEARCH_HOST = os.getenv("ELASTICSEARCH_HOST", "http://localhost:9200")
+    BOOTSTRAP_SERVERS = os.getenv("BOOTSTRAP_SERVERS", "localhost:9092")
+    
     # דוגמת הרצה אמיתית (להחליף לכתובות נכונות)
     pipeline = FaceIdentityPipeline(
-        kafka_brokers=['localhost:9092'],
-        es_hosts=['http://localhost:9200']
+        kafka_brokers=[BOOTSTRAP_SERVERS],
+        es_hosts=[ELASTICSEARCH_HOST]
     )
     pipeline.run()
