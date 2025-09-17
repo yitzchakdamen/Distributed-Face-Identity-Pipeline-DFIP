@@ -2,12 +2,21 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
-  // Use dev HTML file for development to avoid CSP issues
-  const htmlInput = mode === 'development' ? './index.dev.html' : './index.html';
-  
+export default defineConfig(({ mode }) => {  
   return {
-    plugins: [react()],
+    plugins: [
+      react(),
+      // Add a simple plugin to modify CSP in development
+      mode === 'development' && {
+        name: 'dev-csp',
+        transformIndexHtml(html: string) {
+          return html.replace(
+            /connect-src 'self' https: wss: https:\/\/api\.facealert\.security https:\/\/api\.facealert\.live https:\/\/fonts\.googleapis\.com/,
+            "connect-src 'self' http://localhost:* ws://localhost:* https: wss: https://api.facealert.security https://api.facealert.live https://fonts.googleapis.com"
+          );
+        }
+      }
+    ].filter(Boolean),
     assetsInclude: ['**/*.svg'],
     
     // Use different HTML files for dev and production
@@ -42,7 +51,6 @@ export default defineConfig(({ mode }) => {
       
       // Optimize chunk splitting for better caching
       rollupOptions: {
-        input: htmlInput,
         output: {
           manualChunks: {
             // Vendor chunk for React and related libraries
