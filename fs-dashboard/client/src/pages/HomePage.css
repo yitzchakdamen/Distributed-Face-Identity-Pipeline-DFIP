@@ -9,6 +9,29 @@
   padding: 3rem 1rem;
 }
 
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.error-message button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin-left: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.error-message button:hover {
+  background: #c82333;
+}
+
 .dashboard-overview h1 {
   margin-bottom: 2rem;
   color: #2c3e50;
