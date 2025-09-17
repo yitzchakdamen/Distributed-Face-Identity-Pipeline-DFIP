@@ -40,7 +40,25 @@ HOST=localhost
 
 # CORS
 ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+
+# Database - Supabase (Required)
+SUPABASE_URL=your_supabase_url_here
+SUPABASE_KEY=your_supabase_anon_key_here
+
+# Database - MongoDB (Optional - for MongoDB Gallery feature)
+MONGODB_URI=mongodb://localhost:27017
+MONGODB_DB_NAME=face_identity
 ```
+
+### MongoDB Configuration (Optional)
+
+The MongoDB integration is optional. If you want to use the MongoDB Gallery feature:
+
+1. Set up a MongoDB instance
+2. Add the connection string to `MONGODB_URI`
+3. Ensure your MongoDB has a database with GridFS collections for image storage
+
+If MongoDB is not configured, the `/api/mongo/*` endpoints will return a 503 error with a helpful message.
 
 ### Configuration Files
 
@@ -124,6 +142,47 @@ Example structure:
 ### Error Handling
 
 The server includes global error handling with:
+
+- Development mode: Full error details and stack traces
+- Production mode: Generic error messages for security
+
+### Production Deployment
+
+For production deployment, ensure these environment variables are set:
+
+```env
+NODE_ENV=production
+PORT=3000
+HOST=0.0.0.0
+ALLOWED_ORIGINS=https://yourdomain.com
+SUPABASE_URL=your_production_supabase_url
+SUPABASE_KEY=your_production_supabase_key
+
+# Optional - for MongoDB Gallery feature
+MONGODB_URI=your_production_mongodb_connection_string
+MONGODB_DB_NAME=face_identity
+```
+
+#### Heroku Deployment
+
+Set environment variables using Heroku CLI:
+
+```bash
+heroku config:set NODE_ENV=production
+heroku config:set SUPABASE_URL=your_supabase_url
+heroku config:set SUPABASE_KEY=your_supabase_key
+heroku config:set MONGODB_URI=your_mongodb_uri
+heroku config:set MONGODB_DB_NAME=face_identity
+```
+
+#### GitHub Secrets (for CI/CD)
+
+Add these secrets to your GitHub repository:
+
+- `SUPABASE_URL`
+- `SUPABASE_KEY`
+- `MONGODB_URI` (optional)
+- `MONGODB_DB_NAME` (optional)
 
 - Detailed logging
 - Customized error messages
