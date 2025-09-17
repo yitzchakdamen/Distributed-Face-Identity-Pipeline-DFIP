@@ -1,6 +1,7 @@
 // MongoDB Alerts component for displaying alerts/events with images
 
 import React, { useState, useEffect } from 'react';
+import api from '../services/api';
 import './MongoAlerts.css';
 
 interface Alert {
@@ -31,28 +32,22 @@ const MongoAlerts: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch('/api/mongo/alerts');
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        if (response.status === 503) {
-          throw new Error('MongoDB service is not available in production environment');
-        }
-        if (response.status === 504) {
-          throw new Error('MongoDB operation timed out. The database may be overloaded. Please try again later.');
-        }
-        throw new Error(errorData.message || `Failed to fetch alerts: ${response.status}`);
-      }
-
-      const data: AlertsResponse = await response.json();
+      const response = await api.get('/api/mongo/alerts');
+      const data: AlertsResponse = response.data;
       
       if (data.success) {
         setAlerts(data.data || data.alerts || []);
       } else {
         throw new Error('API returned error');
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error occurred');
+    } catch (err: any) {
+      if (err.response?.status === 503) {
+        setError('MongoDB service is not available in production environment');
+      } else if (err.response?.status === 504) {
+        setError('MongoDB operation timed out. The database may be overloaded. Please try again later.');
+      } else {
+        setError(err.response?.data?.message || err.message || 'Unknown error occurred');
+      }
       console.error('Error fetching alerts:', err);
     } finally {
       setLoading(false);

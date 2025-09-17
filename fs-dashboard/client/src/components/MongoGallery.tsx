@@ -1,6 +1,7 @@
 // MongoDB Gallery component for displaying persons and their images
 
 import React, { useState, useEffect } from 'react';
+import api from '../services/api';
 import './MongoGallery.css';
 
 interface Person {
@@ -30,24 +31,19 @@ const MongoGallery: React.FC = () => {
       setLoading(true);
       setError('');
       
-      const response = await fetch('/api/mongo/persons');
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        if (response.status === 503) {
-          throw new Error('MongoDB service is not available in production environment');
-        }
-        if (response.status === 504) {
-          throw new Error('MongoDB operation timed out. The database may be overloaded. Please try again later.');
-        }
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
+      const response = await api.get('/api/mongo/persons');
+      const data = response.data;
       setPersons(data.persons || []);
       setStats(data.stats || {});
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching persons:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch data');
+      if (err.response?.status === 503) {
+        setError('MongoDB service is not available in production environment');
+      } else if (err.response?.status === 504) {
+        setError('MongoDB operation timed out. The database may be overloaded. Please try again later.');
+      } else {
+        setError(err.response?.data?.message || err.message || `HTTP error! status: ${err.response?.status || 'unknown'}`);
+      }
     } finally {
       setLoading(false);
     }
