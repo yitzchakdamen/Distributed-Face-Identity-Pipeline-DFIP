@@ -203,7 +203,7 @@ const EventsPage: React.FC = () => {
             <div key={event._id} className={`event-card ${event.level}`}>
               <div className="event-header">
                 <span className="event-time">
-                  {new Date(event.timestamp).toLocaleString()}
+                  {new Date(event.time).toLocaleString()}
                 </span>
                 <span className={`risk-badge ${event.level}`}>
                   {event.level?.toUpperCase() || 'UNKNOWN'}
@@ -213,9 +213,9 @@ const EventsPage: React.FC = () => {
               <div className="event-details">
                 <p><strong>Person ID:</strong> {event.person_id}</p>
                 <p><strong>Camera:</strong> {event.camera_id}</p>
-                <p><strong>Confidence:</strong> {(event.metadata.confidence * 100).toFixed(1)}%</p>
-                <p><strong>Detection Type:</strong> {event.metadata.detection_type}</p>
-                <p><strong>Processing Time:</strong> {event.metadata.processing_time_ms}ms</p>
+                <p><strong>Level:</strong> {event.level}</p>
+                <p><strong>Time:</strong> {new Date(event.time).toLocaleString()}</p>
+                <p><strong>Message:</strong> {event.message}</p>
               </div>
               
               <div className="event-actions">
