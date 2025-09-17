@@ -10,7 +10,6 @@
     "build": "echo 'No build step needed for server'",
     "build:client": "cd ../client && npm install && npm run build && cp -r dist/* ../server/public/",
     "heroku-postbuild": "echo 'Server static files ready'",
-    "create-sample-events": "node scripts/createSampleEvents.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {

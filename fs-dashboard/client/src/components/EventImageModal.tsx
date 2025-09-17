@@ -93,7 +93,7 @@ const EventImageModal: React.FC<EventImageModalProps> = ({
               <div className="info-item">
                 <span className="label">Timestamp:</span>
                 <span className="value">
-                  {new Date(event.timestamp).toLocaleString()}
+                  {new Date(event.time).toLocaleString()}
                 </span>
               </div>
               <div className="info-item">
@@ -103,14 +103,8 @@ const EventImageModal: React.FC<EventImageModalProps> = ({
                 </span>
               </div>
               <div className="info-item">
-                <span className="label">Confidence:</span>
-                <span className="value">
-                  {(event.metadata.confidence * 100).toFixed(1)}%
-                </span>
-              </div>
-              <div className="info-item">
-                <span className="label">Detection Type:</span>
-                <span className="value">{event.metadata.detection_type}</span>
+                <span className="label">Message:</span>
+                <span className="value">{event.message}</span>
               </div>
             </div>
           </div>

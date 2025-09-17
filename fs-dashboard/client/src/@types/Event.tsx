@@ -3,19 +3,9 @@ export interface IEvent {
   person_id: string;
   camera_id: string;
   image_id: string;
-  timestamp: string;
-  level: 'low' | 'medium' | 'high';
-  metadata: {
-    confidence: number;
-    bounding_box: {
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-    };
-    detection_type: string;
-    processing_time_ms: number;
-  };
+  time: string;
+  level: string;
+  message: string;
 }
 
 export interface EventFilters {
