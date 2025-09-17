@@ -16,12 +16,11 @@ class VideoFrameExtractor:
             while success:
                 success, frame = self.capture.read()
                 if not success:
-                    return None
+                    break
                 now = time.time()
                 if now - last_sent >= _interval_sec:
                     last_sent = now
                     yield frame
-                yield None
 
     def release(self):
         self.capture.release()

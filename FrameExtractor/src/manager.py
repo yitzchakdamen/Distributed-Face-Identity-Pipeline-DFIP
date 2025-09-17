@@ -14,13 +14,11 @@ class Manager:
         try:
             for frame in self.extractor.get_frames():
                     try:
-                        if frame is None and count > 2:
-                            break
-                        bytes_frame = self.encoder.frame_encode(frame)
-                        count+=1
-                        print(count)
+                        count += 1
                         # await self.uploader.stream(bytes_frame)
-                        await asyncio.sleep(0.01)
+                        bytes_frame = self.encoder.frame_encode(frame)
+                        # await self.uploader.stream(bytes_frame)
+                        print(count)
                     except Exception as e:
                         print(f"not sent frame\n {e}")
         finally:
