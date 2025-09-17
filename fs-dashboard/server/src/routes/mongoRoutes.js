@@ -5,6 +5,24 @@ import { mongoGridFSService } from "../services/mongoGridFSService.js";
 
 const router = express.Router();
 
+// Middleware to check MongoDB availability
+const checkMongoDBAvailability = async (req, res, next) => {
+  try {
+    await mongoGridFSService.connect();
+    next();
+  } catch (error) {
+    console.error("MongoDB not available:", error.message);
+    res.status(503).json({
+      success: false,
+      error: "MongoDB service unavailable",
+      message: "MongoDB connection not configured or service is down",
+    });
+  }
+};
+
+// Apply MongoDB check to all routes
+router.use(checkMongoDBAvailability);
+
 /**
  * @route   GET /api/mongo/persons
  * @desc    Get all persons with their images from MongoDB
