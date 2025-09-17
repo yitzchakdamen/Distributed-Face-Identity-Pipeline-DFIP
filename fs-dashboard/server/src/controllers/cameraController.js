@@ -1,4 +1,7 @@
 import { CameraService } from "../services/cameraService.js";
+import { CameraDAL, CameraRuntimeDAL } from "../db/CameraDAL.js";
+import { cameraEventPublisher } from "../events/CameraEventPublisher.js";
+import { Camera } from "../models/Camera.js";
 import { validate } from "../services/validationService.js";
 
 import Joi from "joi";
@@ -12,7 +15,7 @@ import {
 
 export class CameraController {
   /**
-   * Create a new camera
+   * Create a new camera with event publishing
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    */
@@ -31,13 +34,28 @@ export class CameraController {
       // Get user info from token
       const { id: userId, role } = req.user;
 
-      // Create camera
-      const camera = await CameraService.createCamera(value, userId, role);
+      // Create camera using new DAL
+      const camera = await CameraDAL.createCamera({
+        name: value.name,
+        connection_string: value.connection_string,
+        status: value.status || 'disabled',
+        location: value.location,
+        description: value.description,
+        metadata: value.metadata || {}
+      });
+
+      // Publish camera created event
+      cameraEventPublisher.publishCameraCreated(camera);
+
+      // If camera is enabled, publish enabled event
+      if (camera.status === 'enabled') {
+        cameraEventPublisher.publishCameraEnabled(camera);
+      }
 
       res.status(201).json({
         success: true,
         message: "Camera created successfully",
-        data: camera,
+        data: camera.toPublicJSON(),
       });
     } catch (error) {
       console.error("Create camera error:", error);
@@ -361,6 +379,113 @@ export class CameraController {
       res.status(statusCode).json({
         success: false,
         message: error.message,
+      });
+    }
+  }
+
+  /**
+   * Update camera status with event publishing
+   * @param {Object} req - Express request object  
+   * @param {Object} res - Express response object
+   */
+  static async updateCameraStatus(req, res) {
+    try {
+      const { camera_id } = req.params;
+      const { status } = req.body;
+
+      // Validate status
+      if (!Camera.validateStatus(status)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid status. Must be 'enabled' or 'disabled'"
+        });
+      }
+
+      // Get current camera
+      const currentCamera = await CameraDAL.getCameraById(camera_id);
+      if (!currentCamera) {
+        return res.status(404).json({
+          success: false,
+          message: "Camera not found"
+        });
+      }
+
+      const previousStatus = currentCamera.status;
+
+      // Update camera status
+      const updatedCamera = await CameraDAL.updateCamera(camera_id, { status });
+
+      // Publish camera updated event
+      cameraEventPublisher.publishCameraUpdated(updatedCamera, previousStatus);
+
+      res.json({
+        success: true,
+        message: "Camera status updated successfully",
+        data: updatedCamera.toPublicJSON()
+      });
+
+    } catch (error) {
+      console.error("Update camera status error:", error);
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * Get cameras with runtime status
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  static async getCamerasWithRuntime(req, res) {
+    try {
+      const camerasWithRuntime = await CameraDAL.getCamerasWithRuntime();
+
+      res.json({
+        success: true,
+        message: "Cameras with runtime status retrieved successfully",
+        data: camerasWithRuntime.map(item => ({
+          ...item.camera.toPublicJSON(),
+          runtime: item.runtime ? item.runtime.toJSON() : null
+        }))
+      });
+
+    } catch (error) {
+      console.error("Get cameras with runtime error:", error);
+      res.status(500).json({
+        success: false,
+        message: error.message
+      });
+    }
+  }
+
+  /**
+   * Handle worker heartbeat
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
+  static async workerHeartbeat(req, res) {
+    try {
+      const { camera_id } = req.params;
+      const { status, health_info } = req.body;
+
+      // Update heartbeat in database
+      await CameraRuntimeDAL.updateHeartbeat(camera_id, health_info);
+
+      // Publish heartbeat event
+      cameraEventPublisher.publishWorkerHeartbeat(camera_id, status, health_info);
+
+      res.json({
+        success: true,
+        message: "Heartbeat received"
+      });
+
+    } catch (error) {
+      console.error("Worker heartbeat error:", error);
+      res.status(500).json({
+        success: false,
+        message: error.message
       });
     }
   }

@@ -1,0 +1,13 @@
+# Milestone A - Infrastructure and Camera Management
+
+# New additions for distributed pipeline
+server/src/db/migrations/
+server/src/models/Camera.js
+server/src/models/Person.js
+server/src/events/CameraEventPublisher.js
+server/src/services/camera-manager/
+server/src/routes/cameraManagerRoutes.js
+server/src/utils/MigrationRunner.js
+server/scripts/loadSampleData.js
+docs/MILESTONE_A_INFRASTRUCTURE.md
+MILESTONE_A_SETUP.md

@@ -1,9 +1,11 @@
 /**
  * 1. Connecting to dbs
- * 2. Starts the server
+ * 2. Initialize Camera Manager
+ * 3. Starts the server
  */
 import { connectMongoDB, closeMongoDB } from "./src/db/mongodb.js";
 import { testSupabaseConnection } from "./src/db/supabase.js";
+import { cameraManager } from "./src/services/camera-manager/CameraManager.js";
 import { serverConfig } from "./src/config/server.js";
 import app from "./src/server.js";
 
@@ -13,6 +15,10 @@ const PORT = serverConfig.port;
 // Graceful shutdown handler
 async function gracefulShutdown(signal) {
   console.log(`✔ ${signal} received, shutting down gracefully...`);
+  
+  // Stop camera manager
+  cameraManager.stop();
+  
   await closeMongoDB();
   process.exit(0);
 }
@@ -46,10 +52,16 @@ async function startServer() {
       console.log("Supabase error:", error.message);
     }
 
+    // Start Camera Manager
+    console.log("Starting Camera Manager...");
+    cameraManager.start();
+    console.log("✔ Camera Manager started");
+
     app.listen(PORT, HOST, () => {
       console.log(`✔ FaceAlert server running on http://${HOST}:${PORT}`);
       console.log(`✔ Environment: ${serverConfig.environment}`);
       console.log("✔ Server started - databases will connect on demand");
+      console.log("✔ Camera Manager listening for camera events");
     });
   } catch (error) {
     console.error("✘ Failed to start server:", error);
