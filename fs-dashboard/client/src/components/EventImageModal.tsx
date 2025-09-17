@@ -1,7 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { getEventImage } from "../services/eventService";
-import type { IEvent } from "../@types/Event";
-import "./EventImageModal.css";
+import React, { useState, useEffect } from 'react';
+import { getEventImage } from '../services/eventService';
+import type { IEvent } from '../@types/Event';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Box,
+  CircularProgress,
+  Typography,
+  Alert,
+  Grid,
+  Divider,
+} from '@mui/material';
 
 interface EventImageModalProps {
   event: IEvent;
@@ -9,137 +21,87 @@ interface EventImageModalProps {
   onClose: () => void;
 }
 
-const EventImageModal: React.FC<EventImageModalProps> = ({
-  event,
-  isOpen,
-  onClose,
-}) => {
-  const [imageUrl, setImageUrl] = useState<string>("");
+const EventImageModal: React.FC<EventImageModalProps> = ({ event, isOpen, onClose }) => {
+  const [imageUrl, setImageUrl] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isOpen && event._id) {
+    // Reset state when modal opens for a new event
+    if (isOpen) {
+      setImageUrl('');
+      setLoading(true);
+      setError(null);
+
+      const loadEventImage = async () => {
+        if (!event._id) {
+            setError("Event ID is missing.");
+            setLoading(false);
+            return;
+        }
+        try {
+          const imageResult = await getEventImage(event._id);
+          if (imageResult.success && imageResult.data) {
+            setImageUrl(imageResult.data);
+          } else {
+            setError(imageResult.error || 'No image available for this event');
+          }
+        } catch (err) {
+          console.error('Error loading event image:', err);
+          setError('Failed to load image due to a network or server error.');
+        } finally {
+          setLoading(false);
+        }
+      };
       loadEventImage();
     }
-    
-    // Cleanup blob URL when modal closes
+
+    // Cleanup blob URL
     return () => {
       if (imageUrl && imageUrl.startsWith('blob:')) {
         URL.revokeObjectURL(imageUrl);
       }
     };
-  }, [isOpen, event._id, imageUrl]);
-
-  const loadEventImage = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      // Use the new getEventImage service function
-      const imageResult = await getEventImage(event._id);
-      
-      if (imageResult.success && imageResult.data) {
-        setImageUrl(imageResult.data);
-      } else {
-        setError(imageResult.error || 'No image available for this event');
-      }
-    } catch (error) {
-      console.error('Error loading event image:', error);
-      setError('Failed to load image');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleOverlayClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
-  const handleImageError = () => {
-    setError("Image could not be loaded");
-    setLoading(false);
-  };
-
-  const handleImageLoad = () => {
-    setLoading(false);
-  };
-
-  if (!isOpen) return null;
+  }, [isOpen, event]); // Rerun effect if the event object itself changes
 
   return (
-    <div className="event-image-modal-overlay" onClick={handleOverlayClick}>
-      <div className="event-image-modal">
-        <div className="modal-header">
-          <h3>Event Image Details</h3>
-          <button className="close-button" onClick={onClose}>
-            ×
-          </button>
-        </div>
-
-        <div className="modal-content">
-          <div className="event-info">
-            <div className="info-grid">
-              <div className="info-item">
-                <span className="label">Person ID:</span>
-                <span className="value">{event.person_id}</span>
-              </div>
-              <div className="info-item">
-                <span className="label">Camera:</span>
-                <span className="value">{event.camera_id}</span>
-              </div>
-              <div className="info-item">
-                <span className="label">Timestamp:</span>
-                <span className="value">
-                  {new Date(event.timestamp).toLocaleString()}
-                </span>
-              </div>
-              <div className="info-item">
-                <span className="label">Risk Level:</span>
-                <span className={`value risk-level ${event.level}`}>
-                  {event.level?.toUpperCase()}
-                </span>
-              </div>
-              <div className="info-item">
-                <span className="label">Confidence:</span>
-                <span className="value">
-                  {(event.metadata.confidence * 100).toFixed(1)}%
-                </span>
-              </div>
-              <div className="info-item">
-                <span className="label">Detection Type:</span>
-                <span className="value">{event.metadata.detection_type}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="image-container">
-            {loading && <div className="image-loading">Loading image...</div>}
-            
-            {error && (
-              <div className="image-error">
-                <p>Unable to load image</p>
-                <p className="error-message">{error}</p>
-                <p className="image-id">Event ID: {event._id}</p>
-              </div>
-            )}
-
-            {!error && imageUrl && (
-              <img
-                src={imageUrl}
-                alt={`Event ${event._id}`}
-                className="event-image"
-                onLoad={handleImageLoad}
-                onError={handleImageError}
-                style={{ display: loading ? "none" : "block" }}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="md">
+      <DialogTitle>Event Details</DialogTitle>
+      <DialogContent dividers>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={5}>
+            <Typography variant="h6" gutterBottom>Information</Typography>
+            <Typography variant="body1" gutterBottom><strong>Person ID:</strong> {event.person_id}</Typography>
+            <Typography variant="body1" gutterBottom><strong>Camera:</strong> {event.camera_id}</Typography>
+            <Typography variant="body1" gutterBottom><strong>Timestamp:</strong> {new Date(event.timestamp).toLocaleString()}</Typography>
+            <Typography variant="body1" gutterBottom><strong>Risk Level:</strong> {event.level?.toUpperCase()}</Typography>
+            <Typography variant="body1" gutterBottom><strong>Confidence:</strong> {(event.metadata.confidence * 100).toFixed(1)}%</Typography>
+            <Divider sx={{ my: 2 }}/>
+            <Typography variant="caption" color="text.secondary">Event ID: {event._id}</Typography>
+          </Grid>
+          <Grid item xs={12} md={7}>
+             <Typography variant="h6" gutterBottom>Event Image</Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300, border: '1px dashed grey', borderRadius: 1, p: 1 }}>
+              {loading && <CircularProgress />}
+              {error && !loading && <Alert severity="warning">{error}</Alert>}
+              {!loading && !error && imageUrl && (
+                <img
+                  src={imageUrl}
+                  alt={`Event ${event._id}`}
+                  style={{ maxWidth: '100%', maxHeight: '450px', objectFit: 'contain' }}
+                />
+              )}
+               {!loading && !error && !imageUrl && <Typography color="text.secondary">No image to display.</Typography>}
+            </Box>
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="primary">
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

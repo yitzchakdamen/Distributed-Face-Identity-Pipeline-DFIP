@@ -11,47 +11,52 @@ import CamerasPage from "./pages/CamerasPage";
 import SettingsPage from "./pages/SettingsPage";
 import UserManagementPage from "./pages/UserManagementPage";
 import MongoPage from "./pages/MongoPage";
-import "./App.css";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import theme from "./theme";
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <ApplicationLayout>
-          <Routes>
-            <Route index element={<HomePage />} />
-            <Route path="/events" element={
-              <ProtectedRoute>
-                <EventsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/cameras" element={
-              <ProtectedRoute>
-                <CamerasPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/settings" element={
-              <ProtectedRoute>
-                <SettingsPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/users" element={
-              <ProtectedRoute>
-                <UserManagementPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/mongo" element={
-              <ProtectedRoute>
-                <MongoPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </ApplicationLayout>
-      </Router>
-    </AuthProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AuthProvider>
+        <Router>
+          <ApplicationLayout>
+            <Routes>
+              <Route index element={<HomePage />} />
+              <Route path="/events" element={
+                <ProtectedRoute>
+                  <EventsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/cameras" element={
+                <ProtectedRoute>
+                  <CamerasPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/settings" element={
+                <ProtectedRoute>
+                  <SettingsPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/users" element={
+                <ProtectedRoute>
+                  <UserManagementPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/mongo" element={
+                <ProtectedRoute>
+                  <MongoPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </ApplicationLayout>
+        </Router>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

@@ -1,14 +1,25 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import "./Login.css";
+import React, { useState } from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import {
+  Avatar,
+  Button,
+  TextField,
+  Link,
+  Grid,
+  Box,
+  Typography,
+  Alert,
+  CircularProgress,
+} from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -18,58 +29,70 @@ const Login: React.FC = () => {
     setLoading(true);
 
     const result = await login({ username, password });
-    
+
     if (result.success) {
-      navigate("/");
+      navigate('/');
     } else {
-      setError(result.error || "Login failed");
+      setError(result.error || 'Login failed. Please check your credentials.');
     }
-    
+
     setLoading(false);
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-form">
-        <h2>Login to FaceAlert system</h2>
-        
-        {error && <div className="error-message">{error}</div>}
-        
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="username">Username:</label>
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              disabled={loading}
-            />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="password">Password:</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-            />
-          </div>
-          
-          <button type="submit" disabled={loading} className="submit-button">
-            {loading ? "Logging in..." : "Login"}
-          </button>
-        </form>
-        
-        <p className="auth-link">
-          Don't have an account? <Link to="/register">Register here</Link>
-        </p>
-      </div>
-    </div>
+    <>
+      <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+        <LockOutlinedIcon />
+      </Avatar>
+      <Typography component="h1" variant="h5">
+        Sign in
+      </Typography>
+      <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        {error && <Alert severity="error" sx={{ mb: 2, width: '100%' }}>{error}</Alert>}
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="username"
+          label="Username"
+          name="username"
+          autoComplete="username"
+          autoFocus
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          disabled={loading}
+        />
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          name="password"
+          label="Password"
+          type="password"
+          id="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          disabled={loading}
+        />
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          sx={{ mt: 3, mb: 2 }}
+          disabled={loading}
+        >
+          {loading ? <CircularProgress size={24} /> : 'Sign In'}
+        </Button>
+        <Grid container justifyContent="flex-end">
+          <Grid item>
+            <Link component={RouterLink} to="/register" variant="body2">
+              {"Don't have an account? Sign Up"}
+            </Link>
+          </Grid>
+        </Grid>
+      </Box>
+    </>
   );
 };
 

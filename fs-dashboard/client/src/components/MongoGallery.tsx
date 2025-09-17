@@ -1,7 +1,27 @@
-// MongoDB Gallery component for displaying persons and their images
-
-import React, { useState, useEffect } from 'react';
-import './MongoGallery.css';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  Box,
+  Typography,
+  CircularProgress,
+  Alert,
+  Button,
+  Grid,
+  Card,
+  CardContent,
+  ImageList,
+  ImageListItem,
+  ImageListItemBar,
+  IconButton,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
+  Paper,
+} from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 interface Person {
   person_id: string;
@@ -12,8 +32,6 @@ interface Stats {
   total_persons: number;
   total_images: number;
   avg_images_per_person: number;
-  max_images_for_single_person: number;
-  min_images_for_single_person: number;
 }
 
 const MongoGallery: React.FC = () => {
@@ -24,246 +42,93 @@ const MongoGallery: React.FC = () => {
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [lightboxImageIndex, setLightboxImageIndex] = useState(0);
 
-  // Fetch persons data from MongoDB API
-  const fetchPersons = async () => {
+  const fetchPersons = useCallback(async () => {
     try {
       setLoading(true);
-      setError('');
-      
+      setError(null);
       const response = await fetch('/api/mongo/persons');
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        if (response.status === 503) {
-          throw new Error('MongoDB service is not available in production environment');
-        }
-        if (response.status === 504) {
-          throw new Error('MongoDB operation timed out. The database may be overloaded. Please try again later.');
-        }
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-      }
-      
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       setPersons(data.persons || []);
-      setStats(data.stats || {});
+      setStats(data.stats || null);
     } catch (err) {
-      console.error('Error fetching persons:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch data');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchPersons();
-  }, []);
+  }, [fetchPersons]);
 
-  // Open lightbox for person images
   const openLightbox = (person: Person, imageIndex: number = 0) => {
     setSelectedPerson(person);
     setLightboxImageIndex(imageIndex);
   };
+  const closeLightbox = () => setSelectedPerson(null);
 
-  // Close lightbox
-  const closeLightbox = () => {
-    setSelectedPerson(null);
-    setLightboxImageIndex(0);
-  };
-
-  // Navigate lightbox images
   const nextImage = () => {
-    if (selectedPerson && lightboxImageIndex < selectedPerson.images.length - 1) {
-      setLightboxImageIndex(lightboxImageIndex + 1);
+    if (selectedPerson) {
+      setLightboxImageIndex((prev) => (prev + 1) % selectedPerson.images.length);
     }
   };
-
   const prevImage = () => {
-    if (lightboxImageIndex > 0) {
-      setLightboxImageIndex(lightboxImageIndex - 1);
+    if (selectedPerson) {
+      setLightboxImageIndex((prev) => (prev - 1 + selectedPerson.images.length) % selectedPerson.images.length);
     }
   };
 
-  // Handle keyboard navigation
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (selectedPerson) {
-        switch (e.key) {
-          case 'Escape':
-            closeLightbox();
-            break;
-          case 'ArrowRight':
-            nextImage();
-            break;
-          case 'ArrowLeft':
-            prevImage();
-            break;
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyPress);
-    return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [selectedPerson, lightboxImageIndex]);
-
-  if (loading) {
-    return (
-      <div className="mongo-gallery">
-        <div className="loading">
-          <div className="spinner"></div>
-          <p>Loading persons data...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="mongo-gallery">
-        <div className="error">
-          <h3>Error Loading Data</h3>
-          <p>{error}</p>
-          <button onClick={fetchPersons} className="retry-btn">
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <Box sx={{display: 'flex', justifyContent: 'center', p: 4}}><CircularProgress /></Box>;
+  if (error) return <Alert severity="error" action={<Button onClick={fetchPersons}>Retry</Button>}>{error}</Alert>;
 
   return (
-    <div className="mongo-gallery">
-      <header className="gallery-header">
-        <h1>MongoDB Persons Gallery</h1>
-        <button onClick={fetchPersons} className="refresh-btn">
-          Refresh Data
-        </button>
-      </header>
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h5">Persons Gallery</Typography>
+        <Button variant="outlined" startIcon={<RefreshIcon />} onClick={fetchPersons}>Refresh Data</Button>
+      </Box>
 
-      {/* Statistics */}
       {stats && (
-        <div className="stats-container">
-          <div className="stat-card">
-            <h3>Total Persons</h3>
-            <div className="stat-value">{stats.total_persons}</div>
-          </div>
-          <div className="stat-card">
-            <h3>Total Images</h3>
-            <div className="stat-value">{stats.total_images}</div>
-          </div>
-          <div className="stat-card">
-            <h3>Avg Images per Person</h3>
-            <div className="stat-value">{stats.avg_images_per_person.toFixed(1)}</div>
-          </div>
-          <div className="stat-card">
-            <h3>Max Images</h3>
-            <div className="stat-value">{stats.max_images_for_single_person}</div>
-          </div>
-        </div>
+        <Grid container spacing={2} sx={{ mb: 4 }}>
+            <Grid item xs={12} sm={4}><Paper sx={{p: 2, textAlign: 'center'}}><Typography variant='h5'>{stats.total_persons}</Typography><Typography>Total Persons</Typography></Paper></Grid>
+            <Grid item xs={12} sm={4}><Paper sx={{p: 2, textAlign: 'center'}}><Typography variant='h5'>{stats.total_images}</Typography><Typography>Total Images</Typography></Paper></Grid>
+            <Grid item xs={12} sm={4}><Paper sx={{p: 2, textAlign: 'center'}}><Typography variant='h5'>{stats.avg_images_per_person.toFixed(1)}</Typography><Typography>Avg Images/Person</Typography></Paper></Grid>
+        </Grid>
       )}
 
-      {/* Persons Grid */}
-      <div className="persons-grid">
+      <ImageList variant="masonry" cols={4} gap={8}>
         {persons.map((person) => (
-          <div key={person.person_id} className="person-card">
-            <div className="person-header">
-              <span className="person-id">Person {person.person_id.substring(0, 8)}...</span>
-              <span className="image-count">{person.images.length} images</span>
-            </div>
-            
-            {person.images.length > 0 ? (
-              <div className="person-image-container">
-                <img
-                  src={person.images[0]}
-                  alt={`Person ${person.person_id}`}
-                  className="person-image"
-                  onClick={() => openLightbox(person, 0)}
-                />
-                {person.images.length > 1 && (
-                  <div className="image-overlay">
-                    +{person.images.length - 1} more
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="no-image">
-                <div className="no-image-icon">📷</div>
-                <p>No images available</p>
-              </div>
-            )}
-            
-            <div className="person-footer">
-              <button
-                onClick={() => openLightbox(person, 0)}
-                className="view-images-btn"
-                disabled={person.images.length === 0}
-              >
-                View Images
-              </button>
-            </div>
-          </div>
+          <ImageListItem key={person.person_id} sx={{cursor: 'pointer'}}>
+            <img src={person.images[0]} alt={person.person_id} loading="lazy" onClick={() => openLightbox(person, 0)} />
+            <ImageListItemBar
+              title={`Person: ${person.person_id.substring(0, 8)}...`}
+              subtitle={`${person.images.length} images`}
+              actionIcon={
+                <IconButton sx={{ color: 'rgba(255, 255, 255, 0.54)' }} onClick={() => openLightbox(person, 0)}>
+                  <InfoIcon />
+                </IconButton>
+              }
+            />
+          </ImageListItem>
         ))}
-      </div>
+      </ImageList>
 
-      {/* Lightbox */}
-      {selectedPerson && (
-        <div className="lightbox" onClick={closeLightbox}>
-          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-            <button className="close-btn" onClick={closeLightbox}>
-              ×
-            </button>
-            
-            <div className="lightbox-header">
-              <h3>Person {selectedPerson.person_id.substring(0, 10)}...</h3>
-              <span className="image-counter">
-                {lightboxImageIndex + 1} / {selectedPerson.images.length}
-              </span>
-            </div>
-            
-            <div className="lightbox-image-container">
-              {selectedPerson.images.length > 1 && (
-                <button 
-                  className="nav-btn nav-prev" 
-                  onClick={prevImage}
-                  disabled={lightboxImageIndex === 0}
-                >
-                  ‹
-                </button>
-              )}
-              
-              <img
-                src={selectedPerson.images[lightboxImageIndex]}
-                alt={`Person ${selectedPerson.person_id} - Image ${lightboxImageIndex + 1}`}
-                className="lightbox-image"
-              />
-              
-              {selectedPerson.images.length > 1 && (
-                <button 
-                  className="nav-btn nav-next" 
-                  onClick={nextImage}
-                  disabled={lightboxImageIndex === selectedPerson.images.length - 1}
-                >
-                  ›
-                </button>
-              )}
-            </div>
-            
-            {/* Thumbnails */}
-            {selectedPerson.images.length > 1 && (
-              <div className="thumbnails-container">
-                {selectedPerson.images.map((image, index) => (
-                  <img
-                    key={index}
-                    src={image}
-                    alt={`Thumbnail ${index + 1}`}
-                    className={`thumbnail ${index === lightboxImageIndex ? 'active' : ''}`}
-                    onClick={() => setLightboxImageIndex(index)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+      <Dialog open={!!selectedPerson} onClose={closeLightbox} maxWidth="lg" fullWidth>
+        <DialogTitle>
+            Person: {selectedPerson?.person_id.substring(0, 10)}...
+            <Typography variant="caption" sx={{ml: 2}}>({lightboxImageIndex + 1} / {selectedPerson?.images.length})</Typography>
+        </DialogTitle>
+        <DialogContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 1 }}>
+            <IconButton onClick={prevImage}><ArrowBackIosNewIcon /></IconButton>
+            <Box component="img" src={selectedPerson?.images[lightboxImageIndex]} alt="lightbox" sx={{ maxHeight: '80vh', maxWidth: '80%', objectFit: 'contain' }} />
+            <IconButton onClick={nextImage}><ArrowForwardIosIcon /></IconButton>
+        </DialogContent>
+        <DialogActions>
+            <Button onClick={closeLightbox}>Close</Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 

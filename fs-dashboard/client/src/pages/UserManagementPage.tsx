@@ -1,200 +1,139 @@
-import React, { useState, useEffect } from "react";
-import { getAllUsers } from "../services/userService";
-import { useAuth } from "../context/AuthContext";
-import CameraAssignment from "../components/CameraAssignment";
-import UserCreationForm from "../components/UserCreationForm";
-import type { IUser } from "../@types/User";
-import "./UserManagementPage.css";
+import React, { useState, useEffect } from 'react';
+import { getAllUsers } from '../services/userService';
+import type { IUser } from '../@types/User';
+import UserCreationForm from '../components/UserCreationForm';
+import CameraAssignment from '../components/CameraAssignment';
+import {
+  Box,
+  Typography,
+  CircularProgress,
+  Alert,
+  Tabs,
+  Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip,
+  Button,
+} from '@mui/material';
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+  return (
+    <div role="tabpanel" hidden={value !== index} id={`user-mgm-tabpanel-${index}`} {...other}>
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
+}
 
 const UserManagementPage: React.FC = () => {
-  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<IUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"users" | "create" | "assign">("users");
-
-  // Helper function to format date
-  const formatDate = (dateString: string): string => {
-    try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) {
-        return "Unknown date";
-      }
-      return date.toLocaleDateString();
-    } catch {
-      return "Unknown date";
-    }
-  };
+  const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (tabValue === 0) {
+      loadUsers();
+    }
+  }, [tabValue]);
 
-  const loadData = async () => {
+  const loadUsers = async () => {
     try {
       setLoading(true);
-      setError(null);
-      
-      // Load users
-      const usersResponse = await getAllUsers();
-      
-      if (usersResponse.success && usersResponse.data) {
-        setUsers(usersResponse.data);
+      const response = await getAllUsers();
+      if (response.success && response.data) {
+        setUsers(response.data);
       } else {
-        setError(usersResponse.error || "Failed to load users");
+        setError(response.error || 'Failed to load users');
       }
-      
     } catch (err: any) {
-      console.error("Error loading data:", err);
-      if (err.response?.status === 401) {
-        setError("Authentication required. Please login again.");
-      } else if (err.response?.status === 403) {
-        setError("You don't have permission to access user management. Only admin and operator roles can manage users.");
-      } else {
-        setError(err.message || "Failed to load data");
-      }
+      setError(err.message || 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }
   };
 
-  const hasUserManagementAccess = () => {
-    return currentUser?.role === "admin" || currentUser?.role === "operator";
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
   };
 
-  if (!hasUserManagementAccess()) {
-    return (
-      <div className="user-management-page">
-        <div className="access-denied">
-          <h2>Access Denied</h2>
-          <p>You don't have permission to access user management.</p>
-          <p>Only administrators and operators can manage users and camera assignments.</p>
-          <p>Your current role: <strong>{currentUser?.role}</strong></p>
-        </div>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="user-management-page">
-        <div className="loading-state">
-          <h2>Loading...</h2>
-          <p>Loading user management data...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="user-management-page">
-        <div className="error-state">
-          <h2>Error</h2>
-          <p>{error}</p>
-          <button onClick={loadData} className="retry-btn">
-            Retry
-          </button>
-        </div>
-      </div>
-    );
+  const getRoleChipColor = (role: string) => {
+      switch (role) {
+          case 'admin': return 'error';
+          case 'operator': return 'warning';
+          case 'viewer': return 'info';
+          default: return 'default';
+      }
   }
 
   return (
-    <div className="user-management-page">
-      <h1>User Management</h1>
+    <Box>
+      <Typography variant="h4" gutterBottom>User Management</Typography>
       
-      <div className="user-info">
-        <p>Welcome, <strong>{currentUser?.name}</strong> ({currentUser?.role})</p>
-        <p>You have {currentUser?.role === "admin" ? "full" : "limited"} user management permissions.</p>
-      </div>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={tabValue} onChange={handleTabChange} aria-label="user management tabs">
+          <Tab label={`View Users (${users.length})`} id="user-mgm-tab-0" />
+          <Tab label="Create User" id="user-mgm-tab-1" />
+          <Tab label="Assign Cameras" id="user-mgm-tab-2" />
+        </Tabs>
+      </Box>
 
-      <div className="tab-navigation">
-        <button
-          className={`tab-btn ${activeTab === "users" ? "active" : ""}`}
-          onClick={() => setActiveTab("users")}
-        >
-          View Users ({users.length})
-        </button>
-        <button
-          className={`tab-btn ${activeTab === "create" ? "active" : ""}`}
-          onClick={() => setActiveTab("create")}
-        >
-          Create User
-        </button>
-        <button
-          className={`tab-btn ${activeTab === "assign" ? "active" : ""}`}
-          onClick={() => setActiveTab("assign")}
-        >
-          Assign Cameras
-        </button>
-      </div>
-
-      <div className="tab-content">
-        {activeTab === "users" && (
-          <div className="users-tab">
-            <h2>System Users</h2>
-            {users.length === 0 ? (
-              <div className="no-data">
-                <p>No users found.</p>
-              </div>
-            ) : (
-              <div className="users-grid">
-                {users.map((user) => (
-                  <div key={user.id} className="user-card">
-                    <div className="user-header">
-                      <h3>{user.name}</h3>
-                      <span className={`role-badge ${user.role}`}>
-                        {user.role}
-                      </span>
-                    </div>
-                    <div className="user-details">
-                      <p><strong>Username:</strong> {user.username}</p>
-                      <p><strong>Email:</strong> {user.email}</p>
-                      <p><strong>Created:</strong> {formatDate(user.createdAt)}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            <div className="summary-stats">
-              <h3>User Statistics</h3>
-              <div className="stats-grid">
-                <div className="stat-item">
-                  <span className="stat-label">Total Users:</span>
-                  <span className="stat-value">{users.length}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">Admins:</span>
-                  <span className="stat-value">{users.filter(u => u.role === "admin").length}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">Operators:</span>
-                  <span className="stat-value">{users.filter(u => u.role === "operator").length}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">Viewers:</span>
-                  <span className="stat-value">{users.filter(u => u.role === "viewer").length}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+      <TabPanel value={tabValue} index={0}>
+        {loading && <Box sx={{display: 'flex', justifyContent: 'center', p: 4}}><CircularProgress /></Box>}
+        {error && <Alert severity="error">{error}</Alert>}
+        {!loading && !error && (
+            <Paper sx={{overflow: 'hidden'}}>
+                <TableContainer>
+                    <Table stickyHeader>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Name</TableCell>
+                                <TableCell>Username</TableCell>
+                                <TableCell>Email</TableCell>
+                                <TableCell>Role</TableCell>
+                                <TableCell>Created At</TableCell>
+                                <TableCell align="right">Actions</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {users.map((user) => (
+                                <TableRow key={user.id} hover>
+                                    <TableCell component="th" scope="row">{user.name}</TableCell>
+                                    <TableCell>{user.username}</TableCell>
+                                    <TableCell>{user.email}</TableCell>
+                                    <TableCell><Chip label={user.role} color={getRoleChipColor(user.role)} size="small" /></TableCell>
+                                    <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                                    <TableCell align="right">
+                                        <Button size="small" variant="outlined">Edit</Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Paper>
         )}
+      </TabPanel>
 
-        {activeTab === "create" && (
-          <div className="create-tab">
-            <UserCreationForm />
-          </div>
-        )}
+      <TabPanel value={tabValue} index={1}>
+        <UserCreationForm />
+      </TabPanel>
 
-        {activeTab === "assign" && (
-          <div className="assign-tab">
-            <CameraAssignment />
-          </div>
-        )}
-      </div>
-    </div>
+      <TabPanel value={tabValue} index={2}>
+        <CameraAssignment />
+      </TabPanel>
+    </Box>
   );
 };
 

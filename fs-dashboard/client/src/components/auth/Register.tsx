@@ -1,17 +1,32 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import "./Register.css";
+import React, { useState } from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import {
+  Avatar,
+  Button,
+  TextField,
+  Link,
+  Grid,
+  Box,
+  Typography,
+  Alert,
+  CircularProgress,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 const Register: React.FC = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState<"admin" | "operator" | "viewer">("viewer");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [role, setRole] = useState<'admin' | 'operator' | 'viewer'>('viewer');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  
+
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -21,96 +36,113 @@ const Register: React.FC = () => {
     setLoading(true);
 
     const result = await register({ username, password, name, email, role });
-    
+
     if (result.success) {
-      navigate("/");
+      navigate('/login'); // Redirect to login after successful registration
     } else {
-      setError(result.error || "Registration failed");
+      setError(result.error || 'Registration failed. Please try again.');
     }
-    
+
     setLoading(false);
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-form">
-        <h2>Register for FaceAlert system</h2>
-        
-        {error && <div className="error-message">{error}</div>}
-        
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="name">Full Name:</label>
-            <input
-              type="text"
+    <>
+      <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+        <LockOutlinedIcon />
+      </Avatar>
+      <Typography component="h1" variant="h5">
+        Sign up
+      </Typography>
+      <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 3 }}>
+        {error && <Alert severity="error" sx={{ mb: 2, width: '100%' }}>{error}</Alert>}
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <TextField
+              name="name"
+              required
+              fullWidth
               id="name"
+              label="Full Name"
+              autoFocus
               value={name}
               onChange={(e) => setName(e.target.value)}
-              required
               disabled={loading}
             />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="username">Username:</label>
-            <input
-              type="text"
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              required
+              fullWidth
               id="username"
+              label="Username"
+              name="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              required
               disabled={loading}
             />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="email">Email:</label>
-            <input
-              type="email"
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              required
+              fullWidth
               id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
               disabled={loading}
             />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="password">Password:</label>
-            <input
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              required
+              fullWidth
+              name="password"
+              label="Password"
               type="password"
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
               disabled={loading}
             />
-          </div>
-          
-          <div className="form-group">
-            <label htmlFor="role">Role:</label>
-            <select
-              id="role"
-              value={role}
-              onChange={(e) => setRole(e.target.value as "admin" | "operator" | "viewer")}
-              disabled={loading}
-            >
-              <option value="viewer">Viewer</option>
-              <option value="operator">Operator</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-          
-          <button type="submit" disabled={loading} className="submit-button">
-            {loading ? "Registering..." : "Register"}
-          </button>
-        </form>
-        
-        <p className="auth-link">
-          Already have an account? <Link to="/login">Login here</Link>
-        </p>
-      </div>
-    </div>
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth required disabled={loading}>
+              <InputLabel id="role-select-label">Role</InputLabel>
+              <Select
+                labelId="role-select-label"
+                id="role-select"
+                value={role}
+                label="Role"
+                onChange={(e) => setRole(e.target.value as 'admin' | 'operator' | 'viewer')}
+              >
+                <MenuItem value="viewer">Viewer</MenuItem>
+                <MenuItem value="operator">Operator</MenuItem>
+                <MenuItem value="admin">Admin</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          sx={{ mt: 3, mb: 2 }}
+          disabled={loading}
+        >
+          {loading ? <CircularProgress size={24} /> : 'Sign Up'}
+        </Button>
+        <Grid container justifyContent="flex-end">
+          <Grid item>
+            <Link component={RouterLink} to="/login" variant="body2">
+              Already have an account? Sign in
+            </Link>
+          </Grid>
+        </Grid>
+      </Box>
+    </>
   );
 };
 

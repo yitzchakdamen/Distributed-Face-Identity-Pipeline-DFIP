@@ -1,106 +1,136 @@
-import React, { useState, useEffect } from "react";
-import { getAllCameras } from "../services/cameraService";
-import CameraCreationForm from "../components/CameraCreationForm";
-import { useAuth } from "../context/AuthContext";
-import type { ICamera } from "../@types/Camera";
-import "./CamerasPage.css";
+import React, { useState, useEffect } from 'react';
+import { getAllCameras } from '../services/cameraService';
+import CameraCreationForm from '../components/CameraCreationForm';
+import { useAuth } from '../context/AuthContext';
+import type { ICamera } from '../@types/Camera';
+import {
+  Box,
+  Typography,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  CircularProgress,
+  Alert,
+  Tabs,
+  Tab,
+  Chip,
+} from '@mui/material';
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`camera-tabpanel-${index}`}
+      aria-labelledby={`camera-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+}
 
 const CamerasPage: React.FC = () => {
   const { user } = useAuth();
   const [cameras, setCameras] = useState<ICamera[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"cameras" | "create">("cameras");
+  const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
     const fetchCameras = async () => {
       try {
         setLoading(true);
         const response = await getAllCameras();
-        
         if (response.success && response.data) {
           setCameras(response.data);
         } else {
-          setError(response.error || "Failed to fetch cameras");
+          setError(response.error || 'Failed to fetch cameras');
         }
       } catch (err: any) {
-        setError(err.message || "Network error occurred");
+        setError(err.message || 'Network error occurred');
       } finally {
         setLoading(false);
       }
     };
+    if (tabValue === 0) {
+        fetchCameras();
+    }
+  }, [tabValue]);
 
-    fetchCameras();
-  }, []);
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
 
-  if (loading) {
-    return <div className="loading">Loading cameras...</div>;
-  }
-
-  if (error) {
-    return <div className="error">Error: {error}</div>;
-  }
+  const canCreate = user && ['operator', 'admin'].includes(user.role);
 
   return (
-    <div className="cameras-page">
-      <h1>Camera Management</h1>
-      
-      <div className="tab-navigation">
-        <button 
-          className={`tab-btn ${activeTab === "cameras" ? "active" : ""}`}
-          onClick={() => setActiveTab("cameras")}
-        >
-          View Cameras
-        </button>
-        {user && ["operator", "admin"].includes(user.role) && (
-          <button 
-            className={`tab-btn ${activeTab === "create" ? "active" : ""}`}
-            onClick={() => setActiveTab("create")}
-          >
-            Create Camera
-          </button>
-        )}
-      </div>
+    <Box>
+      <Typography variant="h4" gutterBottom component="h1">
+        Camera Management
+      </Typography>
 
-      {activeTab === "cameras" && (
-        <div className="cameras-tab">
-          <div className="cameras-grid">
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={tabValue} onChange={handleTabChange} aria-label="camera management tabs">
+          <Tab label="View Cameras" id="camera-tab-0" />
+          {canCreate && <Tab label="Create Camera" id="camera-tab-1" />}
+        </Tabs>
+      </Box>
+
+      <TabPanel value={tabValue} index={0}>
+        {loading && <Box sx={{display: 'flex', justifyContent: 'center', p: 4}}><CircularProgress /></Box>}
+        {error && <Alert severity="error">{error}</Alert>}
+        {!loading && !error && (
+          <Grid container spacing={3}>
             {cameras.length === 0 ? (
-              <p>No cameras found.</p>
+              <Grid item xs={12}><Typography>No cameras found.</Typography></Grid>
             ) : (
               cameras.map((camera) => (
-                <div key={camera.id} className="camera-card">
-                  <div className="camera-header">
-                    <h3>{camera.name}</h3>
-                    <span className="status-badge active">
-                      ACTIVE
-                    </span>
-                  </div>
-                  
-                  <div className="camera-details">
-                    <p><strong>Camera ID:</strong> {camera.camera_id}</p>
-                    <p><strong>Connection:</strong> {camera.connection_string}</p>
-                    <p><strong>Created:</strong> {new Date(camera.created_at).toLocaleString()}</p>
-                    <p><strong>Updated:</strong> {new Date(camera.updated_at).toLocaleString()}</p>
-                  </div>
-                  
-                  <div className="camera-actions">
-                    <button className="action-btn view">View Details</button>
-                    <button className="action-btn edit">Edit</button>
-                  </div>
-                </div>
+                <Grid item key={camera.id} xs={12} sm={6} md={4}>
+                  <Card>
+                    <CardContent>
+                      <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
+                        <Typography variant="h6">{camera.name}</Typography>
+                        <Chip label="ACTIVE" color="success" size="small" />
+                      </Box>
+                      <Typography variant="body2" color="text.secondary" noWrap gutterBottom>
+                        ID: {camera.camera_id}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" noWrap>
+                        Connection: {camera.connection_string}
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Button size="small">View Details</Button>
+                      <Button size="small">Edit</Button>
+                    </CardActions>
+                  </Card>
+                </Grid>
               ))
             )}
-          </div>
-        </div>
-      )}
+          </Grid>
+        )}
+      </TabPanel>
 
-      {activeTab === "create" && (
-        <div className="create-camera-tab">
+      {canCreate && (
+        <TabPanel value={tabValue} index={1}>
           <CameraCreationForm />
-        </div>
+        </TabPanel>
       )}
-    </div>
+    </Box>
   );
 };
 

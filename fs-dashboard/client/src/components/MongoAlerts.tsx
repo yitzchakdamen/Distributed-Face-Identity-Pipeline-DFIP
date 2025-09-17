@@ -1,7 +1,20 @@
-// MongoDB Alerts component for displaying alerts/events with images
-
-import React, { useState, useEffect } from 'react';
-import './MongoAlerts.css';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  Box,
+  Typography,
+  CircularProgress,
+  Alert,
+  Button,
+  Grid,
+  Card,
+  CardContent,
+  CardMedia,
+  Chip,
+  ToggleButtonGroup,
+  ToggleButton,
+  Snackbar,
+} from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 interface Alert {
   person_id: string;
@@ -16,235 +29,93 @@ interface Alert {
 interface AlertsResponse {
   success: boolean;
   data?: Alert[];
-  alerts?: Alert[]; // For backward compatibility
+  alerts?: Alert[];
 }
 
 const MongoAlerts: React.FC = () => {
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentFilter, setCurrentFilter] = useState('all');
+  const [filter, setFilter] = useState('all');
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
-  // Fetch alerts data from MongoDB API
-  const fetchAlerts = async () => {
+  const fetchAlerts = useCallback(async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       setError(null);
-
       const response = await fetch('/api/mongo/alerts');
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        if (response.status === 503) {
-          throw new Error('MongoDB service is not available in production environment');
-        }
-        if (response.status === 504) {
-          throw new Error('MongoDB operation timed out. The database may be overloaded. Please try again later.');
-        }
-        throw new Error(errorData.message || `Failed to fetch alerts: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data: AlertsResponse = await response.json();
-      
       if (data.success) {
         setAlerts(data.data || data.alerts || []);
       } else {
-        throw new Error('API returned error');
+        throw new Error('API returned an error');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error occurred');
-      console.error('Error fetching alerts:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchAlerts();
-    
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(fetchAlerts, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  }, [fetchAlerts]);
 
-  // Filter alerts based on current filter
-  const filteredAlerts = currentFilter === 'all' 
-    ? (alerts || [])
-    : (alerts || []).filter(alert => alert.level === currentFilter);
-
-  // Format date and time
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return {
-      date: date.toLocaleDateString('en-US'),
-      time: date.toLocaleTimeString('en-US')
-    };
+  const handleFilterChange = (event: React.MouseEvent<HTMLElement>, newFilter: string | null) => {
+    if (newFilter) setFilter(newFilter);
   };
 
-  // Show notification
-  const showNotification = (message: string, isError: boolean = false) => {
-    // Simple notification - you can enhance this with a proper notification system
-    const notification = document.createElement('div');
-    notification.className = `notification ${isError ? 'error' : 'success'}`;
-    notification.textContent = message;
-    
-    notification.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 15px 20px;
-      background: ${isError ? '#dc3545' : '#28a745'};
-      color: white;
-      border-radius: 6px;
-      z-index: 1000;
-      transition: all 0.3s;
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-      notification.style.opacity = '0';
-      setTimeout(() => document.body.removeChild(notification), 300);
-    }, 3000);
+  const filteredAlerts = alerts.filter(a => filter === 'all' || a.level === filter);
+
+  const getChipColor = (level: string) => {
+    switch (level) {
+      case 'alert': return 'error';
+      case 'info': return 'info';
+      default: return 'default';
+    }
   };
 
-  const handleRefresh = async () => {
-    await fetchAlerts();
-    showNotification('Alerts updated successfully');
-  };
-
-  if (loading && alerts.length === 0) {
-    return (
-      <div className="mongo-alerts">
-        <div className="loading">
-          <div className="spinner"></div>
-          <p>Loading alerts...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error && alerts.length === 0) {
-    return (
-      <div className="mongo-alerts">
-        <div className="error">
-          <h3>Error Loading Alerts</h3>
-          <p>{error}</p>
-          <button onClick={fetchAlerts} className="retry-btn">
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
+  if (loading && alerts.length === 0) return <Box sx={{display: 'flex', justifyContent: 'center', p: 4}}><CircularProgress /></Box>;
+  if (error && alerts.length === 0) return <Alert severity="error" action={<Button onClick={fetchAlerts}>Retry</Button>}>{error}</Alert>;
 
   return (
-    <div className="mongo-alerts">
-      <header className="alerts-header">
-        <h1>Security Alerts System</h1>
-        <button 
-          onClick={handleRefresh} 
-          className={`refresh-btn ${loading ? 'loading' : ''}`}
-          disabled={loading}
-        >
-          {loading ? 'Refreshing...' : 'Refresh Alerts'}
-        </button>
-      </header>
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h5">Security Alerts</Typography>
+        <Button variant="outlined" startIcon={<RefreshIcon />} onClick={() => { fetchAlerts(); setIsSnackbarOpen(true); }} disabled={loading}>
+            {loading ? 'Refreshing...' : 'Refresh'}
+        </Button>
+      </Box>
 
-      {/* Filter Controls */}
-      <div className="filter-controls">
-        <button 
-          className={`filter-btn ${currentFilter === 'all' ? 'active' : ''}`}
-          onClick={() => setCurrentFilter('all')}
-        >
-          All
-        </button>
-        <button 
-          className={`filter-btn ${currentFilter === 'alert' ? 'active' : ''}`}
-          onClick={() => setCurrentFilter('alert')}
-        >
-          Alerts
-        </button>
-        <button 
-          className={`filter-btn ${currentFilter === 'info' ? 'active' : ''}`}
-          onClick={() => setCurrentFilter('info')}
-        >
-          Info
-        </button>
-      </div>
+      <ToggleButtonGroup value={filter} exclusive onChange={handleFilterChange} sx={{ mb: 2 }}>
+        <ToggleButton value="all">All</ToggleButton>
+        <ToggleButton value="alert">Alert</ToggleButton>
+        <ToggleButton value="info">Info</ToggleButton>
+      </ToggleButtonGroup>
 
-      {/* Alerts Grid */}
-      <div className="alerts-container">
-        {filteredAlerts.length === 0 ? (
-          <div className="no-alerts">
-            <div className="no-alerts-icon">🔔</div>
-            <p>No alerts to display</p>
-          </div>
-        ) : (
-          filteredAlerts.map((alert, index) => {
-            const { date, time } = formatDateTime(alert.time);
-            
-            return (
-              <div key={`${alert.person_id}-${index}`} className="alert-card">
-                <div className="alert-header">
-                  <span className={`alert-level level-${alert.level}`}>
-                    {alert.level.toUpperCase()}
-                  </span>
-                  <span className="alert-time">
-                    {date} {time}
-                  </span>
-                </div>
-                
-                <div className="alert-image">
-                  {alert.image ? (
-                    <img 
-                      src={alert.image} 
-                      alt="Alert image"
-                      className="alert-img"
-                    />
-                  ) : (
-                    <div className="no-image">
-                      <div className="no-image-icon">📷</div>
-                      <p>No image available</p>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="alert-body">
-                  <p className="alert-message">{alert.message}</p>
-                  
-                  <div className="alert-details">
-                    <div className="detail-item">
-                      <span className="detail-label">Person ID:</span>
-                      <span className="detail-value">
-                        {alert.person_id.substring(0, 10)}...
-                      </span>
-                    </div>
-                    <div className="detail-item">
-                      <span className="detail-label">Camera ID:</span>
-                      <span className="detail-value">{alert.camera_id}</span>
-                    </div>
-                    <div className="detail-item">
-                      <span className="detail-label">Image ID:</span>
-                      <span className="detail-value">
-                        {alert.image_id.substring(0, 10)}...
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })
+      <Grid container spacing={3}>
+        {filteredAlerts.map((alert, index) => (
+          <Grid item key={index} xs={12} sm={6} md={4}>
+            <Card>
+              {alert.image && <CardMedia component="img" height="194" image={alert.image} alt="Alert" />}
+              <CardContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Chip label={alert.level.toUpperCase()} color={getChipColor(alert.level)} size="small" />
+                  <Typography variant="caption">{new Date(alert.time).toLocaleString()}</Typography>
+                </Box>
+                <Typography variant="body2" color="text.secondary">{alert.message}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+        {filteredAlerts.length === 0 && !loading && (
+            <Grid item xs={12}><Typography>No alerts to display for this filter.</Typography></Grid>
         )}
-      </div>
+      </Grid>
 
-      {/* Loading overlay for refresh */}
-      {loading && alerts.length > 0 && (
-        <div className="loading-overlay">
-          <div className="spinner-small"></div>
-        </div>
-      )}
-    </div>
+      <Snackbar open={isSnackbarOpen} autoHideDuration={3000} onClose={() => setIsSnackbarOpen(false)} message="Alerts refreshed" />
+    </Box>
   );
 };
 

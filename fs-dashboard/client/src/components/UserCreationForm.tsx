@@ -1,7 +1,21 @@
-import React, { useState } from "react";
-import { createUser } from "../services/userService";
-import { useAuth } from "../context/AuthContext";
-import "./UserCreationForm.css";
+import React, { useState } from 'react';
+import { createUser } from '../services/userService';
+import { useAuth } from '../context/AuthContext';
+import {
+  Box,
+  TextField,
+  Button,
+  CircularProgress,
+  Alert,
+  Typography,
+  Paper,
+  Grid,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  SelectChangeEvent,
+} from '@mui/material';
 
 interface UserFormData {
   username: string;
@@ -14,58 +28,34 @@ interface UserFormData {
 const UserCreationForm: React.FC = () => {
   const { user: currentUser } = useAuth();
   const [formData, setFormData] = useState<UserFormData>({
-    username: "",
-    password: "",
-    name: "",
-    email: "",
-    role: "viewer"
+    username: '',
+    password: '',
+    name: '',
+    email: '',
+    role: 'viewer',
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>("");
-  const [success, setSuccess] = useState<string>("");
+  const [error, setError] = useState<string>('');
+  const [success, setSuccess] = useState<string>('');
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name as string]: value }));
   };
 
-  const getRoleOptions = () => {
-    if (currentUser?.role === "admin") {
-      return [
-        { value: "operator", label: "Operator" },
-        { value: "viewer", label: "Viewer" }
-      ];
-    } else if (currentUser?.role === "operator") {
-      return [
-        { value: "viewer", label: "Viewer" }
-      ];
-    }
-    return [];
+  const handleSelectChange = (e: SelectChangeEvent) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name as string]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
-    setSuccess("");
+    setError('');
+    setSuccess('');
 
-    // Validation
     if (!formData.username || !formData.password || !formData.name || !formData.email) {
-      setError("All fields are required");
-      setLoading(false);
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long");
-      setLoading(false);
-      return;
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setError("Please enter a valid email address");
+      setError('All fields are required');
       setLoading(false);
       return;
     }
@@ -73,142 +63,56 @@ const UserCreationForm: React.FC = () => {
     try {
       const response = await createUser(formData);
       if (response.success) {
-        setSuccess(`User "${formData.name}" created successfully`);
-        setFormData({
-          username: "",
-          password: "",
-          name: "",
-          email: "",
-          role: "viewer"
-        });
+        setSuccess(`User "${formData.name}" created successfully.`);
+        setFormData({ username: '', password: '', name: '', email: '', role: 'viewer' });
       } else {
-        setError(response.error || "Failed to create user");
+        setError(response.error || 'Failed to create user.');
       }
     } catch (err: any) {
-      console.error("Error creating user:", err);
-      if (err.response?.status === 401) {
-        setError("Authentication required. Please login again.");
-      } else if (err.response?.status === 403) {
-        setError("You don't have permission to create this type of user.");
-      } else {
-        setError(err.message || "Failed to create user");
-      }
+      setError(err.message || 'An unexpected error occurred.');
     } finally {
       setLoading(false);
     }
   };
 
-  const roleOptions = getRoleOptions();
-
-  if (roleOptions.length === 0) {
-    return (
-      <div className="user-creation-form">
-        <div className="access-denied">
-          <h3>Access Denied</h3>
-          <p>You do not have permission to create users.</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="user-creation-form">
-      <h2>Create New User</h2>
-      
-      {error && <div className="error-message">{error}</div>}
-      {success && <div className="success-message">{success}</div>}
+    <Paper sx={{ p: {xs: 2, md: 4}, maxWidth: 800, margin: 'auto' }}>
+      <Typography variant="h5" gutterBottom>Create a New User</Typography>
+      <form onSubmit={handleSubmit}>
+        <Grid container spacing={3}>
+          {error && <Grid item xs={12}><Alert severity="error">{error}</Alert></Grid>}
+          {success && <Grid item xs={12}><Alert severity="success">{success}</Alert></Grid>}
 
-      <form onSubmit={handleSubmit} className="creation-form">
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="username">Username *</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleInputChange}
-              required
-              className="form-input"
-              placeholder="Enter username"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="name">Full Name *</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              required
-              className="form-input"
-              placeholder="Enter full name"
-            />
-          </div>
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="email">Email *</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-              className="form-input"
-              placeholder="Enter email address"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="role">Role *</label>
-            <select
-              id="role"
-              name="role"
-              value={formData.role}
-              onChange={handleInputChange}
-              required
-              className="form-select"
-            >
-              {roleOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="password">Password *</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            required
-            className="form-input"
-            placeholder="Enter password (min 6 characters)"
-            minLength={6}
-          />
-        </div>
-
-        <div className="form-actions">
-          <button
-            type="submit"
-            disabled={loading}
-            className="submit-btn"
-          >
-            {loading ? "Creating..." : "Create User"}
-          </button>
-        </div>
+          <Grid item xs={12} sm={6}>
+            <TextField label="Full Name" name="name" value={formData.name} onChange={handleInputChange} required fullWidth />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField label="Username" name="username" value={formData.username} onChange={handleInputChange} required fullWidth />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField label="Email Address" name="email" type="email" value={formData.email} onChange={handleInputChange} required fullWidth />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField label="Password" name="password" type="password" value={formData.password} onChange={handleInputChange} required fullWidth helperText="Minimum 6 characters" />
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth required>
+              <InputLabel id="role-label">Role</InputLabel>
+              <Select labelId="role-label" name="role" value={formData.role} label="Role" onChange={handleSelectChange}>
+                {currentUser?.role === 'admin' && <MenuItem value="admin">Admin</MenuItem>}
+                {currentUser?.role === 'admin' && <MenuItem value="operator">Operator</MenuItem>}
+                <MenuItem value="viewer">Viewer</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <Button type="submit" variant="contained" disabled={loading} fullWidth sx={{ py: 1.5 }}>
+              {loading ? <CircularProgress size={24} /> : 'Create User'}
+            </Button>
+          </Grid>
+        </Grid>
       </form>
-    </div>
+    </Paper>
   );
 };
 
