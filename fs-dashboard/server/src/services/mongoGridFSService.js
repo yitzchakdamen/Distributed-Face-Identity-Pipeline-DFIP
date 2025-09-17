@@ -2,6 +2,7 @@
 
 import { MongoClient, GridFSBucket } from "mongodb";
 import { mongoConfig } from "../config/database.js";
+import { isMongoDBAvailable, getMongoDBStatus } from "../db/mongodb.js";
 
 class MongoGridFSService {
   constructor() {
@@ -21,6 +22,12 @@ class MongoGridFSService {
       // Check if MongoDB URI is configured
       if (!mongoConfig.uri) {
         throw new Error("MongoDB URI not configured. Please set MONGODB_URI environment variable.");
+      }
+
+      // Check if MongoDB is available from main connection
+      if (!isMongoDBAvailable()) {
+        const status = getMongoDBStatus();
+        throw new Error(`MongoDB not available. Status: ${status}`);
       }
 
       this.client = new MongoClient(mongoConfig.uri, mongoConfig.options);

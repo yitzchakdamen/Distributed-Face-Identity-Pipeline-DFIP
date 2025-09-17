@@ -20,6 +20,13 @@ const connectionOptions = mongoConfig.options;
 async function connectMongoDB(maxRetries = 3, retryDelay = 2000) {
   let retries = 0;
 
+  // Check if MongoDB URI is configured
+  if (!mongoConfig.uri) {
+    console.log("⚠ MongoDB URI not configured - skipping MongoDB connection");
+    connectionStatus = "not_configured";
+    return null;
+  }
+
   while (retries < maxRetries) {
     try {
       console.log(`Attempting MongoDB connection... (attempt ${retries + 1}/${maxRetries})`);
@@ -48,7 +55,9 @@ async function connectMongoDB(maxRetries = 3, retryDelay = 2000) {
         retryDelay *= 2; // Exponential backoff
       } else {
         console.error("✘ All MongoDB connection attempts failed");
-        throw error;
+        console.log("⚠ Server will continue without MongoDB - using fallback data");
+        connectionStatus = "failed";
+        return null; // Return null instead of throwing
       }
     }
   }
@@ -60,7 +69,8 @@ async function connectMongoDB(maxRetries = 3, retryDelay = 2000) {
  */
 function getEventsCollection() {
   if (!eventsCollection) {
-    throw new Error("Database not connected. Call connectMongoDB first.");
+    console.log("⚠ MongoDB not connected - events collection unavailable");
+    return null;
   }
   return eventsCollection;
 }
@@ -71,7 +81,8 @@ function getEventsCollection() {
  */
 function getPhotoStorageBucket() {
   if (!photoStorageBucket) {
-    throw new Error("Database not connected. Call connectMongoDB first.");
+    console.log("⚠ MongoDB not connected - photo storage unavailable");
+    return null;
   }
   return photoStorageBucket;
 }
@@ -81,6 +92,13 @@ function getPhotoStorageBucket() {
  */
 function getMongoDBStatus() {
   return connectionStatus;
+}
+
+/**
+ * Check if MongoDB is available
+ */
+function isMongoDBAvailable() {
+  return connectionStatus === "connected";
 }
 
 /**
@@ -94,4 +112,4 @@ async function closeMongoDB() {
   }
 }
 
-export { connectMongoDB, getEventsCollection, getPhotoStorageBucket, getMongoDBStatus, closeMongoDB };
+export { connectMongoDB, getEventsCollection, getPhotoStorageBucket, getMongoDBStatus, isMongoDBAvailable, closeMongoDB };
