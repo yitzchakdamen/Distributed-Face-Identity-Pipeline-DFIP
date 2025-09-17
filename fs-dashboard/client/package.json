@@ -1,0 +1,42 @@
+{
+  "name": "client",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "start": "npm run preview",
+    "lint": "eslint .",
+    "preview": "vite preview --host 0.0.0.0 --port ${PORT:-4173}",
+    "seo:audit": "lighthouse https://facealert.security --output json --output html --output-path ./seo-audit",
+    "seo:validate": "html-validator --file=./dist/index.html",
+    "seo:sitemap": "node scripts/generate-sitemap.js",
+    "analyze": "vite build --analyze",
+    "optimize": "npm run build && npm run seo:validate"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": "10.x"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "axios": "^1.12.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-router-dom": "^7.9.1",
+    "vite": "^5.4.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@types/node": "^24.5.0",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "eslint": "^9.33.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.39.1"
+  }
+}

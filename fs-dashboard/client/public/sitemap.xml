@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+  
+  <!-- Homepage - Highest Priority -->
+  <url>
+    <loc>https://facealert.security/</loc>
+    <lastmod>2025-09-16T16:50:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://facealert.security/images/dashboard-preview.jpg</image:loc>
+      <image:title>Face Alert Security Dashboard</image:title>
+      <image:caption>Advanced face recognition surveillance system with real-time monitoring</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Authentication Pages -->
+  <url>
+    <loc>https://facealert.security/login</loc>
+    <lastmod>2025-09-16T16:50:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://facealert.security/register</loc>
+    <lastmod>2025-09-16T16:50:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Product Information Pages -->
+  <url>
+    <loc>https://facealert.security/features</loc>
+    <lastmod>2025-09-16T16:50:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://facealert.security/images/features-overview.jpg</image:loc>
+      <image:title>Face Alert Security Features</image:title>
+      <image:caption>Comprehensive security surveillance features including real-time face recognition</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://facealert.security/about</loc>
+    <lastmod>2025-09-16T16:50:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://facealert.security/pricing</loc>
+    <lastmod>2025-09-16T16:50:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://facealert.security/contact</loc>
+    <lastmod>2025-09-16T16:50:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Legal Pages -->
+  <url>
+    <loc>https://facealert.security/privacy-policy</loc>
+    <lastmod>2025-09-16T16:50:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <url>
+    <loc>https://facealert.security/terms-of-service</loc>
+    <lastmod>2025-09-16T16:50:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+  <!-- Blog/Documentation Pages -->
+  <url>
+    <loc>https://facealert.security/documentation</loc>
+    <lastmod>2025-09-16T16:50:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <url>
+    <loc>https://facealert.security/blog</loc>
+    <lastmod>2025-09-16T16:50:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Industry/Use Case Pages -->
+  <url>
+    <loc>https://facealert.security/industries/retail</loc>
+    <lastmod>2025-09-16T16:50:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://facealert.security/industries/corporate</loc>
+    <lastmod>2025-09-16T16:50:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://facealert.security/industries/education</loc>
+    <lastmod>2025-09-16T16:50:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+</urlset>

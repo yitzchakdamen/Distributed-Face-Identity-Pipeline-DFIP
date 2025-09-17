@@ -1,0 +1,12 @@
+# Security.txt for Face Alert - Security Contact Information
+# For more information, see https://securitytxt.org/
+
+Contact: security@facealert.security
+Contact: mailto:security@facealert.security
+Contact: https://facealert.security/security-contact
+Expires: 2025-12-31T23:59:59.000Z
+Acknowledgments: https://facealert.security/security-acknowledgments
+Preferred-Languages: en, he
+Canonical: https://facealert.security/.well-known/security.txt
+Policy: https://facealert.security/security-policy
+Hiring: https://facealert.security/careers

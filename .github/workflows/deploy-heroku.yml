@@ -1,0 +1,91 @@
+name: Deploy to Heroku
+
+on:
+  push:
+    branches: [r-el/fs-dashboard]
+  pull_request:
+    branches: [r-el/fs-dashboard]
+    types: [closed]
+
+jobs:
+  deploy-api:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install server dependencies
+        working-directory: fs-dashboard/server
+        run: npm install
+
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+
+      - name: Verify Heroku app exists
+        run: |
+          echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:token
+          heroku apps:info ${{ secrets.HEROKU_API_APP_NAME }} || echo "App ${{ secrets.HEROKU_API_APP_NAME }} not found"
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+      - name: Deploy API to Heroku
+        uses: akhileshns/heroku-deploy@v3.13.15
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_API_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          appdir: "fs-dashboard/server"
+          buildpack: "heroku/nodejs"
+          usedocker: false
+          procfile: "web: node index.js"
+          dontautocreate: true
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install and build React client
+        working-directory: fs-dashboard/client
+        run: |
+          npm install
+          npm run build
+
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+
+      - name: Verify Heroku app exists
+        run: |
+          echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:token
+          heroku apps:info ${{ secrets.HEROKU_FRONTEND_APP_NAME }} || echo "App ${{ secrets.HEROKU_FRONTEND_APP_NAME }} not found"
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+      - name: Deploy Frontend to Heroku
+        uses: akhileshns/heroku-deploy@v3.13.15
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_FRONTEND_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          appdir: "fs-dashboard/client"
+          buildpack: "heroku/nodejs"
+          usedocker: false
+          procfile: "web: npm start"
+          dontautocreate: true

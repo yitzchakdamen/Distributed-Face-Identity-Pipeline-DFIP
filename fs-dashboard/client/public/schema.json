@@ -1,0 +1,221 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://facealert.security/#organization",
+      "name": "Face Alert Security",
+      "alternateName": "FaceAlert",
+      "url": "https://facealert.security",
+      "logo": [
+        {
+          "@type": "ImageObject",
+          "url": "https://facealert.security/logo.svg",
+          "width": 512,
+          "height": 512,
+          "caption": "Face Alert Security Main Logo",
+          "encodingFormat": "image/svg+xml"
+        },
+        {
+          "@type": "ImageObject", 
+          "url": "https://facealert.security/face-icon.svg",
+          "width": 512,
+          "height": 512,
+          "caption": "Face Alert Security Icon",
+          "encodingFormat": "image/svg+xml"
+        },
+        {
+          "@type": "ImageObject",
+          "url": "https://facealert.security/favicon.svg",
+          "width": 512,
+          "height": 512, 
+          "caption": "Face Alert Security Favicon",
+          "encodingFormat": "image/svg+xml"
+        }
+      ],
+      "sameAs": [
+        "https://twitter.com/facealertsec",
+        "https://linkedin.com/company/facealert-security",
+        "https://github.com/facealert",
+        "https://facebook.com/facealertsecurity"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+1-800-FACE-ALERT",
+        "contactType": "customer service",
+        "availableLanguage": ["English", "Hebrew"],
+        "areaServed": "Worldwide"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "IL",
+        "addressLocality": "Tel Aviv",
+        "streetAddress": "Rothschild Blvd 1"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://facealert.security/#website",
+      "url": "https://facealert.security",
+      "name": "Face Alert - Advanced Security Surveillance System",
+      "description": "Professional face recognition and surveillance system with real-time monitoring, multi-camera management, and advanced security alerts for businesses worldwide.",
+      "publisher": {
+        "@id": "https://facealert.security/#organization"
+      },
+      "inLanguage": "en-US",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://facealert.security/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://facealert.security/#software",
+      "name": "Face Alert Security System",
+      "applicationCategory": "SecurityApplication",
+      "operatingSystem": "Web Browser, iOS, Android",
+      "description": "Advanced face recognition surveillance system with real-time monitoring, multi-camera support, role-based access control, and instant security alerts.",
+      "offers": {
+        "@type": "Offer",
+        "price": "99.00",
+        "priceCurrency": "USD",
+        "priceValidUntil": "2025-12-31",
+        "availability": "https://schema.org/InStock",
+        "seller": {
+          "@id": "https://facealert.security/#organization"
+        }
+      },
+      "featureList": [
+        "Real-time face recognition",
+        "Multi-camera management",
+        "Role-based access control",
+        "Instant security alerts",
+        "Cloud-based storage",
+        "Mobile app support",
+        "Advanced analytics",
+        "24/7 monitoring"
+      ],
+      "screenshot": "https://facealert.security/images/dashboard-screenshot.jpg",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "247",
+        "bestRating": "5",
+        "worstRating": "1"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://facealert.security/#service",
+      "name": "Face Recognition Security Service",
+      "serviceType": "Security Surveillance",
+      "description": "Professional face recognition and security surveillance service for businesses, educational institutions, and retail establishments.",
+      "provider": {
+        "@id": "https://facealert.security/#organization"
+      },
+      "areaServed": {
+        "@type": "Place",
+        "name": "Worldwide"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Security Packages",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Basic Plan",
+              "description": "Up to 5 cameras, basic analytics"
+            },
+            "price": "99.00",
+            "priceCurrency": "USD"
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Professional Plan",
+              "description": "Up to 25 cameras, advanced analytics, priority support"
+            },
+            "price": "299.00",
+            "priceCurrency": "USD"
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Enterprise Plan",
+              "description": "Unlimited cameras, custom integration, dedicated support"
+            },
+            "price": "999.00",
+            "priceCurrency": "USD"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://facealert.security/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Face Alert?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Face Alert is an advanced security surveillance system that uses cutting-edge face recognition technology to provide real-time monitoring and instant security alerts for businesses worldwide."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How accurate is the face recognition?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Our face recognition technology achieves 99.7% accuracy under optimal conditions and maintains over 95% accuracy in challenging lighting conditions."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my data secure?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, we use enterprise-grade encryption, comply with GDPR and other privacy regulations, and store all data in secure, certified data centers."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What camera types are supported?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Face Alert supports most IP cameras, CCTV systems, and webcams. We provide detailed compatibility lists and setup guides for popular camera brands."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://facealert.security/#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://facealert.security"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Security Solutions",
+          "item": "https://facealert.security/solutions"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Face Recognition",
+          "item": "https://facealert.security/solutions/face-recognition"
+        }
+      ]
+    }
+  ]
+}

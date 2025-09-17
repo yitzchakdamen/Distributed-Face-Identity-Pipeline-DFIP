@@ -1,0 +1,65 @@
+# Security and Performance Headers for Face Alert
+
+/*
+  # Security Headers
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  
+  # Content Security Policy - Production ready
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://www.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https: wss: https://api.facealert.security https://api.facealert.live; frame-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'self' https:; upgrade-insecure-requests;
+  
+  # Performance Headers
+  Cache-Control: public, max-age=31536000, immutable
+  
+  # HSTS Header
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+# Static Assets Caching
+/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Images Caching
+*.jpg
+  Cache-Control: public, max-age=2592000
+  Content-Type: image/jpeg
+
+*.png
+  Cache-Control: public, max-age=2592000
+  Content-Type: image/png
+
+*.svg
+  Cache-Control: public, max-age=31536000
+  Content-Type: image/svg+xml
+
+# API Endpoints - Relaxed CSP for dynamic content
+/api/*
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Robots-Tag: noindex
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' https: wss:; img-src 'self' data: https: blob:;
+
+# Dashboard route - Application CSP
+/dashboard*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https: wss:;
+
+# Authentication routes
+/login
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https:;
+
+/register  
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https:;
+
+# Sitemap
+/sitemap.xml
+  Content-Type: application/xml
+  Cache-Control: public, max-age=86400
+
+# Robots
+/robots.txt
+  Content-Type: text/plain
+  Cache-Control: public, max-age=86400

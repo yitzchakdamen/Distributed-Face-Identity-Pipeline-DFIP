@@ -1,0 +1,33 @@
+.auth-required {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  padding: 2rem;
+}
+
+.auth-required h2 {
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+.auth-required p {
+  margin-bottom: 2rem;
+  color: #666;
+}
+
+.auth-required a {
+  color: #3498db;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border: 1px solid #3498db;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.auth-required a:hover {
+  background-color: #3498db;
+  color: white;
+}
