@@ -112,4 +112,5 @@ def get_alerts():
     return jsonify({"alerts": result})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # מקבל את הפורט מהסביבה, או 5000 כברירת מחדל
+    app.run(host="0.0.0.0", port=port)

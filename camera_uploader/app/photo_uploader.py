@@ -91,7 +91,7 @@ class CameraUploader:
 
 
 
-    def main(self, interval: int = 1, rtsp_url: str = None):
+    def main(self, interval: float = 0.5, rtsp_url: str = None):
         """
         Main loop for capturing and uploading images from the webcam at regular intervals.
 
