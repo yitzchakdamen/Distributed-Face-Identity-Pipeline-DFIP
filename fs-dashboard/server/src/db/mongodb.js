@@ -35,7 +35,7 @@ async function connectMongoDB(maxRetries = 3, retryDelay = 2000) {
 
       // Access database and collection
       const db = client.db(mongoConfig.dbName);
-      eventsCollection = db.collection("events");
+      eventsCollection = db.collection("event");
 
       // Initialize GridFS bucket for photo storage
       photoStorageBucket = new GridFSBucket(db, { bucketName: "photo_storage" });      console.log("✔ MongoDB connection established successfully");

@@ -19,7 +19,7 @@ async function createSampleEvents() {
     await client.connect();
     
     const db = client.db(DB_NAME);
-    const eventsCollection = db.collection("events");
+    const eventsCollection = db.collection("event");
     
     // Sample camera IDs (these should match your existing cameras)
     const sampleCameraIds = [
