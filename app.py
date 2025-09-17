@@ -1,18 +1,34 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_file
 from pymongo import MongoClient
 import gridfs
 import base64
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
 CORS(app)  # מאפשר לקרוא ל-API מ-React בדפדפן
 
+
 # חיבור ל-MongoDB לוקאלי
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient("mongodb+srv://arieltanami122_db_user:OHod6QgGER7wp09F@facedb.k2ycus.mongodb.net/?retryWrites=true&w=majority&appName=facedb")
 db = client["face_identity"]
 
 # GridFS
 fs = gridfs.GridFS(db, collection="Photo_storage")
+
+BASE_DIR = os.path.dirname(__file__)
+
+@app.route("/")
+def home():
+    return send_file(os.path.join(BASE_DIR, "index.html"))
+
+@app.route("/events")
+def events():
+    return send_file(os.path.join(BASE_DIR, "events.html"))
+
+@app.route("/people")
+def people():
+    return send_file(os.path.join(BASE_DIR, "people.html"))
 
 @app.route("/api/persons")
 def get_persons():
@@ -95,4 +111,4 @@ def get_alerts():
     return jsonify({"alerts": result})
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True)
