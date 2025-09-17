@@ -11,7 +11,7 @@ const checkMongoDBAvailability = async (req, res, next) => {
     await mongoGridFSService.connect();
     next();
   } catch (error) {
-    console.error("MongoDB not available:", error.message);
+    // MongoDB service unavailable - return 503 with JSON response
     res.status(503).json({
       success: false,
       error: "MongoDB service unavailable",
