@@ -1,0 +1,119 @@
+/* MongoDB Page Styles */
+
+.mongo-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.mongo-page-header {
+  text-align: center;
+  padding: 40px 20px 20px;
+  background: white;
+  margin-bottom: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mongo-page-header h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 400;
+}
+
+.tab-navigation {
+  display: flex;
+  justify-content: center;
+  background: white;
+  padding: 0 20px;
+  border-bottom: 1px solid #e0e0e0;
+  gap: 0;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 15px 30px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.tab-btn:hover {
+  color: #007bff;
+  background: rgba(0, 123, 255, 0.05);
+}
+
+.tab-btn.active {
+  color: #007bff;
+  border-bottom-color: #007bff;
+  background: rgba(0, 123, 255, 0.05);
+}
+
+.tab-icon {
+  font-size: 1.2rem;
+}
+
+.tab-content {
+  background: transparent;
+  min-height: calc(100vh - 180px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mongo-page-header {
+    padding: 30px 15px 15px;
+  }
+  
+  .mongo-page-header h1 {
+    font-size: 2rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .tab-navigation {
+    padding: 0 15px;
+    gap: 0;
+  }
+  
+  .tab-btn {
+    padding: 12px 20px;
+    font-size: 14px;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .tab-icon {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mongo-page-header h1 {
+    font-size: 1.75rem;
+  }
+  
+  .tab-btn {
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+  
+  .tab-icon {
+    font-size: 1rem;
+  }
+}

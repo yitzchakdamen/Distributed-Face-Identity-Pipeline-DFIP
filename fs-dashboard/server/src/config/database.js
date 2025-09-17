@@ -16,6 +16,10 @@ export const mongoConfig = {
     maxIdleTimeMS: 30000,
     serverSelectionTimeoutMS: 5000,
   },
+  collections: {
+    events: "Event",
+    photoStorage: "Photo_storage"
+  }
 };
 
 export const supabaseConfig = {

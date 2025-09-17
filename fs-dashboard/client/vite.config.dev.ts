@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
       // Add a simple plugin to modify CSP in development
       mode === 'development' && {
         name: 'dev-csp',
-        transformIndexHtml(html: string) {
+        transformIndexHtml(html) {
           return html.replace(
             /connect-src 'self' https: wss: https:\/\/api\.facealert\.security https:\/\/api\.facealert\.live https:\/\/fonts\.googleapis\.com/,
             "connect-src 'self' http://localhost:* ws://localhost:* https: wss: https://api.facealert.security https://api.facealert.live https://fonts.googleapis.com"
@@ -18,13 +18,6 @@ export default defineConfig(({ mode }) => {
       }
     ].filter(Boolean),
     assetsInclude: ['**/*.svg'],
-    
-    // Use different HTML files for dev and production
-    ...(mode === 'development' && {
-      define: {
-        __DEV_MODE__: true
-      }
-    }),
     
     server: {
       proxy: {

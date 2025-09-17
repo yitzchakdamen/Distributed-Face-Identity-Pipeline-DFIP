@@ -47,6 +47,7 @@ const NavMenu: React.FC = () => {
       <Link to="/" className="nav-link">Dashboard</Link>
       <Link to="/events" className="nav-link">Events</Link>
       <Link to="/cameras" className="nav-link">Cameras</Link>
+      <Link to="/mongo" className="nav-link">MongoDB Gallery</Link>
       {user?.role === 'admin' && (
         <Link to="/users" className="nav-link">Users</Link>
       )}
