@@ -1,39 +1,139 @@
 .events-page {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 1rem;
 }
 
-.events-page h1 {
+.events-header {
   margin-bottom: 2rem;
+  text-align: center;
+}
+
+.events-header h1 {
+  margin-bottom: 0.5rem;
   color: #2c3e50;
 }
 
-.loading, .error {
-  text-align: center;
-  padding: 2rem;
-  font-size: 1.1rem;
+.events-header p {
+  color: #7f8c8d;
+  margin: 0;
 }
 
-.error {
-  color: #e74c3c;
+.events-filters {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-group label {
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.filter-group select,
+.filter-group input {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.filter-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: column;
+}
+
+.filter-actions button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.clear-filters-btn {
+  background: #95a5a6;
+  color: white;
+}
+
+.clear-filters-btn:hover {
+  background: #7f8c8d;
+}
+
+.refresh-btn {
+  background: #3498db;
+  color: white;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: #2980b9;
+}
+
+.refresh-btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.error-banner {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.error-banner button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.error-banner button:hover {
+  background: #c82333;
+}
+
+.no-events {
+  text-align: center;
+  padding: 3rem;
+  color: #7f8c8d;
+}
+
+.no-events p {
+  margin-bottom: 1rem;
 }
 
 .events-list {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-
-.events-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-.events-page h1 {
-  margin-bottom: 2rem;
-  color: #2c3e50;
-  font-size: 2.5rem;
 }
 
 .loading, .error {
