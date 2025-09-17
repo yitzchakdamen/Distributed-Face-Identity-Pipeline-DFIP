@@ -64,6 +64,12 @@ router.get("/persons", async (req, res) => {
       return res.json(mockPersonsData);
     }
     
+    // Check if MongoDB URI is not configured at all
+    if (!process.env.MONGODB_URI) {
+      console.log('MongoDB URI not configured, returning mock data');
+      return res.json(mockPersonsData);
+    }
+    
     // Check if MongoDB is available
     await mongoGridFSService.connect();
     
