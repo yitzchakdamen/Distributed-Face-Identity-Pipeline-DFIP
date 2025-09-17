@@ -98,46 +98,69 @@ router.get("/alerts", async (req, res) => {
       skip: parseInt(skip),
     };
 
-    const events = await mongoGridFSService.getEvents(filters);
+    // Set timeout to prevent Heroku H12 errors
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Operation timeout')), 25000); // 25 seconds
+    });
 
-    // Add images to events
-    const alertsWithImages = await Promise.all(
-      events.map(async (event) => {
-        const alertData = {
-          person_id: event.person_id,
-          time: event.time,
-          level: event.level || "info",
-          image_id: event.image_id,
-          camera_id: event.camera_id,
-          message: event.message || `Person detected: ${event.person_id}`,
-          image: null,
-        };
+    const dataPromise = async () => {
+      const events = await mongoGridFSService.getEvents(filters);
 
-        // Get image if image_id exists
-        if (event.image_id) {
-          try {
-            const base64Image = await mongoGridFSService.getImageAsBase64(event.image_id);
-            alertData.image = base64Image;
-          } catch (error) {
-            console.warn(`Failed to get image ${event.image_id}:`, error.message);
+      // Add images to events
+      const alertsWithImages = await Promise.all(
+        events.map(async (event) => {
+          const alertData = {
+            person_id: event.person_id,
+            time: event.time,
+            level: event.level || "info",
+            image_id: event.image_id,
+            camera_id: event.camera_id,
+            message: event.message || `Person detected: ${event.person_id}`,
+            image: null,
+          };
+
+          // Get image if image_id exists
+          if (event.image_id) {
+            try {
+              const base64Image = await mongoGridFSService.getImageAsBase64(event.image_id);
+              alertData.image = base64Image;
+            } catch (error) {
+              console.warn(`Failed to get image ${event.image_id}:`, error.message);
+            }
           }
-        }
 
-        return alertData;
-      })
-    );
+          return alertData;
+        })
+      );
+
+      return alertsWithImages;
+    };
+
+    const alertsWithImages = await Promise.race([dataPromise(), timeoutPromise]);
 
     res.json({
       success: true,
-      alerts: alertsWithImages,
+      data: alertsWithImages,
+      pagination: {
+        limit: filters.limit,
+        skip: filters.skip,
+        total: alertsWithImages.length,
+      },
     });
   } catch (error) {
-    console.error("Error fetching alerts:", error);
-    res.status(500).json({
-      success: false,
-      error: "Failed to fetch alerts data",
-      message: error.message,
-    });
+    if (error.message === 'Operation timeout') {
+      res.status(504).json({
+        success: false,
+        error: "Gateway timeout",
+        message: "MongoDB operation timed out. Please try again later.",
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: "Failed to fetch alerts data",
+        message: "MongoDB service is not available or an error occurred",
+      });
+    }
   }
 });
 
