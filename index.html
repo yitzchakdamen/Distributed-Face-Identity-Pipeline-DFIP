@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>דף בית — דוגמת אתר עם שני דפים</title>
+  <style>
+    /* סגנון כללי פשוט ונקי */
+    :root{ --bg:#f7f8fb; --card:#fff; --accent:#0b69ff; --muted:#6b7280; }
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans Hebrew',Arial; background:var(--bg); margin:0; color:#111}
+    .container{max-width:980px;margin:28px auto;padding:18px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    h1{margin:0;font-size:1.4rem}
+    nav a{margin-left:10px;text-decoration:none;color:var(--accent);font-weight:600}
+    main{margin-top:18px}
+
+    /* כרטיסים ודפי תוכן */
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 20px rgba(16,24,40,0.06)}
+    .links{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:10px;text-decoration:none;background:linear-gradient(180deg,#0d6efd,#0056d6);color:white;font-weight:700}
+
+    /* ניווט פנימי (sections) */
+    .page{display:none}
+    .page.active{display:block}
+
+    /* כפתור חזרה בחלק הפנימי */
+    .back{display:inline-block;margin-top:14px;padding:8px 12px;border-radius:8px;background:#eee;text-decoration:none;color:#111}
+
+    footer{margin-top:20px;color:var(--muted);font-size:0.9rem}
+
+    /* מימדים קטנים */
+    @media (max-width:600px){.container{margin:12px;padding:12px} .links{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>דף בית — אתר דוגמה</h1>
+        <div style="color:var(--muted);font-size:0.95rem">ברוכים הבאים! בחרו לאן ללכת</div>
+      </div>
+      <nav>
+        <!-- קישורים היסטוריים (הצגה בלבד) -->
+        <a href="/">דף הבית</a>
+        <a href="/events">לדף האירועים</a>
+        <a href="/people">לדף אנשים</a>
+      </nav>
+    </header>
+
+  </div>
+
+  <script>
+    // JavaScript קטן שמממש ניווט פנימי ללא טעינת דפים מחדש
+    (function(){
+      const pages = document.querySelectorAll('.page');
+      const setActive = id => {
+        pages.forEach(p => p.classList.toggle('active', p.id === id));
+        // עדכון כתובת (hash) בלי רענון
+        if(location.hash !== '#' + id) history.pushState(null, '', '#' + id);
+      };
+
+      // קריאה לקישורים פנימיים עם data-nav או data-link
+      document.body.addEventListener('click', e => {
+        const a = e.target.closest('a[data-nav], a[data-link]');
+        if(!a) return;
+        e.preventDefault();
+        const href = a.getAttribute('href') || '';
+        const id = href.replace('#','') || 'home';
+        setActive(id);
+      });
+
+      // תומך בחזרה/קדימה בדפדפן
+      window.addEventListener('popstate', () => {
+        const id = (location.hash || '#home').replace('#','') || 'home';
+        pages.forEach(p => p.classList.toggle('active', p.id === id));
+      });
+
+      // בעת טעינה - בחר לפי ה-hash או דיפולט לדף הבית
+      document.addEventListener('DOMContentLoaded', () => {
+        const id = (location.hash || '#home').replace('#','') || 'home';
+        pages.forEach(p => p.classList.toggle('active', p.id === id));
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -39,7 +39,7 @@ class CameraUploader:
 
 
     @staticmethod
-    def encode_image_to_bytes(frame, format_to: str = '.jpg') -> bytes:
+    def encode_image_to_bytes(frame, format_to: str = '.png') -> bytes:
         """
         Encode an image frame to binary format (JPEG or PNG).
 
@@ -53,6 +53,7 @@ class CameraUploader:
         Raises:
             ValueError: If image encoding fails.
         """
+
         ret, buffer = cv2.imencode(format_to, frame)
         if not ret:
             raise ValueError("Failed to encode image")
@@ -101,6 +102,9 @@ class CameraUploader:
             RuntimeError: If the video device cannot be opened.
         """
         cap = cv2.VideoCapture(0)
+        
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
         if not cap.isOpened():
             raise RuntimeError("Could not open video device")
 

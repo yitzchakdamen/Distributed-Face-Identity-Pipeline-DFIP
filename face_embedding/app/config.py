@@ -29,7 +29,7 @@ MONGO_DATABASE = os.getenv("MONGO_DATABASE", "face_identity")
 MONGO_CLUSTER_ADDRESS = os.getenv("MONGO_CLUSTER_ADDRESS", "localhost:27017")
 MONGO_COLLECTION = os.getenv("MONGO_COLLECTION", "Photo_storage")
 MONGO_URI = f"{MONGO_PROTOCOL}://{MONGO_USER}:{MONGO_PASSWORD}@{MONGO_CLUSTER_ADDRESS}"
-MONGO_URI = f"{MONGO_PROTOCOL}://localhost:27017"
+MONGO_URI = "mongodb+srv://arieltanami122_db_user:OHod6QgGER7wp09F@facedb.k2ycus.mongodb.net/?retryWrites=true&w=majority&appName=facedb"
 
 # Kafka producer and consumer configs
 KAFKA_PRODUCER_CONFIG = {

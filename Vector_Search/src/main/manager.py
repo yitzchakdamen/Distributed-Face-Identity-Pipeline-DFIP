@@ -39,14 +39,12 @@ class Manager:
 
         if merged_result_vector_record is not None:
             self.vector_producer.send_vector(merged_result_vector_record)
-        print(merged_result_vector_record)
 
     def new_entry(self, _vector_record):
         try:
             return self.vector_store.search_vector(_vector_record)
         except SearchGotWrong as e:
             self.logger.warning(e)
-            print(_vector_record)
 
     def new_approval_person(self, _vector_record):
         return self.vector_store.create_approval_person(_vector_record)
