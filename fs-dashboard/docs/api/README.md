@@ -2,11 +2,12 @@
 
 ## Overview
 
-This API provides authentication, user management, and camera management services for the Face Alert Dashboard system.
+This API provides authentication, user management, camera management, and MongoDB integration services for the Face Alert Dashboard system.
 
 ## Available API Documentation
 
 - **[Camera Management API](./camera-api-documentation.md)** - Complete documentation for camera CRUD operations and user assignments
+- **[MongoDB API](./MONGODB_API.md)** - MongoDB GridFS integration for persons and alerts data
 - **[Authentication & User Management](#user-authentication)** - User registration, login, and role management
 
 ## Quick Fixes
@@ -14,6 +15,13 @@ This API provides authentication, user management, and camera management service
 - **[Heroku Deployment Issues](../deploy/HEROKU_TROUBLESHOOTING.md)** - Fix "Invalid credentials" and deployment failures
 
 ## Postman Collections
+
+### MongoDB API Collection
+
+Import the following files into Postman to test the MongoDB API:
+
+- **Collection**: `mongodb-api-collection.json`
+- **Environment**: `mongodb-api-environment.json`
 
 ### Camera API Collection
 

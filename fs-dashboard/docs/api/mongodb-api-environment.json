@@ -1,0 +1,19 @@
+{
+  "id": "mongodb-api-environment",
+  "name": "MongoDB API Environment",
+  "values": [
+    {
+      "key": "base_url",
+      "value": "https://api.facealert.live",
+      "type": "default",
+      "description": "Production API base URL"
+    },
+    {
+      "key": "base_url_local",
+      "value": "http://localhost:3000",
+      "type": "default",
+      "description": "Local development API base URL"
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}
