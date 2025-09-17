@@ -37,6 +37,9 @@ const MongoAlerts: React.FC = () => {
         if (response.status === 503) {
           throw new Error('MongoDB service is not available in production environment');
         }
+        if (response.status === 504) {
+          throw new Error('MongoDB operation timed out. The database may be overloaded. Please try again later.');
+        }
         throw new Error(errorData.message || `Failed to fetch alerts: ${response.status}`);
       }
 
