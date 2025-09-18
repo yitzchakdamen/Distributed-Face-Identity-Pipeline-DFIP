@@ -1,0 +1,230 @@
+{
+  "info": {
+    "name": "Direct Camera API",
+    "description": "Direct camera endpoints without /api/mongo prefix for FaceAlert system",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.facealert.live",
+      "type": "string"
+    },
+    {
+      "key": "localUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "cameraId",
+      "value": "123",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Get Camera Events",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/camera/{{cameraId}}/events?level=alert&limit=10&skip=0&includeImages=false",
+          "host": ["{{baseUrl}}"],
+          "path": ["camera", "{{cameraId}}", "events"],
+          "query": [
+            {
+              "key": "level",
+              "value": "alert",
+              "description": "Filter by event level (info, warning, alert)"
+            },
+            {
+              "key": "limit",
+              "value": "10",
+              "description": "Maximum events to return"
+            },
+            {
+              "key": "skip",
+              "value": "0",
+              "description": "Number of events to skip for pagination"
+            },
+            {
+              "key": "includeImages",
+              "value": "false",
+              "description": "Include base64 images in response"
+            },
+            {
+              "key": "startDate",
+              "value": "",
+              "description": "Filter events after this date (ISO format)",
+              "disabled": true
+            },
+            {
+              "key": "endDate",
+              "value": "",
+              "description": "Filter events before this date (ISO format)",
+              "disabled": true
+            }
+          ]
+        },
+        "description": "Get events for a specific camera with optional filtering"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Latest Camera Event",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/camera/{{cameraId}}/latest?includeImage=true",
+          "host": ["{{baseUrl}}"],
+          "path": ["camera", "{{cameraId}}", "latest"],
+          "query": [
+            {
+              "key": "includeImage",
+              "value": "true",
+              "description": "Include base64 image in response"
+            }
+          ]
+        },
+        "description": "Get the most recent event for a specific camera"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Camera Statistics",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/camera/{{cameraId}}/stats",
+          "host": ["{{baseUrl}}"],
+          "path": ["camera", "{{cameraId}}", "stats"],
+          "query": [
+            {
+              "key": "startDate",
+              "value": "",
+              "description": "Start date for statistics (ISO format, default: 7 days ago)",
+              "disabled": true
+            },
+            {
+              "key": "endDate",
+              "value": "",
+              "description": "End date for statistics (ISO format, default: now)",
+              "disabled": true
+            }
+          ]
+        },
+        "description": "Get event statistics for a specific camera"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Camera Image (Base64)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/camera/{{cameraId}}/image/5190c3ea-c722-5e3e-b014-e583a33b7235?format=base64",
+          "host": ["{{baseUrl}}"],
+          "path": ["camera", "{{cameraId}}", "image", "5190c3ea-c722-5e3e-b014-e583a33b7235"],
+          "query": [
+            {
+              "key": "format",
+              "value": "base64",
+              "description": "Image format (base64 or binary)"
+            }
+          ]
+        },
+        "description": "Get a specific image from a camera in base64 format"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Camera Image (Binary)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/camera/{{cameraId}}/image/5190c3ea-c722-5e3e-b014-e583a33b7235",
+          "host": ["{{baseUrl}}"],
+          "path": ["camera", "{{cameraId}}", "image", "5190c3ea-c722-5e3e-b014-e583a33b7235"]
+        },
+        "description": "Get a specific image from a camera in binary format"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Events with Date Range",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/camera/{{cameraId}}/events?startDate=2025-09-01T00:00:00Z&endDate=2025-09-17T23:59:59Z&limit=20",
+          "host": ["{{baseUrl}}"],
+          "path": ["camera", "{{cameraId}}", "events"],
+          "query": [
+            {
+              "key": "startDate",
+              "value": "2025-09-01T00:00:00Z",
+              "description": "Start date in ISO format"
+            },
+            {
+              "key": "endDate",
+              "value": "2025-09-17T23:59:59Z",
+              "description": "End date in ISO format"
+            },
+            {
+              "key": "limit",
+              "value": "20",
+              "description": "Maximum events to return"
+            }
+          ]
+        },
+        "description": "Get camera events within a specific date range"
+      },
+      "response": []
+    }
+  ]
+}

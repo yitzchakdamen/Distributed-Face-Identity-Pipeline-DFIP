@@ -29,6 +29,7 @@ import cameraRoutes from "./routes/cameraRoutes.js";
 import eventRoutes from "./routes/eventRoutes.js";
 import mongoRoutes from "./routes/mongoRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import cameraDirectRoutes from "./routes/cameraDirectRoutes.js";
 
 app.use("/", rootRoutes);
 app.use("/", healthRoutes);
@@ -38,6 +39,7 @@ app.use("/cameras", cameraRoutes);
 app.use("/events", eventRoutes);
 app.use("/api/mongo", mongoRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/camera", cameraDirectRoutes);
 
 // Global error handling middleware - must be last
 app.use(globalErrorHandler);
